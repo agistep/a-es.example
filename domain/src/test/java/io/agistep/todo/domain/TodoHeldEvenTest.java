@@ -10,7 +10,7 @@ class TodoHeldEvenTest {
 
 	@Test
 	void hold() {
-		Todo sut = new Todo(new TodoCreated(99999L, "Some Text"), new TodoDone(99999L));
+		Todo sut = Todo.replay(new TodoCreated(99999L, "Some Text"), new TodoDone(99999L));
 		assertThat(sut.isDone()).isTrue();
 
 		sut.hold();

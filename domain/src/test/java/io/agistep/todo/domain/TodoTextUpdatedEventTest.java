@@ -8,7 +8,7 @@ class TodoTextUpdatedEventTest {
 
 	@Test
 	void textChangedEvent() {
-		Todo sut = new Todo(new TodoCreated(999L, "Some text"));
+		Todo sut = Todo.replay(new TodoCreated(999L, "Some text"));
 
 		sut.updateText("Updated Text");
 

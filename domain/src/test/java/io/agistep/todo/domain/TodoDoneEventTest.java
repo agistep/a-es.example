@@ -9,7 +9,7 @@ class TodoDoneEventTest {
 
 	@Test
 	void done() {
-		Todo sut = new Todo(new TodoCreated(99L, "Some Text"));
+		Todo sut = Todo.replay(new TodoCreated(99L, "Some Text"));
 
 		sut.done();
 
@@ -18,7 +18,7 @@ class TodoDoneEventTest {
 
 	@Test
 	void properties() {
-		Todo sut = new Todo(new TodoCreated(100L, "Some Text"));
+		Todo sut = Todo.replay(new TodoCreated(100L, "Some Text"));
 		assertThat(sut.isDone()).isFalse();
 
 		sut.done();

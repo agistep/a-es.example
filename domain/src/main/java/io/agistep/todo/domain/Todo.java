@@ -9,7 +9,12 @@ import java.util.Arrays;
 
 
 @Getter
-class Todo {
+public class Todo {
+
+	public static Todo replay(Event ... events) {
+		return new Todo(events);
+	}
+
 	private TodoIdentity id;
 	private String text;
 	private boolean done;
@@ -21,7 +26,7 @@ class Todo {
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
-	Todo(Event ... anEvent) {
+	 private Todo(Event... anEvent) {
 		Arrays.stream(anEvent).forEach(e-> {
 			DomainEventApplier.instance().replay(this, e);
 		});
