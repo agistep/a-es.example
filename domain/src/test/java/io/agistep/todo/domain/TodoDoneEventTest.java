@@ -1,24 +1,30 @@
 package io.agistep.todo.domain;
 
+import io.agistep.event.Events;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static io.agistep.event.EventAssertions.assertThatOccurredExactly;
+import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TodoDoneEventTest {
 
+	Todo sut;
+
+	@BeforeEach
+	void setUp() {
+		sut = Todo.replay(Events.mock(1919, 1, new TodoCreated("Some Text")));
+	}
+
 	@Test
 	void done() {
-		Todo sut = Todo.replay(new TodoCreated(99L, "Some Text"));
-
 		sut.done();
 
-		assertThatOccurredExactly(sut, new TodoDone(sut.getId().getValue()));
+		assertThatOccurredExactlyOnes(sut, Events.mock(1919, -1, new TodoDone()));
 	}
 
 	@Test
 	void properties() {
-		Todo sut = Todo.replay(new TodoCreated(100L, "Some Text"));
 		assertThat(sut.isDone()).isFalse();
 
 		sut.done();

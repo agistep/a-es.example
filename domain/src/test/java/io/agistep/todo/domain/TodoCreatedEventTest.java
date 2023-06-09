@@ -1,8 +1,9 @@
 package io.agistep.todo.domain;
 
+import io.agistep.event.Events;
 import org.junit.jupiter.api.Test;
 
-import static io.agistep.event.EventAssertions.assertThatOccurredExactly;
+import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TodoCreatedEventTest {
@@ -11,7 +12,7 @@ class TodoCreatedEventTest {
 
 	@Test
 	void created() {
-		assertThatOccurredExactly(sut, new TodoCreated(sut.getId().getValue(), "Some Text"));
+		assertThatOccurredExactlyOnes(sut, Events.mock(sut.getId().getValue(), 1, new TodoCreated("Some Text")));
 	}
 
 	@Test

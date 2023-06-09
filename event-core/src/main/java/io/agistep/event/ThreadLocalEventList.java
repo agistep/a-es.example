@@ -37,7 +37,7 @@ class ThreadLocalEventList implements EventList {
 
 	private static List<Event> init() {
 		changes.set(new ArrayList<>());
-		return new ArrayList<>();
+		return changes.get();
 	}
 
 	private static boolean isEmpty(List<Event> events) {

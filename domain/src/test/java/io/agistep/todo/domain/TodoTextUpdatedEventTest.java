@@ -1,18 +1,20 @@
 package io.agistep.todo.domain;
 
+import io.agistep.event.Events;
 import org.junit.jupiter.api.Test;
 
-import static io.agistep.event.EventAssertions.assertThatOccurredExactly;
+import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
 
 class TodoTextUpdatedEventTest {
 
 	@Test
 	void textChangedEvent() {
-		Todo sut = Todo.replay(new TodoCreated(999L, "Some text"));
+		Todo sut = Todo.replay(
+				Events.begin(new TodoCreated("Some Text")));
 
 		sut.updateText("Updated Text");
 
-		assertThatOccurredExactly(sut, new TodoTextUpdated(sut.getId().getValue(), "Updated Text") );
+		assertThatOccurredExactlyOnes(sut, Events.occurs(sut, new TodoTextUpdated("Updated Text")));
 	}
 
 

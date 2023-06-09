@@ -1,13 +1,9 @@
 package io.agistep.todo.domain;
 
 
-import io.agistep.event.AbstractEvent;
-import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 
-@EqualsAndHashCode(callSuper = true)
-public class TodoDone extends AbstractEvent {
-	public TodoDone(long aggregateIdValue) {
-		super(aggregateIdValue);
-	}
+@Value
+public class TodoDone {
 }
