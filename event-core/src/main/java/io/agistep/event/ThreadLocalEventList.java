@@ -49,4 +49,9 @@ class ThreadLocalEventList implements EventList {
 		long idValue = AggregateSupports.getId(aggregate);
 		return occurredListAll().stream().filter(e-> Objects.equals(idValue, e.getAggregateIdValue())).collect(Collectors.<Event>toList());
 	}
+
+	@Override
+	public void clean() {
+		changes.remove();
+	}
 }
