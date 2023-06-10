@@ -22,7 +22,7 @@ class TodoDoneEventTest {
 	@Test
 	void done() {
 		sut.done();
-		assertThatOccurredExactlyOnes(sut, Events.mock(1919, -1, new TodoDone()));
+		assertThatOccurredExactlyOnes(sut, Events.mock(1919, -1, TodoDone.newBuilder().build()));
 	}
 
 	@Test

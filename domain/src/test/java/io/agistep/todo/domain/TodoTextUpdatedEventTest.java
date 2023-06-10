@@ -15,7 +15,7 @@ class TodoTextUpdatedEventTest {
 
 		sut.updateText("Updated Text");
 
-		assertThatOccurredExactlyOnes(sut, Events.occurs(sut, new TodoTextUpdated("Updated Text")));
+		assertThatOccurredExactlyOnes(sut, Events.occurs(sut, TodoTextUpdated.newBuilder().setUpdatedText("Updated Text").build()));
 	}
 
 

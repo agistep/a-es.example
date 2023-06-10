@@ -19,7 +19,7 @@ class TodoHeldEvenTest {
 		Event created = Events.mock(/*1*/99, 1, TodoCreated.newBuilder().setText("Some Text").build());
 		Todo sut = Todo.replay(
 				created,
-				Events.mock(created.getAggregateIdValue(), 2, new TodoDone()));
+				Events.mock(created.getAggregateIdValue(), 2, TodoDone.newBuilder().build()));
 		assertThat(sut.isDone()).isTrue();
 
 		sut.hold();

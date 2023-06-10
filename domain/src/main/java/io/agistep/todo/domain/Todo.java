@@ -44,7 +44,7 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		Event anEvent = Events.occurs(this, new TodoDone());
+		Event anEvent = Events.occurs(this, TodoDone.newBuilder().build());
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
@@ -53,7 +53,7 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		Event anEvent = Events.occurs(this, new TodoTextUpdated(text));
+		Event anEvent = Events.occurs(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
@@ -65,7 +65,7 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		Event anEvent = Events.occurs(id.getValue(), new TodoHeld());
+		Event anEvent = Events.occurs(id.getValue(), TodoHeld.newBuilder().build());
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
