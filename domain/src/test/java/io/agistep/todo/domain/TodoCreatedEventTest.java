@@ -13,16 +13,16 @@ class TodoCreatedEventTest {
 
 	Todo sut;
 
+	@Test
+	void created() {
+		assertThatOccurredExactlyOnes(sut, Events.mock(sut.getId().getValue(), 1, TodoCreated.newBuilder().setText("Some Text").build()));
+	}
+
 	@BeforeEach
 	void setUp() {
 		sut = new Todo("Some Text");
-	}
 
-	@Test
-	void created() {
-		assertThatOccurredExactlyOnes(sut, Events.mock(sut.getId().getValue(), 1, new TodoCreated("Some Text")));
 	}
-
 	@Test
 	void properties() {
 		assertThat(sut.getText()).isEqualTo("Some Text");

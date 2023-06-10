@@ -16,7 +16,7 @@ class TodoDoneEventTest {
 
 	@BeforeEach
 	void setUp() {
-		sut = Todo.replay(Events.mock(1919, 1, new TodoCreated("Some Text")));
+		sut = Todo.replay(Events.mock(1919, 1, TodoCreated.newBuilder().setText("Some Text").build()));
 	}
 
 	@Test

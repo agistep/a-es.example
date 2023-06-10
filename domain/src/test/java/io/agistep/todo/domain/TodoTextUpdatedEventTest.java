@@ -10,7 +10,8 @@ class TodoTextUpdatedEventTest {
 	@Test
 	void textChangedEvent() {
 		Todo sut = Todo.replay(
-				Events.begin(new TodoCreated("Some Text")));
+				/*TODO 여기보자... 왜 begin 을 사용하는가? begin 을 사용하것을 왜 문제 시 삼으려 하는가?*/
+				Events.begin(TodoCreated.newBuilder().setText("Some Text").build()));
 
 		sut.updateText("Updated Text");
 

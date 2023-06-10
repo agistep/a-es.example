@@ -11,6 +11,7 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id "io.freefair.lombok" version "8.0.1"
+    id "com.google.protobuf" version "0.9.3" // for-event-payload
     id 'idea'
 }
 
@@ -39,7 +40,7 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:31.0.1-jre'
-
+    implementation 'com.google.protobuf:protobuf-java:3.23.0'
 
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
@@ -54,5 +55,12 @@ testing {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('5.8.2')
         }
+    }
+}
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.23.0'
     }
 }

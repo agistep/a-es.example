@@ -21,7 +21,10 @@ public class Todo {
 	private boolean hold;
 
 	Todo(String text) {
-		Event anEvent = Events.begin(new TodoCreated(text));
+		TodoCreated created = TodoCreated.newBuilder()
+				.setText(text)
+				.build();
+		Event anEvent = Events.begin(created);
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
