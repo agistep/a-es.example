@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EventBuilderTest {
 
-	final long aggregateIdValue = 1L;
+	final long aggregateIdValue = 0L;
 	final SomePayload payload = new SomePayload();
 	@Test
 	void beginEvent() {
