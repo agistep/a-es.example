@@ -14,9 +14,9 @@ class SimpleDomainEventApplier implements DomainEventApplier {
 
 	@Override
 	public void replay(Object aggregate, Event anEvent) {
-		final String className = aggregate.getClass().getName();
-		if("io.agistep.todo.domain.Todo".equals(className)) {
-			final String eventName = anEvent.getClass().getName();
+		final String aggregateName = aggregate.getClass().getName();
+		if("io.agistep.todo.domain.Todo".equals(aggregateName)) {
+			final String eventName = anEvent.getName();
 			if ("io.agistep.todo.domain.TodoCreated".equals(eventName)) {
 				final String handlerName = "onCreated";
 				handle(handlerName, aggregate,anEvent);
@@ -44,7 +44,7 @@ class SimpleDomainEventApplier implements DomainEventApplier {
 
 	private static void handle(String handlerName, Object aggregate, Event anEvent) {
 		try {
-			Method method = aggregate.getClass().getDeclaredMethod(handlerName, anEvent.getClass());
+			Method method = aggregate.getClass().getDeclaredMethod(handlerName, Event.class);
 			method.setAccessible(true);
 			method.invoke(aggregate, anEvent);
 		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {

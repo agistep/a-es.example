@@ -2,7 +2,7 @@ package io.agistep.todo.domain;
 
 import io.agistep.event.DomainEventApplier;
 import io.agistep.event.Event;
-import io.agistep.identity.IdentityValueProvider;
+import io.agistep.event.Events;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 @Getter
 public class Todo {
 
-	public static Todo replay(Event ... events) {
+	public static Todo replay(Event... events) {
 		return new Todo(events);
 	}
 
@@ -21,47 +21,55 @@ public class Todo {
 	private boolean hold;
 
 	Todo(String text) {
-		long idValue = IdentityValueProvider.instance().newLong();
-		TodoCreated anEvent = new TodoCreated(idValue, text);
+		TodoCreated created = TodoCreated.newBuilder()
+				.setText(text)
+				.build();
+		Event anEvent = Events.begin(created);
 		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
-	 private Todo(Event... anEvent) {
-		Arrays.stream(anEvent).forEach(e-> {
+	private Todo(Event... anEvent) {
+		Arrays.stream(anEvent).forEach(e -> {
 			DomainEventApplier.instance().replay(this, e);
 		});
 	}
 
-	void onCreated(TodoCreated anEvent){
+	void onCreated(Event anEvent) {
 		this.id = new TodoIdentity(anEvent.getAggregateIdValue());
-		this.text= anEvent.getText();
+		this.text = ((TodoCreated) anEvent.getPayload()).getText();
 		this.done = false;
 	}
 
 	public void done() {
-		DomainEventApplier.instance().apply(this, new TodoDone(this.getId().getValue()));
+		if(isDone()) {
+			return;
+		}
+		Event anEvent = Events.occurs(this, TodoDone.newBuilder().build());
+		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
-	void onDone(TodoDone anEvent) {
+	void onDone(Event anEvent) {
 		this.done = true;
 	}
 
 	public void updateText(String text) {
-		DomainEventApplier.instance().apply(this, new TodoTextUpdated(this.getId().getValue(), text));
+		Event anEvent = Events.occurs(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
-	void onTextUpdated(TodoTextUpdated anEvent) {
-		this.text = anEvent.getUpdatedText();
+	void onTextUpdated(Event anEvent) {
+		this.text = ((TodoTextUpdated) anEvent.getPayload()).getUpdatedText();
 	}
 
 	public void hold() {
-		if(isDone()) {
+		if (isDone()) {
 			return;
 		}
-		DomainEventApplier.instance().apply(this,new TodoHeld(this.getId().getValue()));
+		Event anEvent = Events.occurs(id.getValue(), TodoHeld.newBuilder().build());
+		DomainEventApplier.instance().apply(this, anEvent);
 	}
 
-	void onHeld(TodoHeld anEvent) {
+	void onHeld(Event anEvent) {
 		this.hold = true;
 	}
 

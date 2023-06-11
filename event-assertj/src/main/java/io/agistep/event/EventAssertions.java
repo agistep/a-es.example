@@ -1,15 +1,25 @@
 package io.agistep.event;
 
 
-import org.assertj.core.api.Assertions;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class EventAssertions {
 
-	public static void assertThatOccurredExactly(Object aggregate, Event... event) {
-		Assertions.assertThat(EventList.instance().occurredListBy(aggregate)).containsExactly(event);
+	public static void assertThatOccurredExactlyOnes(Object aggregate, Event expected) {
+		List<Event> eventList = EventList.instance().occurredListBy(aggregate);
+		long occurredCount = eventList.size();
+		assertThat(occurredCount).describedAs("Expected count of occurred is 1").isEqualTo(1);
+		Event actual = eventList.get(0);
+		assertThat(actual.getName()).describedAs("Event name is invalid").isEqualTo(expected.getName());
+		assertThat(actual.getOrder() ).describedAs("Event Order is Invalid").isEqualTo(expected.getOrder());
+		assertThat(actual.getAggregateIdValue()).describedAs("Aggregate ID is Invalid").isEqualTo(expected.getAggregateIdValue());
+		assertThat(actual.getPayload()).describedAs("Payload is Invalid").isEqualTo(expected.getPayload());
+		assertThat(actual.getOccurredAt()).describedAs("Occurred At is Invalid").isEqualToIgnoringNanos(expected.getOccurredAt());
 	}
 
 	public static void assertThatDoesNotOccurAnEventBy(Object aggregate) {
-		Assertions.assertThat(EventList.instance().occurredListBy(aggregate)).isEmpty();
+		assertThat(EventList.instance().occurredListBy(aggregate)).isEmpty();
 	}
 }

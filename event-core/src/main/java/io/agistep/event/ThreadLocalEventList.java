@@ -37,7 +37,7 @@ class ThreadLocalEventList implements EventList {
 
 	private static List<Event> init() {
 		changes.set(new ArrayList<>());
-		return new ArrayList<>();
+		return changes.get();
 	}
 
 	private static boolean isEmpty(List<Event> events) {
@@ -48,5 +48,10 @@ class ThreadLocalEventList implements EventList {
 	public List<Event> occurredListBy(Object aggregate) {
 		long idValue = AggregateSupports.getId(aggregate);
 		return occurredListAll().stream().filter(e-> Objects.equals(idValue, e.getAggregateIdValue())).collect(Collectors.<Event>toList());
+	}
+
+	@Override
+	public void clean() {
+		changes.remove();
 	}
 }
