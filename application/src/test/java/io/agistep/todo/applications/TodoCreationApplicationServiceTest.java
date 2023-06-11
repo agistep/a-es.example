@@ -1,36 +1,45 @@
 package io.agistep.todo.applications;
 
-import io.agistep.event.Event;
 import io.agistep.event.EventStore;
+import io.agistep.todo.domain.Todo;
 import io.agistep.todo.domain.TodoFactory;
+import io.agistep.todo.domain.TodoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoSettings;
 
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.*;
 
 @MockitoSettings
 class TodoCreationApplicationServiceTest {
 
-	@Mock
-	TodoFactory todoFactory;
+	@Spy
+	TodoFactory todoFactory = new TodoFactory();
+	ReturnCapture<Todo> createdTodo = new ReturnCapture<>();
 
 	@Mock
 	EventStore eventStore;
 
 	@Mock
-	Event expectedEvent;
+	TodoRepository todoRepository;
+
+	TodoCreationApplicationService sut;
+
+	@BeforeEach
+	void setUp() {
+		sut  = new TodoCreationApplicationService(todoFactory, todoRepository);
+		doAnswer(createdTodo).when(todoFactory).create(anyString());
+	}
 
 	@Test
-	void name() {
-
-		TodoCreationApplicationService sut  = new TodoCreationApplicationService(todoFactory, eventStore);
-
+	void create() {
 		sut.create("Some Todo");
 
-		InOrder inOrder = inOrder(todoFactory, eventStore);
-//		inOrder.verify(todoFactory).create("Some Todo");
-//		inOrder.verify(eventStore).appendToStream(expectedEvent);
+		InOrder inOrder = inOrder(todoFactory, todoRepository);
+		inOrder.verify(todoFactory).create("Some Todo");
+		inOrder.verify(todoRepository).save(createdTodo.get());
 	}
 }

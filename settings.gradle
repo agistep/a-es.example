@@ -15,3 +15,4 @@ include('event-assertj')
 
 include('application')
 include('domain')
+include('infrastructure')
