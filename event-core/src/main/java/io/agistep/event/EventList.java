@@ -15,5 +15,6 @@ public interface EventList {
 
 	List<Event> occurredListBy(Object aggregate);
 
-	void clean();
+	void publish();
+
 }

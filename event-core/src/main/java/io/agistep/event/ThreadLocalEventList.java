@@ -41,7 +41,7 @@ class ThreadLocalEventList implements EventList {
 	}
 
 	private static boolean isEmpty(List<Event> events) {
-		return events == null;
+		return events == null || events.isEmpty();
 	}
 
 	@Override
@@ -51,7 +51,9 @@ class ThreadLocalEventList implements EventList {
 	}
 
 	@Override
-	public void clean() {
+	public void publish() {
+		// TODO 이벤트 스토어에 저장 요청
 		changes.remove();
+
 	}
 }
