@@ -1,5 +1,7 @@
 package io.agistep.todo.domain;
 
-public interface TodoFactory {
-	Todo create(String text);
+public class TodoFactory {
+	public Todo create(String text) {
+		return new Todo(text);
+	}
 }
