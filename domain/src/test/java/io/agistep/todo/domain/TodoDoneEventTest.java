@@ -16,6 +16,7 @@ class TodoDoneEventTest {
 
 	@BeforeEach
 	void setUp() {
+		EventList.instance().publish();
 		sut = Todo.replay(Events.mock(1919, 1, TodoCreated.newBuilder().setText("Some Text").build()));
 	}
 
@@ -30,10 +31,5 @@ class TodoDoneEventTest {
 		assertThat(sut.isDone()).isFalse();
 		sut.done();
 		assertThat(sut.isDone()).isTrue();
-	}
-
-	@AfterEach
-	void tearDown() {
-		EventList.instance().clean();
 	}
 }

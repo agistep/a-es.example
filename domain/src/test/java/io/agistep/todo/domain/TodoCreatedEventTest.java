@@ -20,6 +20,8 @@ class TodoCreatedEventTest {
 
 	@BeforeEach
 	void setUp() {
+		EventList.instance().publish();
+
 		sut = new Todo("Some Text");
 
 	}
@@ -27,10 +29,5 @@ class TodoCreatedEventTest {
 	void properties() {
 		assertThat(sut.getText()).isEqualTo("Some Text");
 		assertThat(sut.isDone()).isEqualTo(false);
-	}
-
-	@AfterEach
-	void tearDown() {
-		EventList.instance().clean();
 	}
 }
