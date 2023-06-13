@@ -1,6 +1,11 @@
 package io.agistep.event;
 
-public interface EventStore {
-	void publish(Event anEvent);
+import java.util.List;
 
+public interface EventStore {
+	void publishOccurredEventOf(Object aggregate);
+
+	default List<Event> load(long todoId) {
+		return null;
+	}
 }
