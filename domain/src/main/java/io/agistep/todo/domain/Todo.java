@@ -6,14 +6,26 @@ import io.agistep.event.Events;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 @Getter
 public class Todo {
 
+	public static Todo replay(List<Event> events) {
+		if(events == null || events.isEmpty()) {
+			return null;
+		}
+		return replay(events.toArray(new Event[0]));
+	}
+
 	public static Todo replay(Event... events) {
+		if(events == null || events.length == 0) {
+			return null;
+		}
 		return new Todo(events);
 	}
+
 
 	private TodoIdentity id;
 	private String text;

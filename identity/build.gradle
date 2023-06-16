@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
 
+    implementation 'org.valid4j:valid4j:0.5.0'
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
