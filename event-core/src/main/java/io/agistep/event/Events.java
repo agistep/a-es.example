@@ -1,7 +1,5 @@
 package io.agistep.event;
 
-import io.agistep.identity.IdentityValueProvider;
-
 import java.time.LocalDateTime;
 
 public final class Events {
@@ -12,8 +10,7 @@ public final class Events {
 		return new EventBuilder();
 	}
 
-	public static Event begin(Object payload) {
-		long idValue = IdentityValueProvider.instance().newLong();
+	public static Event begin(long idValue, Object payload) {
 		return Events.builder()
 				.name(payload.getClass().getName())
 				.order(BEGIN_ORDER)
@@ -23,8 +20,13 @@ public final class Events {
 				.build();
 	}
 
+	@Deprecated
 	public static Event occurs(Object aggregate, Object payload) {
 		final long aggregateIdValue = AggregateSupports.getId(aggregate);
+		return occurs(aggregateIdValue, payload);
+	}
+
+	public static Event occurs(long aggregateIdValue, Object payload) {
 		return Events.builder()
 				.name(payload.getClass().getName())
 				.order(-1) //TODO 이전 order 를 알아야한다.

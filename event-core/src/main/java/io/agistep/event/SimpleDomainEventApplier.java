@@ -15,6 +15,17 @@ class SimpleDomainEventApplier implements DomainEventApplier {
 	@Override
 	public void replay(Object aggregate, Event anEvent) {
 		final String aggregateName = aggregate.getClass().getName();
+
+		if("io.agistep.event.DomainEventApplierTest$Foo".equals(aggregateName)) {
+			final String eventName = anEvent.getName();
+			if ("io.agistep.event.DomainEventApplierTest$FooCreated".equals(eventName)) {
+				final String handlerName = "onCreated";
+				handle(handlerName, aggregate,anEvent);
+				return;
+			}
+			return;
+		}
+
 		if("io.agistep.todo.domain.Todo".equals(aggregateName)) {
 			final String eventName = anEvent.getName();
 			if ("io.agistep.todo.domain.TodoCreated".equals(eventName)) {
