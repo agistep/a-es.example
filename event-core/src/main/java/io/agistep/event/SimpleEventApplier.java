@@ -3,22 +3,22 @@ package io.agistep.event;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-class SimpleDomainEventApplier implements DomainEventApplier {
+class SimpleEventApplier implements EventApplier {
 
-	public static DomainEventApplier instance() {
-		return new SimpleDomainEventApplier();
+	public static EventApplier instance() {
+		return new SimpleEventApplier();
 	}
 
-	private SimpleDomainEventApplier() {
+	private SimpleEventApplier() {
 	}
 
 	@Override
 	public void replay(Object aggregate, Event anEvent) {
 		final String aggregateName = aggregate.getClass().getName();
 
-		if("io.agistep.event.DomainEventApplierTest$Foo".equals(aggregateName)) {
+		if("io.agistep.event.EventApplierTest$Foo".equals(aggregateName)) {
 			final String eventName = anEvent.getName();
-			if ("io.agistep.event.DomainEventApplierTest$FooCreated".equals(eventName)) {
+			if ("io.agistep.event.EventApplierTest$FooCreated".equals(eventName)) {
 				final String handlerName = "onCreated";
 				handle(handlerName, aggregate,anEvent);
 				return;

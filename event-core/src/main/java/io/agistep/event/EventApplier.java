@@ -2,9 +2,9 @@ package io.agistep.event;
 
 import io.agistep.identity.IdentityValueProvider;
 
-public interface DomainEventApplier {
-	static DomainEventApplier instance() {
-		return SimpleDomainEventApplier.instance();
+public interface EventApplier {
+	static EventApplier instance() {
+		return SimpleEventApplier.instance();
 	}
 
 

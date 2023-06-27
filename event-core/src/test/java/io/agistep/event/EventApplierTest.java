@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DomainEventApplierTest {
+class EventApplierTest {
 
     static class Foo {
         Identity<Long> id;
@@ -28,10 +28,10 @@ class DomainEventApplierTest {
 
         assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(0);
 
-        DomainEventApplier.instance().apply(aggregate, new FooCreated());
+        EventApplier.instance().apply(aggregate, new FooCreated());
         assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(1);
 
-        DomainEventApplier.instance().apply(aggregate, new FooDone());
+        EventApplier.instance().apply(aggregate, new FooDone());
         assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(2);
 
     }

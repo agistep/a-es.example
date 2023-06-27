@@ -1,6 +1,6 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.DomainEventApplier;
+import io.agistep.event.EventApplier;
 import io.agistep.event.Event;
 import lombok.Getter;
 
@@ -35,12 +35,12 @@ public class Todo {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
 				.build();
-		DomainEventApplier.instance().apply(this, created);
+		EventApplier.instance().apply(this, created);
 	}
 
 	private Todo(Event... anEvent) {
 		Arrays.stream(anEvent).forEach(e -> {
-			DomainEventApplier.instance().replay(this, e);
+			EventApplier.instance().replay(this, e);
 		});
 	}
 
@@ -54,7 +54,7 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		DomainEventApplier.instance().apply(this, TodoDone.newBuilder().build());
+		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
 	}
 
 	void onDone(Event anEvent) {
@@ -62,7 +62,7 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		DomainEventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
 	}
 
 	void onTextUpdated(Event anEvent) {
@@ -73,7 +73,7 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		DomainEventApplier.instance().apply(this, TodoHeld.newBuilder().build());
+		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
 	}
 
 	void onHeld(Event anEvent) {
