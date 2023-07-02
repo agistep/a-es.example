@@ -1,7 +1,8 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventApplier;
 import io.agistep.event.Event;
+import io.agistep.event.EventApplier;
+import io.agistep.event.EventHandler;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -44,6 +45,7 @@ public class Todo {
 		});
 	}
 
+	@EventHandler(payload = TodoCreated.class)
 	void onCreated(Event anEvent) {
 		this.id = new TodoIdentity(anEvent.getAggregateIdValue());
 		this.text = ((TodoCreated) anEvent.getPayload()).getText();
@@ -57,6 +59,7 @@ public class Todo {
 		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
 	}
 
+	@EventHandler(payload = TodoDone.class)
 	void onDone(Event anEvent) {
 		this.done = true;
 	}
@@ -65,6 +68,7 @@ public class Todo {
 		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
 	}
 
+	@EventHandler(payload = TodoTextUpdated.class)
 	void onTextUpdated(Event anEvent) {
 		this.text = ((TodoTextUpdated) anEvent.getPayload()).getUpdatedText();
 	}
@@ -76,6 +80,7 @@ public class Todo {
 		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
 	}
 
+	@EventHandler(payload = TodoHeld.class)
 	void onHeld(Event anEvent) {
 		this.hold = true;
 	}

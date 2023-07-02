@@ -1,26 +1,10 @@
 package io.agistep.event;
 
-import io.agistep.identity.Identity;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EventApplierTest {
-
-    static class Foo {
-        Identity<Long> id;
-
-        void onCreated(Event anEvent) {
-            this.id = anEvent::getAggregateIdValue;
-        }
-    }
-
-    static class FooCreated {
-
-    }
-    static class FooDone {
-
-    }
 
     @Test
     void apply() {
