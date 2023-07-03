@@ -20,12 +20,6 @@ public final class Events {
 				.build();
 	}
 
-	@Deprecated
-	public static Event occurs(Object aggregate, Object payload) {
-		final long aggregateIdValue = AggregateSupports.getId(aggregate);
-		return occurs(aggregateIdValue, payload);
-	}
-
 	public static Event occurs(long aggregateIdValue, Object payload) {
 		return Events.builder()
 				.name(payload.getClass().getName())

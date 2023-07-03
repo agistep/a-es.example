@@ -1,5 +1,6 @@
 package io.agistep.todo.domain;
 
+import io.agistep.event.AggregateSupports;
 import io.agistep.event.Events;
 import io.agistep.identity.IdentityValueProvider;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,9 @@ class TodoTextUpdatedEventTest {
 
 		sut.updateText("Updated Text");
 
-		assertThatOccurredExactlyOnes(sut, Events.occurs(sut, TodoTextUpdated.newBuilder().setUpdatedText("Updated Text").build()));
+
+		final long aggregateIdValue = AggregateSupports.getId(sut);
+		assertThatOccurredExactlyOnes(sut, Events.occurs(aggregateIdValue, TodoTextUpdated.newBuilder().setUpdatedText("Updated Text").build()));
 	}
 
 
