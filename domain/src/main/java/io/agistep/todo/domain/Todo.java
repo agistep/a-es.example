@@ -3,6 +3,7 @@ package io.agistep.todo.domain;
 import io.agistep.event.Event;
 import io.agistep.event.EventApplier;
 import io.agistep.event.EventHandler;
+import io.agistep.event.EventReorganizer;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -40,9 +41,7 @@ public class Todo {
 	}
 
 	private Todo(Event... anEvent) {
-		Arrays.stream(anEvent).forEach(e -> {
-			EventApplier.instance().replay(this, e);
-		});
+		Arrays.stream(anEvent).forEach(e -> EventReorganizer.reorganize(this, e));
 	}
 
 	@EventHandler(payload = TodoCreated.class)

@@ -15,7 +15,7 @@ class ReplierTest {
 
 		assertThat(aggregate.id).isNull();
 
-		Replier.reply(aggregate, anEvent);
+		EventReorganizer.reorganize(aggregate, anEvent);
 
 		assertThat(aggregate.id.getValue()).isEqualTo(1L);
 	}

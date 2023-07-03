@@ -10,8 +10,8 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-class Replier {
-	static void reply(Object aggregate, Event anEvent) {
+public class EventReorganizer {
+	public static void reorganize(Object aggregate, Event anEvent) {
 		Handler handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
