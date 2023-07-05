@@ -26,7 +26,7 @@ class ThreadLocalEventListTest {
     @Test
     void occursTest() {
         long aggregateId = 1L;
-        sut.occurs(Events.mock(aggregateId, -1, new FooEventPayload()));
+        sut.occurs(Events.mock(aggregateId, new FooEventPayload()));
 
         List<Event> actual = sut.occurredListAll();
         assertThat(actual).hasSize(1);

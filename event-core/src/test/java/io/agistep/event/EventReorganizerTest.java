@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ReplierTest {
+class EventReorganizerTest {
 
 
 	@Test
-	void replay() {
+	void reorganize() {
 
 		Foo aggregate = new Foo();
-		Event anEvent =Events.begin(1L, new FooCreated());
+		Event anEvent =Events.mock(1L, new FooCreated());
 
 		assertThat(aggregate.id).isNull();
 

@@ -13,15 +13,15 @@ class TodoTextUpdatedEventTest {
 	void textChangedEvent() {
 		Object payload = TodoCreated.newBuilder().setText("Some Text").build();
 		long idValue = IdentityValueProvider.instance().newLong();
-		Todo sut = Todo.replay(
+		Todo sut = Todo.reorganize(
 				/*TODO 여기보자... 왜 begin 을 사용하는가? begin 을 사용하것을 왜 문제 시 삼으려 하는가?*/
-				Events.begin(idValue, payload));
+				Events.mock(idValue, payload));
 
 		sut.updateText("Updated Text");
 
 
 		final long aggregateIdValue = AggregateSupports.getId(sut);
-		assertThatOccurredExactlyOnes(sut, Events.occurs(aggregateIdValue, TodoTextUpdated.newBuilder().setUpdatedText("Updated Text").build()));
+		assertThatOccurredExactlyOnes(sut, Events.mock(aggregateIdValue, TodoTextUpdated.newBuilder().setUpdatedText("Updated Text").build()));
 	}
 
 

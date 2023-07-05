@@ -4,6 +4,7 @@ import io.agistep.utils.AnnotationHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,12 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 
 public class EventReorganizer {
+
+	public static void reorganize(Object aggregate, Event[] events) {
+		Arrays.stream(events)
+				.forEach(e-> EventReorganizer.reorganize(aggregate, e));
+	}
+
 	public static void reorganize(Object aggregate, Event anEvent) {
 		Handler handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
