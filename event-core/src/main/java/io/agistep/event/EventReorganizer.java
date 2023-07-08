@@ -19,15 +19,15 @@ public class EventReorganizer {
 	}
 
 	public static void reorganize(Object aggregate, Event anEvent) {
-		Handler handler = findHandler(aggregate);
+		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
 		// TODO throw new UnsupportedOperationException();
 	}
 
-	private static Handler findHandler(Object aggregate) {
+	private static HandlerAdapter findHandler(Object aggregate) {
 		final String aggregateName = aggregate.getClass().getName();
-		Handler handler = retrieveHandler(aggregateName);
+		HandlerAdapter handler = retrieveHandler(aggregateName);
 		if(handler != null) {
 			return handler;
 		}
@@ -36,7 +36,7 @@ public class EventReorganizer {
 
 	}
 
-	private static Handler initHandler(Object aggregate) {
+	private static HandlerAdapter initHandler(Object aggregate) {
 		final String aggregateName = aggregate.getClass().getName();
 		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
 		List<Pair<EventHandler, Method>> aa = eventHandlerMethods.stream().map(m -> {
@@ -45,16 +45,16 @@ public class EventReorganizer {
 			return Pair.of(annotation, m);
 		}).collect(toList());
 
-		return new Handler(aggregateName, aa);
+		return new HandlerAdapter(aggregateName, aa);
 	}
 
-	final static Map<String, Handler> handlers = new HashMap<>();
+	final static Map<String, HandlerAdapter> handlers = new HashMap<>();
 
-	private static Handler retrieveHandler(String aggregateName) {
+	private static HandlerAdapter retrieveHandler(String aggregateName) {
 		return handlers.get(aggregateName);
 	}
 
-	private static Handler caching(Handler handler) {
+	private static HandlerAdapter caching(HandlerAdapter handler) {
 		handlers.put(handler.getAggregateName(), handler);
 		return handler;
 	}
