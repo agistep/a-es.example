@@ -15,7 +15,8 @@ class TodoDoneEventTest {
 	@BeforeEach
 	void setUp() {
 		EventList.instance().publish();
-		sut = Todo.reorganize(Events.mock(1919, TodoCreated.newBuilder().setText("Some Text").build()));
+		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
+		sut = Todo.reorganize(Events.events(1919, created));
 	}
 
 	@Test

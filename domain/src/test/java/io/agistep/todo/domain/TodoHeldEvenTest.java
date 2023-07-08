@@ -12,18 +12,19 @@ class TodoHeldEvenTest {
 
 	@Test
 	void hold() {
-		//TODO 왜 아래는(created) 인라인으로 들어갈 수 가 없는가.?
-		//TODO 1을 aggreagteIDValue 로 넣으면 어떤일이 발생하는가?
-		//TODO order 는 어떤 이유로 1,2 를 넣은것인가?
-		//TODO 조금더 타당하고 명시적인 어그리거트 구체화 를 테스트에서 생성할수 없을까?
-		Event created = Events.mock(/*1*/99, TodoCreated.newBuilder().setText("Some Text").build());
-		Todo sut = Todo.reorganize(
-				created,
-				Events.mock(created.getAggregateIdValue(), TodoDone.newBuilder().build()));
+		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
+		TodoDone done = TodoDone.newBuilder().build();
+		int aggregateIdValue = 99;
+
+		Event[] events = Events.events(aggregateIdValue, created, done);
+
+		Todo sut = Todo.reorganize(events);
+
 		assertThat(sut.isDone()).isTrue();
 
 		sut.hold();
 
 		assertThatDoesNotOccurAnEventBy(sut);
 	}
+
 }
