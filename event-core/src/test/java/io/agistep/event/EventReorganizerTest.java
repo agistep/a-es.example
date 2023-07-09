@@ -2,6 +2,9 @@ package io.agistep.event;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
+import static io.agistep.event.Events.BEGIN_ORDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EventReorganizerTest {
@@ -11,7 +14,14 @@ class EventReorganizerTest {
 	void reorganize() {
 
 		Foo aggregate = new Foo();
-		Event anEvent =Events.mock(1L, new FooCreated());
+		Object payload = new FooCreated();
+		Event anEvent = Events.builder()
+				.name(payload.getClass().getName())
+				.order(BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
+				.aggregateIdValue(1L)
+				.payload(payload)
+				.occurredAt(LocalDateTime.now())
+				.build();
 
 		assertThat(aggregate.id).isNull();
 

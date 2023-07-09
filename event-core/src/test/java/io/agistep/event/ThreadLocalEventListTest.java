@@ -3,8 +3,10 @@ package io.agistep.event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.agistep.event.Events.BEGIN_ORDER;
 import static org.assertj.core.api.Assertions.*;
 
 class ThreadLocalEventListTest {
@@ -26,7 +28,14 @@ class ThreadLocalEventListTest {
     @Test
     void occursTest() {
         long aggregateId = 1L;
-        sut.occurs(Events.mock(aggregateId, new FooEventPayload()));
+        Object payload = new FooEventPayload();
+        sut.occurs(Events.builder()
+                .name(payload.getClass().getName())
+                .order(BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
+                .aggregateIdValue(aggregateId)
+                .payload(payload)
+                .occurredAt(LocalDateTime.now())
+                .build());
 
         List<Event> actual = sut.occurredListAll();
         assertThat(actual).hasSize(1);
