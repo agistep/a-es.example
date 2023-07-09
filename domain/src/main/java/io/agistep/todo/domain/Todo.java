@@ -7,7 +7,6 @@ import io.agistep.event.EventHandler;
 import io.agistep.event.EventReorganizer;
 import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -15,18 +14,21 @@ import java.util.List;
 @AggregateEventStore
 public class Todo {
 
-	public static Todo replay(List<Event> events) {
+	public static Todo reorganize(List<Event> events) {
 		if(events == null || events.isEmpty()) {
 			return null;
 		}
-		return replay(events.toArray(new Event[0]));
+		return reorganize(events.toArray(new Event[0]));
 	}
 
-	public static Todo replay(Event... events) {
+	public static Todo reorganize(Event... events) {
+		Todo aggregate = new Todo();
+
 		if(events == null || events.length == 0) {
 			return null;
 		}
-		return new Todo(events);
+		EventReorganizer.reorganize(aggregate, events);
+		return aggregate;
 	}
 
 
@@ -35,15 +37,14 @@ public class Todo {
 	private boolean done;
 	private boolean hold;
 
+	public Todo() {
+	}
+
 	Todo(String text) {
 //		TodoCreated created = TodoCreated.newBuilder()
 //				.setText(text)
 //				.build();
 //		EventApplier.instance().apply(this, created);
-	}
-
-	private Todo(Event... anEvent) {
-		Arrays.stream(anEvent).forEach(e -> EventReorganizer.reorganize(this, e));
 	}
 
 	@EventHandler(payload = TodoCreated.class)

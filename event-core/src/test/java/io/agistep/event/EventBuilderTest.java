@@ -12,7 +12,7 @@ class EventBuilderTest {
 	final SomePayload payload = new SomePayload();
 	@Test
 	void beginEvent() {
-		Event actual = Events.begin(aggregateIdValue, payload);
+		Event actual = Events.create(aggregateIdValue, payload);
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
 		assertThat(actual.getOrder()).isEqualTo(Events.BEGIN_ORDER);
