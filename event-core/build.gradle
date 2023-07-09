@@ -30,6 +30,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
 
+    annotationProcessor project(":event-annotation")
+    api project(":event-annotation")
 
 }
 

@@ -1,5 +1,6 @@
 package io.agistep.todo.domain;
 
+import io.agistep.annotation.AggregateEventStore;
 import io.agistep.event.Event;
 import io.agistep.event.EventApplier;
 import io.agistep.event.EventHandler;
@@ -11,6 +12,7 @@ import java.util.List;
 
 
 @Getter
+@AggregateEventStore
 public class Todo {
 
 	public static Todo replay(List<Event> events) {
@@ -34,10 +36,10 @@ public class Todo {
 	private boolean hold;
 
 	Todo(String text) {
-		TodoCreated created = TodoCreated.newBuilder()
-				.setText(text)
-				.build();
-		EventApplier.instance().apply(this, created);
+//		TodoCreated created = TodoCreated.newBuilder()
+//				.setText(text)
+//				.build();
+//		EventApplier.instance().apply(this, created);
 	}
 
 	private Todo(Event... anEvent) {

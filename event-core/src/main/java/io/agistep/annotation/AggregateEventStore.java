@@ -1,4 +1,4 @@
 package io.agistep.annotation;
 
-public @interface AggregateEvent {
+public @interface AggregateEventStore {
 }
