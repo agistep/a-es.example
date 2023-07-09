@@ -6,7 +6,7 @@ import java.util.Arrays;
 import static io.agistep.event.Events.BEGIN_ORDER;
 
 public class TestEvents {
-	public static Event[] events(long aggregateIdValue, Object[] payload) {
+	public static Event[] events(long aggregateIdValue, Object ... payload) {
 		return Arrays.stream(payload).map(p -> Events.builder()
 				.name(p.getClass().getName())
 				.order(BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
