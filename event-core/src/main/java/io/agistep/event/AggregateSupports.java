@@ -4,9 +4,9 @@ import io.agistep.identity.Identity;
 
 import java.lang.reflect.Field;
 
-final class AggregateSupports {
+public final class AggregateSupports {
 
-	static long getId(Object aggregate) {
+	public static long getId(Object aggregate) {
 		try {
 			Field field = aggregate.getClass().getDeclaredField("id");
 			field.setAccessible(true);

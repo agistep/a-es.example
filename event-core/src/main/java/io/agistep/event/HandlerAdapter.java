@@ -7,12 +7,12 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 
-class Handler {
+class HandlerAdapter {
 
 	private final String aggregateName;
 	private final List<Pair<EventHandler, Method>> handlerMethods;
 
-	public Handler(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
+	public HandlerAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
 		this.aggregateName = aggregateName;
 		this.handlerMethods = handlerMethods;
 	}

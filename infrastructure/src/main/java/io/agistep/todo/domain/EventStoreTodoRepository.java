@@ -25,6 +25,6 @@ class EventStoreTodoRepository implements TodoRepository {
 	@Override
 	public Optional<Todo> findBy(long todoId) {
 		List<Event> events = eventStore.load(todoId);
-		return Optional.ofNullable(Todo.replay(events));
+		return Optional.ofNullable(Todo.reorganize(events));
 	}
 }

@@ -1,8 +1,6 @@
 package io.agistep.todo.domain;
 
 import io.agistep.event.EventList;
-import io.agistep.event.Events;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,18 +11,21 @@ class TodoCreatedEventTest {
 
 	Todo sut;
 
-	@Test
-	void created() {
-		assertThatOccurredExactlyOnes(sut, Events.mock(sut.getId().getValue(), 1, TodoCreated.newBuilder().setText("Some Text").build()));
-	}
-
 	@BeforeEach
 	void setUp() {
 		EventList.instance().publish();
-
 		sut = new Todo("Some Text");
-
 	}
+
+	@Test
+	void created() {
+		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
+
+		assertThatOccurredExactlyOnes(sut, created);
+	}
+
+
+
 	@Test
 	void properties() {
 		assertThat(sut.getText()).isEqualTo("Some Text");
