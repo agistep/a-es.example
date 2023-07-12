@@ -1,6 +1,7 @@
 package io.agistep.todo.domain;
 
-import io.agistep.annotation.AggregateEventStore;
+import com.google.protobuf.Message;
+import io.agistep.annotation.EventSourcingAggregate;
 import io.agistep.event.Event;
 import io.agistep.event.EventApplier;
 import io.agistep.event.EventHandler;
@@ -11,7 +12,7 @@ import java.util.List;
 
 
 @Getter
-@AggregateEventStore
+@EventSourcingAggregate
 public class Todo {
 
 	public static Todo reorganize(List<Event> events) {
@@ -31,20 +32,26 @@ public class Todo {
 		return aggregate;
 	}
 
+	private void apply(Message message) {
+		EventApplier.instance().apply(this, message);
+	}
+
+
+//	public Todo() {
+//	}
 
 	private TodoIdentity id;
 	private String text;
 	private boolean done;
 	private boolean hold;
 
-	public Todo() {
-	}
 
 	Todo(String text) {
-//		TodoCreated created = TodoCreated.newBuilder()
-//				.setText(text)
-//				.build();
-//		EventApplier.instance().apply(this, created);
+		TodoCreated created = TodoCreated.newBuilder()
+				.setText(text)
+				.build();
+
+		apply(created);
 	}
 
 	@EventHandler(payload = TodoCreated.class)
@@ -58,7 +65,8 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
+		TodoDone todoDone = TodoDone.newBuilder().build();
+		apply(todoDone);
 	}
 
 	@EventHandler(payload = TodoDone.class)
@@ -67,7 +75,7 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		apply(TodoTextUpdated.newBuilder().setUpdatedText(text).build());
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
@@ -79,7 +87,7 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
+		apply(TodoHeld.newBuilder().build());
 	}
 
 	@EventHandler(payload = TodoHeld.class)

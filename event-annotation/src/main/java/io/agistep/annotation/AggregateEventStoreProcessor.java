@@ -6,6 +6,8 @@ import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Flags;
+import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
@@ -26,7 +28,7 @@ import java.util.Set;
 
 import static java.lang.reflect.Modifier.PUBLIC;
 
-@SupportedAnnotationTypes("io.agistep.annotation.AggregateEventStore")
+@SupportedAnnotationTypes("io.agistep.annotation.EventSourcingAggregate")
 @SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class AggregateEventStoreProcessor  extends AbstractProcessor {
 
@@ -52,8 +54,8 @@ public class AggregateEventStoreProcessor  extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "process");
 
-        for (final Element element : roundEnv.getElementsAnnotatedWith(AggregateEventStore.class)) {
-            // 현재 어노테이션은 Type 이고 여기서 Class 뿐만 아니라, interface 와 enum 에도 작성이 가능하므로 class만 지정할 수 있도록
+        for (final Element element : roundEnv.getElementsAnnotatedWith(EventSourcingAggregate.class)) {
+            
             if (element.getKind() != ElementKind.CLASS) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "@AggregateEventStore annotation cant be used on" + element.getSimpleName());
                 return true;
@@ -66,7 +68,7 @@ public class AggregateEventStoreProcessor  extends AbstractProcessor {
         return true;
     }
 
-    TreePathScanner<Object, CompilationUnitTree> treePathScanner = new TreePathScanner<>() {
+    private final TreePathScanner<Object, CompilationUnitTree> treePathScanner = new TreePathScanner<>() {
         /**
          * CompillationUnitTree 는 소스파일에서 패키지 선언에서 부터 abstract syntax tree 를 정의함
          * ClassTree -> 클래스 , 인터페이스, enum 어노테이션을 트리노드로 선언
@@ -79,77 +81,149 @@ public class AggregateEventStoreProcessor  extends AbstractProcessor {
             JCTree.JCCompilationUnit compilationUnit = (JCTree.JCCompilationUnit) unitTree;
 
             if (compilationUnit.sourcefile.getKind() == JavaFileObject.Kind.SOURCE) {
+
                 compilationUnit.accept(new TreeTranslator() {
                     @Override
                     public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
                         super.visitClassDef(jcClassDecl);
                         List<JCTree> members = jcClassDecl.getMembers();
+
+                        List<String> strings = List.of("reorganize", "apply");
+
+                        boolean hasReorganizeMethod = false;
+                        boolean hasApplyMethod = false;
+                        boolean hasNoArgsConstructor = false;
+
                         for (JCTree member : members) {
-                            if (member instanceof JCTree.JCMethodDecl) {
-                                JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) member;
-                                if (isDefaultConstruectorMethod(jcMethodDecl)) {
+                            if (!(member instanceof JCTree.JCMethodDecl)) {
+                                continue;
+                            }
 
-                                    String string = jcClassDecl.name.toString();
-                                    String upperVar = string.substring(0, 1).toUpperCase() + string.substring(1);
-                                    JCTree.JCExpression thisExpression = treeMaker.Ident(names._this);
+                            JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) member;
+                            if (hasNoArgsPublicConstructorMethod(jcMethodDecl)) {
+                                hasNoArgsConstructor = true;
+                                // TODO throw Error
+                            }
 
-                                    // class를 나타내는 JCExpression 생성
-                                    JCTree.JCExpression classExpression = treeMaker.Select(
-                                            treeMaker.Ident(names._class),
-                                            names.fromString(upperVar + "Created")
-                                    );
+                            if (hasReorganizedMethod(jcMethodDecl)) {
+                                hasReorganizeMethod = true;
+                            }
 
-
-                                    /**
-                                     * 식 생성 함수 - select
-                                     */
-                                    JCTree.JCExpression eventApplierInstanceExpression = treeMaker.Select(
-                                            treeMaker.Ident(names.fromString("io.agistep.event")),
-                                            names.fromString("EventApplier")
-                                    );
-
-                                    JCTree.JCExpression methodExpression = treeMaker.Select(
-                                            eventApplierInstanceExpression,
-                                            names.fromString("instance")
-                                    );
-
-                                    /**
-                                     * Method 변환 함수 - apply
-                                     */
-                                    JCTree.JCMethodInvocation instanceMethod = treeMaker.Apply(
-                                            List.nil(),
-                                            methodExpression,
-                                            List.nil()
-                                    );
-
-                                    JCTree.JCVariableDecl createdClassInstance = createCreatedEventClassInstance();
-//                                    JCTree.JCVariableDecl variableDecl = createCreatedClassInstance();
-                                    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(createdClassInstance);
-                                    JCTree.JCIdent ident = treeMaker.Ident(names.fromString("obj"));
-
-
-                                    JCTree.JCMethodInvocation applied = treeMaker.Apply(
-                                            List.nil(),
-                                            treeMaker.Select(
-                                                    instanceMethod,
-                                                    names.fromString("apply")
-                                            ),
-                                            List.of(thisExpression, ident)
-                                    );
-                                    JCTree.JCExpressionStatement printStatement = treeMaker.Exec(applied);
-                                    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(printStatement);
-                                }
+                            if (hasApplyMethod(jcMethodDecl)) {
+                                hasApplyMethod = true;
                             }
                         }
+
+                        if (!hasNoArgsConstructor) {
+                            JCTree.JCMethodDecl init = getInitDefaultMethod();
+                            jcClassDecl.defs = jcClassDecl.defs.append(init);
+                        }
+
+                        if (!hasReorganizeMethod) {
+
+                        }
+
+
+
+                        // TODO Create Xxxx
                     }
                 });
             }
             return trees;
+
         }
+
     };
 
-    private static boolean isDefaultConstruectorMethod(JCTree.JCMethodDecl jcMethodDecl) {
-        return jcMethodDecl.getName().toString().startsWith("<init>") && jcMethodDecl.mods.flags == 0;
+    private JCTree.JCMethodDecl getInitDefaultMethod() {
+        return treeMaker.MethodDef(
+                treeMaker.Modifiers(1),
+                names.init,
+                treeMaker.TypeIdent(TypeTag.VOID),
+//                                    treeMaker.Type(new Type.JCVoidType()),
+                List.nil(),
+                List.nil(),
+                List.nil(),
+                treeMaker.Block(0, List.nil()),
+                null);
+    }
+
+    private static boolean hasApplyMethod(JCTree.JCMethodDecl jcMethodDecl) {
+        return "apply".equals(jcMethodDecl.name.toString());
+    }
+
+    private static boolean hasReorganizedMethod(JCTree.JCMethodDecl jcMethodDecl) {
+        return "reorganize".equals(jcMethodDecl.name.toString());
+    }
+
+
+    //    String string = jcClassDecl.name.toString();
+//    String upperVar = string.substring(0, 1).toUpperCase() + string.substring(1);
+//    JCTree.JCExpression thisExpression = treeMaker.Ident(names._this);
+//
+//    // class를 나타내는 JCExpression 생성
+//    JCTree.JCExpression classExpression = treeMaker.Select(
+//            treeMaker.Ident(names._class),
+//            names.fromString(upperVar + "Created")
+//    );
+//
+//
+//    /**
+//     * 식 생성 함수 - select
+//     */
+//    JCTree.JCExpression eventApplierInstanceExpression = treeMaker.Select(
+//            treeMaker.Ident(names.fromString("io.agistep.event")),
+//            names.fromString("EventApplier")
+//    );
+//
+//    JCTree.JCExpression methodExpression = treeMaker.Select(
+//            eventApplierInstanceExpression,
+//            names.fromString("instance")
+//    );
+//
+//    /**
+//     * Method 변환 함수 - apply
+//     */
+//    JCTree.JCMethodInvocation instanceMethod = treeMaker.Apply(
+//            List.nil(),
+//            methodExpression,
+//            List.nil()
+//    );
+//
+//    JCTree.JCVariableDecl createdClassInstance = createCreatedEventClassInstance();
+////                                    JCTree.JCVariableDecl variableDecl = createCreatedClassInstance();
+//    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(createdClassInstance);
+//    JCTree.JCIdent ident = treeMaker.Ident(names.fromString("obj"));
+//
+//
+//    JCTree.JCMethodInvocation applied = treeMaker.Apply(
+//            List.nil(),
+//            treeMaker.Select(
+//                    instanceMethod,
+//                    names.fromString("apply")
+//            ),
+//            List.of(thisExpression, ident)
+//    );
+//    JCTree.JCExpressionStatement printStatement = treeMaker.Exec(applied);
+//    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(printStatement);
+    private static boolean hasNoArgsPublicConstructorMethod(JCTree.JCMethodDecl jcMethodDecl) {
+        JCTree.JCModifiers mods = jcMethodDecl.mods;
+        List<JCTree.JCVariableDecl> params = jcMethodDecl.params;
+        return hasNoParams(params)
+                && isConstructor(jcMethodDecl)
+                && isPublicModifier(mods);
+    }
+
+    private static boolean isConstructor(JCTree.JCMethodDecl jcMethodDecl) {
+        return jcMethodDecl.getName().toString().startsWith("<init>");
+    }
+
+    private static boolean hasNoParams(List<JCTree.JCVariableDecl> params) {
+        return params.isEmpty();
+    }
+
+    private static boolean isPublicModifier(JCTree.JCModifiers mods) {
+        return mods.flags == 1;
     }
 
 

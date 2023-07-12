@@ -1,6 +1,5 @@
 package io.agistep.event;
 
-import io.agistep.annotation.AggregateEventStore;
 import io.agistep.identity.Identity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @ExtendWith(MockitoExtension.class)
-class AggregateEventStoreTest {
+class EventSourcingAggregateTest {
 
     static public class Bar {
 
