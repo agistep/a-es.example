@@ -23,6 +23,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import java.lang.invoke.WrongMethodTypeException;
 import java.util.Set;
 
 @SupportedAnnotationTypes("io.agistep.annotation.EventSourcingAggregate")
@@ -81,23 +82,64 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
 
             if (compilationUnit.sourcefile.getKind() == JavaFileObject.Kind.SOURCE) {
 
+
                 compilationUnit.accept(new TreeTranslator() {
 
 
                     @Override
                     public void visitTopLevel(JCTree.JCCompilationUnit tree) {
                         super.visitTopLevel(tree);
-                        JCTree packageExpression = tree.defs.get(0);
+                        tree.defs = initImportPackages(tree.defs.get(0),
+                                List.from(tree.defs.subList(1, tree.defs.length())));
 
-                        List<JCTree> from = List.from(tree.defs.subList(1, tree.defs.length()));
+                    }
 
+                    private List<JCTree> initImportPackages(JCTree packageExpression, List<JCTree> from) {
                         JCTree.JCImport googleProtobufImport = getGoogleProtobufImport();
                         JCTree.JCImport eventApplierImport = getEventApplierImport();
                         JCTree.JCImport eventReorganizerImport = getEventReorganizerImport();
-                        JCTree.JCImport listImport = getListImport();
+                        JCTree.JCImport listImport = geUtilListImport();
+                        return List.of(packageExpression, googleProtobufImport, eventReorganizerImport, eventApplierImport, listImport).appendList(from);
+                    }
 
-                        tree.defs = List.of(packageExpression, googleProtobufImport, eventReorganizerImport, eventApplierImport, listImport).appendList(from);
+                    private JCTree.JCImport geUtilListImport() {
+                        return treeMaker.Import(
+                                treeMaker.Select(
+                                        treeMaker.Ident(names.fromString("java.util")),
+                                        names.fromString("List")
+                                ),
+                                false
+                        );
+                    }
 
+                    private JCTree.JCImport getEventReorganizerImport() {
+                        return treeMaker.Import(
+                                treeMaker.Select(
+                                        treeMaker.Ident(names.fromString("io.agistep.event")),
+                                        names.fromString("EventReorganizer")
+                                ),
+                                false
+                        );
+                    }
+
+                    private JCTree.JCImport getEventApplierImport() {
+                        return treeMaker.Import(
+                                treeMaker.Select(
+                                        treeMaker.Ident(names.fromString("io.agistep.event")),
+                                        names.fromString("EventApplier")
+                                ),
+                                false
+                        );
+                    }
+
+                    private JCTree.JCImport getGoogleProtobufImport() {
+                        return treeMaker.Import(
+                                treeMaker.Select(
+                                        treeMaker.Ident(names.fromString("com.google.protobuf")),
+                                        names.fromString("Message")
+                                ),
+                                false
+                        );
                     }
 
                     @Override
@@ -106,10 +148,6 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
 
                         List<JCTree> members = jcClassDecl.getMembers();
 
-                        List<String> strings = List.of("reorganize", "apply");
-
-                        boolean hasReorganizeMethod = false;
-                        boolean hasApplyMethod = false;
                         boolean hasNoArgsConstructor = false;
 
                         for (JCTree member : members) {
@@ -120,15 +158,15 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
                             JCTree.JCMethodDecl jcMethodDecl = (JCTree.JCMethodDecl) member;
                             if (hasNoArgsPublicConstructorMethod(jcMethodDecl)) {
                                 hasNoArgsConstructor = true;
-                                // TODO throw Error
                             }
 
                             if (hasReorganizedMethod(jcMethodDecl)) {
-                                hasReorganizeMethod = true;
+                                throw new WrongMethodTypeException("should not be used 'Reorganized'. It should generated automatically");
+
                             }
 
                             if (hasApplyMethod(jcMethodDecl)) {
-                                hasApplyMethod = true;
+                                throw new WrongMethodTypeException("should not be used 'Apply'. It should generated automatically");
                             }
                         }
 
@@ -137,79 +175,22 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
                             jcClassDecl.defs = jcClassDecl.defs.append(init);
                         }
 
-                        if (!hasReorganizeMethod) {
-                            JCTree.JCMethodDecl reorganizeWithEventsParams = createReorganizeWithEventsParams();
-                            jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams);
+                        JCTree.JCMethodDecl reorganizeWithEventsParams = createReorganizeWithEventsParams();
+                        jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams);
 
 
-                            JCTree.JCMethodDecl reorganizeWithEventsParams2 = createReorganizeWithEventsParams2();
-                            jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams2);
+                        JCTree.JCMethodDecl reorganizeWithEventsParams2 = createReorganizeWithEventsParams2();
+                        jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams2);
 
-                        }
-
-                        if (!hasApplyMethod) {
-                            JCTree.JCMethodDecl aa = createApplyMethod();
-                            jcClassDecl.defs = jcClassDecl.defs.prepend(aa);
-                        }
+                        JCTree.JCMethodDecl aa = createApplyMethod();
+                        jcClassDecl.defs = jcClassDecl.defs.prepend(aa);
                     }
                 });
             }
             return trees;
 
         }
-
-        private JCTree.JCImport getJcImport() {
-            JCTree.JCImport importStatement = treeMaker.Import(
-                    treeMaker.Select(
-                            treeMaker.Ident(names.fromString("com")),
-                            names.fromString("example")
-                    ),
-                    false
-            );
-            return importStatement;
-        }
-
     };
-
-    private JCTree.JCImport getListImport() {
-        return treeMaker.Import(
-                treeMaker.Select(
-                        treeMaker.Ident(names.fromString("java.util")),
-                        names.fromString("List")
-                ),
-                false
-        );
-    }
-
-    private JCTree.JCImport getEventReorganizerImport() {
-        return treeMaker.Import(
-                treeMaker.Select(
-                        treeMaker.Ident(names.fromString("io.agistep.event")),
-                        names.fromString("EventReorganizer")
-                ),
-                false
-        );
-    }
-
-    private JCTree.JCImport getEventApplierImport() {
-        return treeMaker.Import(
-                treeMaker.Select(
-                        treeMaker.Ident(names.fromString("io.agistep.event")),
-                        names.fromString("EventApplier")
-                ),
-                false
-        );
-    }
-
-    private JCTree.JCImport getGoogleProtobufImport() {
-        return treeMaker.Import(
-                treeMaker.Select(
-                        treeMaker.Ident(names.fromString("com.google.protobuf")),
-                        names.fromString("Message")
-                ),
-                false
-        );
-    }
 
     private JCTree.JCMethodDecl createApplyMethod() {
         // 접근 제어자 및 기타 선언을 나타내는 JCModifiers 생성
@@ -465,56 +446,6 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         return "reorganize".equals(jcMethodDecl.name.toString());
     }
 
-
-    //    String string = jcClassDecl.name.toString();
-//    String upperVar = string.substring(0, 1).toUpperCase() + string.substring(1);
-//    JCTree.JCExpression thisExpression = treeMaker.Ident(names._this);
-//
-//    // class를 나타내는 JCExpression 생성
-//    JCTree.JCExpression classExpression = treeMaker.Select(
-//            treeMaker.Ident(names._class),
-//            names.fromString(upperVar + "Created")
-//    );
-//
-//
-//    /**
-//     * 식 생성 함수 - select
-//     */
-//    JCTree.JCExpression eventApplierInstanceExpression = treeMaker.Select(
-//            treeMaker.Ident(names.fromString("io.agistep.event")),
-//            names.fromString("EventApplier")
-//    );
-//
-//    JCTree.JCExpression methodExpression = treeMaker.Select(
-//            eventApplierInstanceExpression,
-//            names.fromString("instance")
-//    );
-//
-//    /**
-//     * Method 변환 함수 - apply
-//     */
-//    JCTree.JCMethodInvocation instanceMethod = treeMaker.Apply(
-//            List.nil(),
-//            methodExpression,
-//            List.nil()
-//    );
-//
-//    JCTree.JCVariableDecl createdClassInstance = createCreatedEventClassInstance();
-////                                    JCTree.JCVariableDecl variableDecl = createCreatedClassInstance();
-//    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(createdClassInstance);
-//    JCTree.JCIdent ident = treeMaker.Ident(names.fromString("obj"));
-//
-//
-//    JCTree.JCMethodInvocation applied = treeMaker.Apply(
-//            List.nil(),
-//            treeMaker.Select(
-//                    instanceMethod,
-//                    names.fromString("apply")
-//            ),
-//            List.of(thisExpression, ident)
-//    );
-//    JCTree.JCExpressionStatement printStatement = treeMaker.Exec(applied);
-//    jcMethodDecl.body.stats = jcMethodDecl.body.getStatements().append(printStatement);
     private static boolean hasNoArgsPublicConstructorMethod(JCTree.JCMethodDecl jcMethodDecl) {
         JCTree.JCModifiers mods = jcMethodDecl.mods;
         List<JCTree.JCVariableDecl> params = jcMethodDecl.params;
@@ -534,90 +465,4 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
     private static boolean isPublicModifier(JCTree.JCModifiers mods) {
         return mods.flags == 1;
     }
-
-
-    private TreePathScanner<Object, CompilationUnitTree> getObjectCompilationUnitTreeTreePathScanner() {
-
-        return treePathScanner;
-    }
-
-    private JCTree.JCVariableDecl createCreatedEventClassInstance() {
-
-        /**
-         * ex) TodoCreated.
-         */
-        JCTree.JCIdent todoCreatedIdent = treeMaker.Ident(names.fromString("TodoCreated"));
-
-        /**
-         * ex) TodoCreated.newBuilder
-         */
-        JCTree.JCExpression newBuilderIdent = treeMaker.Select(
-                todoCreatedIdent,
-                names.fromString("newBuilder")
-        );
-
-        JCTree.JCMethodInvocation newBuilderMethod = treeMaker.Apply(
-                List.nil(),
-                newBuilderIdent,
-                List.nil()
-        );
-
-        JCTree.JCExpression setTestMethod = treeMaker.Select(
-                newBuilderMethod,
-                names.fromString("setText")
-        );
-        JCTree.JCLiteral helloWorld = treeMaker.Literal("Some Text");
-        JCTree.JCMethodInvocation newBuilderInvocation = treeMaker.Apply(
-                List.nil(),
-                setTestMethod,
-                List.of(helloWorld)
-        );
-
-
-        JCTree.JCExpression buildMethodIdent = treeMaker.Select(
-                newBuilderInvocation,
-                names.fromString("build")
-        );
-        JCTree.JCMethodInvocation buildInvocation = treeMaker.Apply(
-                List.nil(),
-                buildMethodIdent,
-                List.nil()
-        );
-
-// 할당식을 나타내는 JCExpressionStatement 생성
-//        JCTree.JCExpressionStatement assignmentStatement = treeMaker.Exec(
-//                treeMaker.Assign(
-//                        treeMaker.Ident(names.fromString("created")),
-//                        buildInvocation
-//                )
-//        );
-//        return assignmentStatement;
-
-        return treeMaker.VarDef(
-                treeMaker.Modifiers(Flags.FINAL),
-                names.fromString("obj"),
-                treeMaker.Ident(names.fromString("TodoCreated")),
-                buildInvocation
-        );
-    }
-
-//    private JCTree.JCClassDecl creatInitClassDef(String string) {
-//        JCTree.JCModifiers modifiers = treeMaker.Modifiers(PUBLIC);
-//        String upperVar = string.substring(0, 1).toUpperCase() + string.substring(1);
-//
-//        Name className = names.fromString(upperVar + "created");
-//        List<JCTree.JCTypeParameter> typeParameters = List.nil(); // 제네릭 타입 매개변수가 없는 경우
-//
-//        JCTree.JCExpression superClass = null; // 슈퍼클래스가 없는 경우
-//// 클래스 정의를 나타내는 JCClassDecl 생성
-//        JCTree.JCClassDecl classDecl = treeMaker.ClassDef(
-//                modifiers, // 클래스 접근 제어자 및 기타 선언
-//                className, // 클래스 이름
-//                typeParameters, // 제네릭 타입 매개변수
-//                superClass, // 슈퍼클래스 또는 인터페이스
-//                List.nil(), // 구현하는 인터페이스 (빈 목록)
-//                List.nil() // 클래스 멤버 (빈 목록)
-//        );
-//        return classDecl;
-//    }
 }
