@@ -14,14 +14,16 @@ public class Todo {
 	private boolean done;
 	private boolean hold;
 
+	public Todo() {
+	}
+
 	Todo(String text) {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
 				.build();
-
 		apply(created);
 	}
-
+  
 	@EventHandler(payload = TodoCreated.class)
 	void onCreated(Event anEvent) {
 		this.id = new TodoIdentity(anEvent.getAggregateIdValue());
