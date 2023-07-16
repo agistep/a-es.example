@@ -1,50 +1,18 @@
 package io.agistep.todo.domain;
 
-import com.google.protobuf.Message;
 import io.agistep.annotation.EventSourcingAggregate;
 import io.agistep.event.Event;
-import io.agistep.event.EventApplier;
 import io.agistep.event.EventHandler;
-import io.agistep.event.EventReorganizer;
 import lombok.Getter;
-
-import java.util.List;
-
 
 @Getter
 @EventSourcingAggregate
 public class Todo {
 
-	public static Todo reorganize(List<Event> events) {
-		if(events == null || events.isEmpty()) {
-			return null;
-		}
-		return reorganize(events.toArray(new Event[0]));
-	}
-
-	public static Todo reorganize(Event... events) {
-		Todo aggregate = new Todo();
-
-		if(events == null || events.length == 0) {
-			return null;
-		}
-		EventReorganizer.reorganize(aggregate, events);
-		return aggregate;
-	}
-
-	private void apply(Message message) {
-		EventApplier.instance().apply(this, message);
-	}
-
-
-//	public Todo() {
-//	}
-
 	private TodoIdentity id;
 	private String text;
 	private boolean done;
 	private boolean hold;
-
 
 	Todo(String text) {
 		TodoCreated created = TodoCreated.newBuilder()
@@ -94,6 +62,4 @@ public class Todo {
 	void onHeld(Event anEvent) {
 		this.hold = true;
 	}
-
-
 }
