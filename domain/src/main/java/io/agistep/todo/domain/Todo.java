@@ -1,34 +1,13 @@
 package io.agistep.todo.domain;
 
+import io.agistep.annotation.EventSourcingAggregate;
 import io.agistep.event.Event;
-import io.agistep.event.EventApplier;
 import io.agistep.event.EventHandler;
-import io.agistep.event.EventReorganizer;
 import lombok.Getter;
 
-import java.util.List;
-
-
 @Getter
+@EventSourcingAggregate
 public class Todo {
-
-	public static Todo reorganize(List<Event> events) {
-		if(events == null || events.isEmpty()) {
-			return null;
-		}
-		return reorganize(events.toArray(new Event[0]));
-	}
-
-	public static Todo reorganize(Event... events) {
-		Todo aggregate = new Todo();
-
-		if(events == null || events.length == 0) {
-			return null;
-		}
-		EventReorganizer.reorganize(aggregate, events);
-		return aggregate;
-	}
-
 
 	private TodoIdentity id;
 	private String text;
@@ -42,9 +21,9 @@ public class Todo {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
 				.build();
-		EventApplier.instance().apply(this, created);
+		apply(created);
 	}
-
+  
 	@EventHandler(payload = TodoCreated.class)
 	void onCreated(Event anEvent) {
 		this.id = new TodoIdentity(anEvent.getAggregateIdValue());
@@ -56,7 +35,8 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
+		TodoDone todoDone = TodoDone.newBuilder().build();
+		apply(todoDone);
 	}
 
 	@EventHandler(payload = TodoDone.class)
@@ -65,7 +45,7 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		apply(TodoTextUpdated.newBuilder().setUpdatedText(text).build());
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
@@ -77,13 +57,11 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
+		apply(TodoHeld.newBuilder().build());
 	}
 
 	@EventHandler(payload = TodoHeld.class)
 	void onHeld(Event anEvent) {
 		this.hold = true;
 	}
-
-
 }
