@@ -40,7 +40,6 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         JavacProcessingEnvironment javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "init");
         this.processingEnvironment = processingEnv;
         this.trees = Trees.instance(processingEnv);
         this.context = javacProcessingEnvironment.getContext();
@@ -50,8 +49,6 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "process");
-
         for (final Element element : roundEnv.getElementsAnnotatedWith(EventSourcingAggregate.class)) {
 
             if (element.getKind() != ElementKind.CLASS) {
@@ -69,29 +66,19 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
     }
 
     private final TreePathScanner<Object, CompilationUnitTree> treePathScanner = new TreePathScanner<>() {
-        /**
-         * CompillationUnitTree 는 소스파일에서 패키지 선언에서 부터 abstract syntax tree 를 정의함
-         * ClassTree -> 클래스 , 인터페이스, enum 어노테이션을 트리노드로 선언
-         * class 정의 위에 어노테이션 작성시 내부적으로 메소드 실행
-         * CompilationUnitTree AST(Abstract Syntax Tree 의 최상단)
-         */
         @Override
         public Trees visitClass(ClassTree classTree, CompilationUnitTree unitTree) {
 
             JCTree.JCCompilationUnit compilationUnit = (JCTree.JCCompilationUnit) unitTree;
 
             if (compilationUnit.sourcefile.getKind() == JavaFileObject.Kind.SOURCE) {
-
-
                 compilationUnit.accept(new TreeTranslator() {
-
-
                     @Override
                     public void visitTopLevel(JCTree.JCCompilationUnit tree) {
                         super.visitTopLevel(tree);
+                        java.util.List<JCTree> restOfJcTree = tree.defs.subList(1, tree.defs.length());
                         tree.defs = initImportPackages(tree.defs.get(0),
-                                List.from(tree.defs.subList(1, tree.defs.length())));
-
+                                List.from(restOfJcTree));
                     }
 
                     private List<JCTree> initImportPackages(JCTree packageExpression, List<JCTree> from) {
@@ -175,11 +162,11 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
                             jcClassDecl.defs = jcClassDecl.defs.append(init);
                         }
 
-                        JCTree.JCMethodDecl reorganizeWithEventsParams = createReorganizeWithEventsParams();
+                        JCTree.JCMethodDecl reorganizeWithEventsParams = createReorganizeWithEventsParams(jcClassDecl);
                         jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams);
 
 
-                        JCTree.JCMethodDecl reorganizeWithEventsParams2 = createReorganizeWithEventsParams2();
+                        JCTree.JCMethodDecl reorganizeWithEventsParams2 = createReorganizeWithEventsParams2(jcClassDecl);
                         jcClassDecl.defs = jcClassDecl.defs.prepend(reorganizeWithEventsParams2);
 
                         JCTree.JCMethodDecl aa = createApplyMethod();
@@ -251,14 +238,11 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         );
     }
 
-    private JCTree.JCMethodDecl createReorganizeWithEventsParams2() {
-        // 접근 제어자 및 기타 선언을 나타내는 JCModifiers 생성
+    private JCTree.JCMethodDecl createReorganizeWithEventsParams2(JCTree.JCClassDecl jcClassDecl) {
+        Name classSimpleName = jcClassDecl.getSimpleName();
+
         JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PUBLIC | Flags.STATIC);
 
-        // 메소드의 이름을 나타내는 Name 생성
-        Name methodName = names.fromString("reorganize");
-
-        // 메소드의 매개변수를 나타내는 JCVariableDecl 리스트 생성
         List<JCTree.JCVariableDecl> parameters = List.of(
                 treeMaker.VarDef(
                         treeMaker.Modifiers(Flags.PARAMETER),
@@ -271,7 +255,6 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
                 )
         );
 
-// events == null || events.isEmpty()를 나타내는 JCExpression 생성
         JCTree.JCExpression eventsIdent = treeMaker.Ident(names.fromString("events"));
         JCTree.JCExpression condition = treeMaker.Binary(
                 JCTree.Tag.OR,
@@ -322,10 +305,11 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
 
         // 메소드 정의를 나타내는 JCMethodDecl 생성
         JCTree.JCBlock body = treeMaker.Block(0, List.of(ifStatement, returnStatement));
+        Name methodName = names.fromString("reorganize");
         return treeMaker.MethodDef(
                 modifiers,
                 methodName,
-                treeMaker.Ident(names.fromString("Todo")),
+                treeMaker.Ident(classSimpleName),
                 List.nil(),
                 parameters,
                 List.nil(),
@@ -334,7 +318,9 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         );
     }
 
-    private JCTree.JCMethodDecl createReorganizeWithEventsParams() {
+    private JCTree.JCMethodDecl createReorganizeWithEventsParams(JCTree.JCClassDecl jcClassDecl) {
+        Name classSimpleName = jcClassDecl.getSimpleName();
+
 
 // 접근 제어자 및 기타 선언을 나타내는 JCModifiers 생성
         JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PUBLIC | Flags.STATIC);
@@ -353,11 +339,11 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         );
 
 
-        JCTree.JCExpression todoIdent = treeMaker.Ident(names.fromString("Todo"));
+        JCTree.JCExpression classNameIdent = treeMaker.Ident(classSimpleName);
         JCTree.JCExpression newClass = treeMaker.NewClass(
                 null,
                 null,
-                todoIdent,
+                classNameIdent,
                 List.nil(),
                 null
         );
@@ -365,7 +351,7 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         JCTree.JCVariableDecl jcVariableDecl = treeMaker.VarDef(
                 treeMaker.Modifiers(Flags.FINAL),
                 names.fromString("aggregate"),
-                treeMaker.Ident(names.fromString("Todo")),
+                treeMaker.Ident(classSimpleName),
                 newClass
         );
 
@@ -417,7 +403,7 @@ public class AggregateEventStoreProcessor extends AbstractProcessor {
         return treeMaker.MethodDef(
                 modifiers,
                 methodName,
-                treeMaker.Ident(names.fromString("Todo")),
+                treeMaker.Ident(classSimpleName),
                 List.nil(),
                 parameters,
                 List.nil(),
