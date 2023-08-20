@@ -12,7 +12,6 @@ rootProject.name = 'a-es.example'
 include('identity')
 include('event-core')
 include('event-assertj')
-include('event-annotation')
 
 include('application')
 include('domain')
