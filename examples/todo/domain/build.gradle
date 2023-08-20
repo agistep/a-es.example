@@ -32,13 +32,21 @@ repositories {
 }
 
 dependencies {
+    api project(":event:identity")
+    api project(":event:core")
+
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    api 'org.apache.commons:commons-math3:3.6.1'
+
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'com.google.protobuf:protobuf-java:3.23.0'
     implementation 'org.valid4j:valid4j:0.5.0'
-    implementation project(":domain")
 
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
-    testImplementation project(':event-assertj')
+    testImplementation project(':event:assertj')
 }
 
 testing {

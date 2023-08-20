@@ -9,10 +9,10 @@
  */
 
 rootProject.name = 'a-es.example'
-include('identity')
-include('event-core')
-include('event-assertj')
+include('event:identity')
+include('event:core')
+include('event:assertj')
 
-include('application')
-include('domain')
-include('infrastructure')
+include('examples:todo:application')
+include('examples:todo:domain')
+include('examples:todo:infrastructure')
