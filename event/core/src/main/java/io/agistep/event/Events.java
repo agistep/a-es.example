@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public final class Events {
 
 	public static final long BEGIN_ORDER = 1L;
+	public static final int INITIAL_ORDER = 0;
 
 	static EventBuilder builder() {
 		return new EventBuilder();
@@ -13,11 +14,19 @@ public final class Events {
 	static Event create(long aggregateIdValue, Object payload) {
 		return Events.builder()
 				.name(payload.getClass().getName())
-				.order(BEGIN_ORDER) //TODO fix 이전 order 를 알아야한다.
+				.order(getCurrentOrder()+1)
 				.aggregateIdValue(aggregateIdValue)
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())
 				.build();
+	}
+
+	private static long getCurrentOrder() {
+		return getInitialOrder();
+	}
+
+	private static long getInitialOrder() {
+		return INITIAL_ORDER;
 	}
 
 }
