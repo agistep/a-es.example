@@ -1,6 +1,8 @@
 package io.agistep.event;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
 
 public final class Events {
 
@@ -11,22 +13,37 @@ public final class Events {
 		return new EventBuilder();
 	}
 
-	static Event create(long aggregateIdValue, Object payload) {
+	private static long nextOrder(long aggregateIdValue, Map ids) {
+		long order;
+        if (hasNotBeenPublishedBy(aggregateIdValue, ids)) {
+			order = initOrder();
+		} else {
+			order = previousOrder(aggregateIdValue,ids) + 1;
+        }
+		ids.put(aggregateIdValue, order);
+		return order;
+	}
+
+	private static long initOrder() {
+		return (long) INITIAL_ORDER + 1;
+	}
+
+	private static boolean hasNotBeenPublishedBy(long aggregateIdValue,Map<Long, Long> ids) {
+		return (Objects.isNull(previousOrder(aggregateIdValue,ids)));
+	}
+
+	private static Long previousOrder(long aggregateIdValue, Map<Long, Long> ids) {
+		return ids.get(aggregateIdValue);
+	}
+
+	public static Event create(long aggregateIdValue, Object payload, Map<Long, Long> ids) {
+		long order = nextOrder(aggregateIdValue, ids);
 		return Events.builder()
 				.name(payload.getClass().getName())
-				.order(getCurrentOrder()+1)
+				.order(order)
 				.aggregateIdValue(aggregateIdValue)
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())
 				.build();
 	}
-
-	private static long getCurrentOrder() {
-		return getInitialOrder();
-	}
-
-	private static long getInitialOrder() {
-		return INITIAL_ORDER;
-	}
-
 }
