@@ -17,7 +17,7 @@ class ThreadLocalEventListTest {
     @BeforeEach
     void setUp() {
         sut = (ThreadLocalEventList) ThreadLocalEventList.instance();
-        sut.publish();
+        sut.clear();
     }
 
     @Test

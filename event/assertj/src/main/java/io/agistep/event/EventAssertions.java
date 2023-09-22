@@ -13,7 +13,7 @@ public final class EventAssertions {
 		long aggregateIdValue = AggregateSupports.getId(aggregate);
 		assertThatOccurredExactlyOnes(aggregate, Events.builder()
 				.name(payload.getClass().getName())
-				.order(BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
+				.order(EventList.instance().getLatestOrderOf(aggregate))
 				.aggregateIdValue(aggregateIdValue)
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())

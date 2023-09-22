@@ -2,6 +2,8 @@ package io.agistep.event;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("ClassNamingConvention")
@@ -11,16 +13,18 @@ class Ordering_EventApplierTest {
     void apply() {
         Foo aggregate = new Foo();
 
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(0);
+        final EventList eventList = EventList.instance();
 
-        EventApplier.instance().apply(aggregate, new FooCreated());
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(1);
-        assertThat(EventList.instance().occurredListBy(aggregate).get(0).getOrder()).isEqualTo(1);
+        HashMap<Long, Long> aggregateOrderMap = new HashMap<>();
 
-        EventApplier.instance().apply(aggregate, new FooDone());
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(2);
-        assertThat(EventList.instance().occurredListBy(aggregate).get(0).getOrder()).isEqualTo(1);
-        assertThat(EventList.instance().occurredListBy(aggregate).get(1).getOrder()).isEqualTo(2);
+        EventApplier.instance().apply(aggregate, new FooCreated(), aggregateOrderMap);
+        assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(1);
+
+        EventApplier.instance().apply(aggregate, new FooDone(), aggregateOrderMap);
+        assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(2);
+
+        EventApplier.instance().apply(aggregate, new FooDone(), aggregateOrderMap);
+        assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(3);
 
     }
 }

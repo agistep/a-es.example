@@ -6,11 +6,15 @@ import io.agistep.event.EventHandler;
 import io.agistep.event.EventReorganizer;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
 public class Todo {
+
+	private Map<Long, Long> aggregateOrderMap;
 
 	public static Todo reorganize(List<Event> events) {
 		if(events == null || events.isEmpty()) {
@@ -20,7 +24,12 @@ public class Todo {
 	}
 
 	public static Todo reorganize(Event... events) {
-		Todo aggregate = new Todo();
+		long aggregateID = events[0].getAggregateIdValue();
+		long latestOrder = events.length;
+		Map<Long,Long> aggregateOrderMap = new HashMap<Long, Long>();
+		aggregateOrderMap.put(aggregateID, latestOrder);
+
+		Todo aggregate = new Todo(aggregateOrderMap);
 
 		if(events == null || events.length == 0) {
 			return null;
@@ -35,14 +44,18 @@ public class Todo {
 	private boolean done;
 	private boolean hold;
 
-	public Todo() {
+	//post construct at reorganize
+	public Todo(Map<Long,Long> aggregateOrderMap) {
+		// reorganize
+		this.aggregateOrderMap = aggregateOrderMap;
 	}
 
+	//pre construct
 	Todo(String text) {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
 				.build();
-		EventApplier.instance().apply(this, created);
+		this.aggregateOrderMap = EventApplier.instance().init(this, created);
 	}
 
 	@EventHandler(payload = TodoCreated.class)
@@ -56,7 +69,8 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
+		Object payload = TodoDone.newBuilder().build();
+		EventApplier.instance().apply(this, payload, aggregateOrderMap);
 	}
 
 	@EventHandler(payload = TodoDone.class)
@@ -65,7 +79,8 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		Object payload = TodoTextUpdated.newBuilder().setUpdatedText(text).build();
+		EventApplier.instance().apply(this, payload, new HashMap<>());
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
@@ -77,7 +92,8 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
+		Object payload = TodoHeld.newBuilder().build();
+		EventApplier.instance().apply(this, payload, aggregateOrderMap);
 	}
 
 	@EventHandler(payload = TodoHeld.class)

@@ -51,7 +51,7 @@ class ThreadLocalEventList implements EventList {
 	}
 
 	@Override
-	public void publish() {
+	public void clear() {
 		// TODO 이벤트 스토어에 저장 요청
 		changes.remove();
 

@@ -1,34 +1,32 @@
 package io.agistep.todo.domain;
 
 import io.agistep.event.EventList;
+import io.agistep.event.TestEvents;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TodoCreatedEventTest {
-
+class TodoEventOrderTest {
 	Todo sut;
 
 	@BeforeEach
 	void setUp() {
 		EventList.instance().clear();
 		sut = new Todo("Some Text");
+
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
 	}
 
 	@Test
-	void created() {
-		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
+	void done() {
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
 
-		assertThatOccurredExactlyOnes(sut, created);
+		sut.done();
+
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(2);
 	}
 
 
-
-	@Test
-	void properties() {
-		assertThat(sut.getText()).isEqualTo("Some Text");
-		assertThat(sut.isDone()).isEqualTo(false);
-	}
 }
