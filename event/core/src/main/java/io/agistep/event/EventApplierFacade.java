@@ -15,17 +15,17 @@ class EventApplierFacade implements EventApplier {
 
 	@Override
 	public void apply(Object aggregate, Object payload) {
-		HashMap<Long, Long> ids1 = new HashMap<>();
-		Event anEvent = getEvent(aggregate, payload, ids1);
+		HashMap<Long, Long> ids = new HashMap<>();
+		Event anEvent = getEvent(aggregate, payload, ids);
 
 		EventList.instance().occurs(anEvent);
 		EventReorganizer.reorganize(aggregate, anEvent);
 	}
 
-	private Event getEvent(Object aggregate, Object payload, HashMap<Long, Long> ids1) {
+	private Event getEvent(Object aggregate, Object payload, HashMap<Long, Long> ids) {
 		long id = AggregateSupports.getId(aggregate) == -1 ?
 				IdentityValueProvider.instance().newLong() :  AggregateSupports.getId(aggregate);
 
-		return Events.create(id, payload, ids1);
+		return Events.create(id, payload, ids);
 	}
 }

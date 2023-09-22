@@ -13,7 +13,7 @@ public final class Events {
 		return new EventBuilder();
 	}
 
-	private static long nextOrder(long aggregateIdValue, Map ids) {
+	private static long nextOrder(long aggregateIdValue, Map<Long, Long> ids) {
 		long order;
         if (hasNotBeenPublishedBy(aggregateIdValue, ids)) {
 			order = initOrder();
@@ -29,7 +29,7 @@ public final class Events {
 	}
 
 	private static boolean hasNotBeenPublishedBy(long aggregateIdValue,Map<Long, Long> ids) {
-		return (Objects.isNull(previousOrder(aggregateIdValue,ids)));
+		return Objects.isNull(previousOrder(aggregateIdValue,ids));
 	}
 
 	private static Long previousOrder(long aggregateIdValue, Map<Long, Long> ids) {
