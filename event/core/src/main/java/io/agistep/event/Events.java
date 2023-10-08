@@ -6,13 +6,13 @@ import java.util.Objects;
 
 public final class Events {
 
-	public static final long BEGIN_ORDER = 1L;
+	public static final long BEGIN_ORDER = 0L;
 	public static final int INITIAL_ORDER = 0;
 
 	static EventBuilder builder() {
 		return new EventBuilder();
 	}
-
+	@Deprecated
 	private static long nextOrder(long aggregateIdValue, Map<Long, Long> ids) {
 		long order;
         if (hasNotBeenPublishedBy(aggregateIdValue, ids)) {
@@ -22,6 +22,18 @@ public final class Events {
         }
 		ids.put(aggregateIdValue, order);
 		return order;
+	}
+
+	private static long nextOrder(long aggregateIdValue) {
+		return ThreadLocalOrderMap.instance().putOrder(aggregateIdValue);
+	}
+
+	private static boolean hasNotBeenPublishedBy(long aggregateIdValue) {
+		return Objects.isNull(previousOrder(aggregateIdValue));
+	}
+
+	private static Long previousOrder(long aggregateIdValue) {
+		return ThreadLocalOrderMap.instance().getOrder(aggregateIdValue);
 	}
 
 	private static long initOrder() {
@@ -38,6 +50,17 @@ public final class Events {
 
 	public static Event create(long aggregateIdValue, Object payload, Map<Long, Long> ids) {
 		long order = nextOrder(aggregateIdValue, ids);
+		return Events.builder()
+				.name(payload.getClass().getName())
+				.order(order)
+				.aggregateIdValue(aggregateIdValue)
+				.payload(payload)
+				.occurredAt(LocalDateTime.now())
+				.build();
+	}
+
+	public static Event create(long aggregateIdValue, Object payload) {
+		long order = nextOrder(aggregateIdValue);
 		return Events.builder()
 				.name(payload.getClass().getName())
 				.order(order)

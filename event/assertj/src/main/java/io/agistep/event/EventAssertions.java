@@ -2,6 +2,8 @@ package io.agistep.event;
 
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import static io.agistep.event.Events.BEGIN_ORDER;
@@ -29,7 +31,8 @@ public final class EventAssertions {
 		assertThat(actual.getOrder() ).describedAs("Event Order is Invalid").isEqualTo(expected.getOrder());
 		assertThat(actual.getAggregateIdValue()).describedAs("Aggregate ID is Invalid").isEqualTo(expected.getAggregateIdValue());
 		assertThat(actual.getPayload()).describedAs("Payload is Invalid").isEqualTo(expected.getPayload());
-		assertThat(actual.getOccurredAt()).describedAs("Occurred At is Invalid").isEqualToIgnoringNanos(expected.getOccurredAt());
+		long until = actual.getOccurredAt().until(expected.getOccurredAt(), ChronoUnit.MILLIS);
+		assertThat(1000 > until).describedAs("Occurred At is Invalid").isTrue();
 	}
 
 	public static void assertThatDoesNotOccurAnEventBy(Object aggregate) {

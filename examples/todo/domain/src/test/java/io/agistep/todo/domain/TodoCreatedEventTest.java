@@ -2,6 +2,7 @@ package io.agistep.todo.domain;
 
 import io.agistep.event.EventList;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;

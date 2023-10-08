@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -13,12 +14,14 @@ class EventBuilderTest {
 	final long aggregateIdValue = 0L;
 	final SomePayload payload = new SomePayload();
 
+	@BeforeEach
+	void setUp() {
+		ThreadLocalOrderMap.instance().clear();
+	}
 
 	@Test
 	void beginEvent() {
-		Map<Long, Long> ids = new HashMap<>();
-
-		Event actual = Events.create(aggregateIdValue, payload, ids);
+		Event actual = Events.create(aggregateIdValue, payload);
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
 		assertThat(actual.getOrder()).isEqualTo(Events.BEGIN_ORDER);

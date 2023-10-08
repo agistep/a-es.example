@@ -2,8 +2,6 @@ package io.agistep.event;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("ClassNamingConvention")
@@ -11,20 +9,20 @@ class Ordering_EventApplierTest {
 
     @Test
     void apply() {
+        ThreadLocalOrderMap.instance().clear();
+
         Foo aggregate = new Foo();
 
         final EventList eventList = EventList.instance();
 
-        HashMap<Long, Long> aggregateOrderMap = new HashMap<>();
+        EventApplier.instance().apply(aggregate, new FooCreated());
+        assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(0);
 
-        EventApplier.instance().apply(aggregate, new FooCreated(), aggregateOrderMap);
+        EventApplier.instance().apply(aggregate, new FooDone());
         assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(1);
 
-        EventApplier.instance().apply(aggregate, new FooDone(), aggregateOrderMap);
+        EventApplier.instance().apply(aggregate, new FooDone());
         assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(2);
-
-        EventApplier.instance().apply(aggregate, new FooDone(), aggregateOrderMap);
-        assertThat(eventList.getLatestOrderOf(aggregate)).isEqualTo(3);
 
     }
 }

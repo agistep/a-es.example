@@ -2,6 +2,7 @@ package io.agistep.todo.domain;
 
 import io.agistep.event.EventList;
 import io.agistep.event.TestEvents;
+import io.agistep.event.ThreadLocalOrderMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,18 +15,20 @@ class TodoEventOrderTest {
 	@BeforeEach
 	void setUp() {
 		EventList.instance().clear();
+		ThreadLocalOrderMap.instance().clear();
+
 		sut = new Todo("Some Text");
 
-		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(0);
 	}
 
 	@Test
 	void done() {
-		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(0);
 
 		sut.done();
 
-		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(2);
+		assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
 	}
 
 
