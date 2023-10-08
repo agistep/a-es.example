@@ -1,5 +1,7 @@
 package io.agistep.event;
 
+import io.agistep.identity.IdentityValueProvider;
+
 import java.time.LocalDateTime;
 
 class EventBuilder {
@@ -23,11 +25,13 @@ class EventBuilder {
 		return this;
 	}
 
+	@Deprecated
 	EventBuilder order(long order) {
 		this.order = order;
 		return this;
 	}
 
+	@Deprecated
 	EventBuilder aggregateIdValue(long aggregateIdValue) {
 		this.aggregateIdValue = aggregateIdValue;
 		return this;
@@ -40,6 +44,14 @@ class EventBuilder {
 
 	EventBuilder occurredAt(LocalDateTime occurredAt) {
 		this.occurredAt = occurredAt;
+		return this;
+	}
+
+	public EventBuilder aggregate(Object aggregate) {
+		this.order = ThreadLocalOrderMap.instance().setOrder(aggregate);
+		//TODO aggregate 를 통해서 order 와 id를 가져올수있다 그러므로  aggregate builder 에 넘겨 처리하자
+		this.aggregateIdValue = AggregateSupports.getId(aggregate) == -1 ?
+				IdentityValueProvider.instance().newLong() : AggregateSupports.getId(aggregate);
 		return this;
 	}
 }

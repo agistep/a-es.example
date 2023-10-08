@@ -22,8 +22,7 @@ public class EventReorganizer {
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
-		ThreadLocalOrderMap.instance().putOrder(aggregate, anEvent);
-		// TODO throw new UnsupportedOperationException();
+		ThreadLocalOrderMap.instance().setOrder(aggregate, anEvent);
 	}
 
 	private static HandlerAdapter findHandler(Object aggregate) {

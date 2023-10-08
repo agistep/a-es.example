@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 
 public final class AggregateSupports {
 
+	//TODO 암묵적인 규칙 컨팬션을 더 여러개 고려할수 있겠다.
+	//TODO @ID
 	public static long getId(Object aggregate) {
 		try {
 			Field field = aggregate.getClass().getDeclaredField("id");

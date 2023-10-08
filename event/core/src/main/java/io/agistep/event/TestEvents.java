@@ -1,9 +1,6 @@
 package io.agistep.event;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static io.agistep.event.Events.BEGIN_ORDER;
 
 public class TestEvents {
 	public static Event[] events(long aggregateIdValue, Object ... payloads) {

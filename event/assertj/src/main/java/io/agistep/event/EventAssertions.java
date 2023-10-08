@@ -3,10 +3,8 @@ package io.agistep.event;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 
-import static io.agistep.event.Events.BEGIN_ORDER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class EventAssertions {
