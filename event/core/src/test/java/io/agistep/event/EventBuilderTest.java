@@ -29,15 +29,20 @@ class EventBuilderTest {
 	@BeforeEach
 	void setUp() {
 		EventList.instance().clear();
-		ThreadLocalOrderMap.instance().clear();
+		ThreadLocalEventVersionMap.instance().clear();
 	}
 
 	@Test
 	void beginEvent() {
-		Event actual = Events.create(aggregate, payload);
+		Event actual = new EventBuilder()
+				.name(((Object) payload).getClass().getName())
+				.aggregate(aggregate)
+				.payload(payload)
+				.occurredAt(LocalDateTime.now())
+				.build();
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
-		assertThat(actual.getOrder()).isEqualTo(ThreadLocalOrderMap.BEGIN_ORDER);
+		assertThat(actual.getVersion()).isEqualTo(ThreadLocalEventVersionMap.BEGIN_VERSION);
 		assertThat(actual.getAggregateIdValue()).isEqualTo(1L);
 		assertThat(actual.getPayload()).isSameAs(payload);
 		assertThat(actual.getOccurredAt()).isEqualToIgnoringSeconds(LocalDateTime.now());
@@ -46,16 +51,16 @@ class EventBuilderTest {
 
 	@Test
 	void occurs() {
-		Event actual = Events.builder()
+		Event actual = new EventBuilder()
 				.name(((Object) payload).getClass().getName())
-				.order(-1) //TODO 이전 order 를 알아야한다.
+				.version(-1) //TODO 이전 version 를 알아야한다.
 				.aggregateIdValue(aggregate.id.getValue())
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())
 				.build();
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
-		assertThat(actual.getOrder()).isNotEqualTo(ThreadLocalOrderMap.BEGIN_ORDER);
+		assertThat(actual.getVersion()).isNotEqualTo(ThreadLocalEventVersionMap.BEGIN_VERSION);
 		assertThat(actual.getAggregateIdValue()).isEqualTo(aggregate.id.getValue());
 		assertThat(actual.getPayload()).isSameAs(payload);
 		assertThat(actual.getOccurredAt()).isEqualToIgnoringSeconds(LocalDateTime.now());

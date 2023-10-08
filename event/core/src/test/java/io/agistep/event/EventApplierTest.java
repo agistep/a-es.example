@@ -10,7 +10,7 @@ class EventApplierTest {
     @BeforeEach
     void setUp() {
         EventList.instance().clear();
-        ThreadLocalOrderMap.instance().clear();
+        ThreadLocalEventVersionMap.instance().clear();
     }
 
     @Test

@@ -22,7 +22,7 @@ public class EventReorganizer {
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
-		ThreadLocalOrderMap.instance().setOrder(aggregate, anEvent);
+		ThreadLocalEventVersionMap.instance().setVersion(aggregate, anEvent);
 	}
 
 	private static HandlerAdapter findHandler(Object aggregate) {

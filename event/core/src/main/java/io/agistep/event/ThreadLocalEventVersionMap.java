@@ -7,31 +7,31 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ThreadLocalOrderMap{
+public class ThreadLocalEventVersionMap {
 
-	public static final long BEGIN_ORDER = 0;
+	public static final long BEGIN_VERSION = 0;
 
 	private final static ThreadLocal<Map<Long,Long>> changes = new ThreadLocal<>();
 
-	public static ThreadLocalOrderMap instance() {
-		return new ThreadLocalOrderMap();
+	public static ThreadLocalEventVersionMap instance() {
+		return new ThreadLocalEventVersionMap();
 	}
 
-	private ThreadLocalOrderMap() {
+	private ThreadLocalEventVersionMap() {
 		// Do Nothing
 	}
 
-	public void setOrder(Object aggregate, Event anEvent) {
+	public void setVersion(Object aggregate, Event anEvent) {
 		Long aggregateId = AggregateSupports.getId(aggregate);
 
 		if (isNotInit(aggregateId)) {
 			init(aggregate);
 		}
-		long order = anEvent.getOrder();
+		long version = anEvent.getVersion();
 		if (Objects.isNull(changes.get())) {
 			changes.set(new HashMap<>());
 		}
-		changes.get().put(aggregateId, order);
+		changes.get().put(aggregateId, version);
 	}
 
 	private void init(Object aggregate) {
@@ -48,7 +48,7 @@ public class ThreadLocalOrderMap{
 		return Optional.ofNullable(changes.get().get(aggregateId)).isEmpty();
 	}
 
-	public Long setOrder(Object aggregate) {
+	public Long setVersion(Object aggregate) {
 		if (Objects.isNull(changes.get())) {
 			changes.set(new HashMap<>());
 		}
@@ -56,7 +56,7 @@ public class ThreadLocalOrderMap{
 		final long aggregateIdValue = AggregateSupports.getId(aggregate) == -1 ?
 				IdentityValueProvider.instance().newLong() : AggregateSupports.getId(aggregate);
 		if (!changes.get().containsKey(aggregateIdValue)) {
-			changes.get().put(aggregateIdValue, BEGIN_ORDER);
+			changes.get().put(aggregateIdValue, BEGIN_VERSION);
 		} else {
 			changes.get().put(aggregateIdValue, changes.get().get(aggregateIdValue) + 1);
 		}

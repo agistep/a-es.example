@@ -13,7 +13,7 @@ class EventReorganizerTest {
 	@BeforeEach
 	void setUp() {
 		EventList.instance().clear();
-		ThreadLocalOrderMap.instance().clear();
+		ThreadLocalEventVersionMap.instance().clear();
 	}
 
 	@Test
@@ -21,7 +21,7 @@ class EventReorganizerTest {
 
 		Foo aggregate = new Foo(()->1L);
 		Object payload = new FooCreated();
-		Event anEvent = Events.builder()
+		Event anEvent = new EventBuilder()
 				.name(payload.getClass().getName())
 				.aggregate(aggregate)
 				.payload(payload)

@@ -8,9 +8,9 @@ public class TestEvents {
 		Event[] ret = new Event[payloads.length];
 		for (int i = 0; i < payloads.length; i++) {
 			Object payload = payloads[i];
-			Event e = Events.builder()
+			Event e = new EventBuilder()
 					.name(payload.getClass().getName())
-					.order(i)
+					.version(i)
 					.aggregateIdValue(aggregateIdValue)
 					.payload(payload)
 					.occurredAt(LocalDateTime.now())

@@ -28,9 +28,9 @@ class ThreadLocalEventListTest {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.occurs(Events.builder()
+        sut.occurs(new EventBuilder()
                 .name(payload.getClass().getName())
-                .order(ThreadLocalOrderMap.BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
+                .version(ThreadLocalEventVersionMap.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
                 .aggregateIdValue(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())

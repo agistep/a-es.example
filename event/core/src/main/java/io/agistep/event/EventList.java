@@ -21,7 +21,7 @@ public interface EventList {
 		return !occurredListBy(aggregate).isEmpty();
 	}
 
-	default long getLatestOrderOf(Object aggregate) {
-		return this.occurredListBy(aggregate).get(this.occurredListBy(aggregate).size()-1).getOrder();
+	default long getLatestVersionOf(Object aggregate) {
+		return this.occurredListBy(aggregate).get(this.occurredListBy(aggregate).size()-1).getVersion();
 	}
 }

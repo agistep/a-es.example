@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public interface Event {
 
-	long getOrder();
+	long getVersion();
 	String getName();
 	long getAggregateIdValue();
 	Object getPayload();

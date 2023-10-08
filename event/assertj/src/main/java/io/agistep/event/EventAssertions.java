@@ -11,9 +11,9 @@ public final class EventAssertions {
 
 	public static void assertThatOccurredExactlyOnes(Object aggregate, Object payload) {
 		long aggregateIdValue = AggregateSupports.getId(aggregate);
-		assertThatOccurredExactlyOnes(aggregate, Events.builder()
+		assertThatOccurredExactlyOnes(aggregate, new EventBuilder()
 				.name(payload.getClass().getName())
-				.order(EventList.instance().getLatestOrderOf(aggregate))
+				.version(EventList.instance().getLatestVersionOf(aggregate))
 				.aggregateIdValue(aggregateIdValue)
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())
@@ -26,7 +26,7 @@ public final class EventAssertions {
 		assertThat(occurredCount).describedAs("Expected count of occurred is 1").isEqualTo(1);
 		Event actual = eventList.get(0);
 		assertThat(actual.getName()).describedAs("Event name is invalid").isEqualTo(expected.getName());
-		assertThat(actual.getOrder() ).describedAs("Event Order is Invalid").isEqualTo(expected.getOrder());
+		assertThat(actual.getVersion() ).describedAs("Event Order is Invalid").isEqualTo(expected.getVersion());
 		assertThat(actual.getAggregateIdValue()).describedAs("Aggregate ID is Invalid").isEqualTo(expected.getAggregateIdValue());
 		assertThat(actual.getPayload()).describedAs("Payload is Invalid").isEqualTo(expected.getPayload());
 		long until = actual.getOccurredAt().until(expected.getOccurredAt(), ChronoUnit.MILLIS);
