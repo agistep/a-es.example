@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static io.agistep.event.Events.BEGIN_ORDER;
 import static org.assertj.core.api.Assertions.*;
 
 class ThreadLocalEventListTest {
@@ -17,7 +16,7 @@ class ThreadLocalEventListTest {
     @BeforeEach
     void setUp() {
         sut = (ThreadLocalEventList) ThreadLocalEventList.instance();
-        sut.publish();
+        sut.clear();
     }
 
     @Test
@@ -29,9 +28,9 @@ class ThreadLocalEventListTest {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.occurs(Events.builder()
+        sut.occurs(new EventBuilder()
                 .name(payload.getClass().getName())
-                .order(BEGIN_ORDER) //TODO 이전 order 를 알아야한다.
+                .version(ThreadLocalEventVersionMap.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
                 .aggregateIdValue(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())

@@ -1,19 +1,21 @@
 package io.agistep.event;
 
+import io.agistep.identity.IdentityValueProvider;
+
 import java.time.LocalDateTime;
 
 class EventBuilder {
 	private String name;
-	private long order;
-	private long aggregateIdValue;
+	private long version;
+	private long aggregateId;
 	private Object payload;
 	private LocalDateTime occurredAt;
 
 	Event build() {
 		return new ObjectPayloadEnvelop(
 				name,
-				order,
-				aggregateIdValue,
+				version,
+				aggregateId,
 				payload,
 				occurredAt);
 	}
@@ -23,13 +25,15 @@ class EventBuilder {
 		return this;
 	}
 
-	EventBuilder order(long order) {
-		this.order = order;
+	@Deprecated
+	EventBuilder version(long version) {
+		this.version = version;
 		return this;
 	}
 
+	@Deprecated
 	EventBuilder aggregateIdValue(long aggregateIdValue) {
-		this.aggregateIdValue = aggregateIdValue;
+		this.aggregateId = aggregateIdValue;
 		return this;
 	}
 
@@ -40,6 +44,13 @@ class EventBuilder {
 
 	EventBuilder occurredAt(LocalDateTime occurredAt) {
 		this.occurredAt = occurredAt;
+		return this;
+	}
+
+	public EventBuilder aggregate(Object aggregate) {
+		this.version = ThreadLocalEventVersionMap.instance().setVersion(aggregate);
+		this.aggregateId = AggregateSupports.getId(aggregate) == -1 ?
+				IdentityValueProvider.instance().newLong() : AggregateSupports.getId(aggregate);
 		return this;
 	}
 }

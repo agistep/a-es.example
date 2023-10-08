@@ -1,9 +1,6 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.Event;
-import io.agistep.event.EventApplier;
-import io.agistep.event.EventHandler;
-import io.agistep.event.EventReorganizer;
+import io.agistep.event.*;
 import lombok.Getter;
 
 import java.util.List;
@@ -11,6 +8,7 @@ import java.util.List;
 
 @Getter
 public class Todo {
+
 
 	public static Todo reorganize(List<Event> events) {
 		if(events == null || events.isEmpty()) {
@@ -35,9 +33,11 @@ public class Todo {
 	private boolean done;
 	private boolean hold;
 
+	//post construct at reorganize
 	public Todo() {
 	}
 
+	//pre construct
 	Todo(String text) {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
@@ -56,7 +56,8 @@ public class Todo {
 		if(isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoDone.newBuilder().build());
+		Object payload = TodoDone.newBuilder().build();
+		EventApplier.instance().apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoDone.class)
@@ -65,7 +66,8 @@ public class Todo {
 	}
 
 	public void updateText(String text) {
-		EventApplier.instance().apply(this, TodoTextUpdated.newBuilder().setUpdatedText(text).build());
+		Object payload = TodoTextUpdated.newBuilder().setUpdatedText(text).build();
+		EventApplier.instance().apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
@@ -77,7 +79,8 @@ public class Todo {
 		if (isDone()) {
 			return;
 		}
-		EventApplier.instance().apply(this, TodoHeld.newBuilder().build());
+		Object payload = TodoHeld.newBuilder().build();
+		EventApplier.instance().apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoHeld.class)

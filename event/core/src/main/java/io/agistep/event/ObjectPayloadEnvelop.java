@@ -6,16 +6,16 @@ import java.util.Objects;
 
 class ObjectPayloadEnvelop implements Event {
 	private final  String name;
-	private final  long order;
+	private final  long version;
 	private final  long aggregateIdValue;
 	private final  Object payload;
 	private final  LocalDateTime occurredAt;
 
 
-	ObjectPayloadEnvelop(String name, long order, long aggregateIdValue, Object payload, LocalDateTime occurredAt) {
+	ObjectPayloadEnvelop(String name, long version, long aggregateIdValue, Object payload, LocalDateTime occurredAt) {
 
 		this.name = name;
-		this.order = order;
+		this.version = version;
 		this.aggregateIdValue = aggregateIdValue;
 		this.payload = payload;
 		this.occurredAt = occurredAt;
@@ -27,8 +27,8 @@ class ObjectPayloadEnvelop implements Event {
 	}
 
 	@Override
-	public long getOrder() {
-		return order;
+	public long getVersion() {
+		return version;
 	}
 
 	@Override
@@ -51,11 +51,11 @@ class ObjectPayloadEnvelop implements Event {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ObjectPayloadEnvelop that = (ObjectPayloadEnvelop) o;
-		return order == that.order && aggregateIdValue == that.aggregateIdValue && Objects.equals(name, that.name) && Objects.equals(payload, that.payload) && Objects.equals(occurredAt, that.occurredAt);
+		return version == that.version && aggregateIdValue == that.aggregateIdValue && Objects.equals(name, that.name) && Objects.equals(payload, that.payload) && Objects.equals(occurredAt, that.occurredAt);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, order, aggregateIdValue, payload, occurredAt);
+		return Objects.hash(name, version, aggregateIdValue, payload, occurredAt);
 	}
 }

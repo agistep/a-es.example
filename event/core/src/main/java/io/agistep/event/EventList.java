@@ -15,6 +15,13 @@ public interface EventList {
 
 	List<Event> occurredListBy(Object aggregate);
 
-	void publish();
+	void clear();
 
+	default boolean hasEventsOf(Object aggregate) {
+		return !occurredListBy(aggregate).isEmpty();
+	}
+
+	default long getLatestVersionOf(Object aggregate) {
+		return this.occurredListBy(aggregate).get(this.occurredListBy(aggregate).size()-1).getVersion();
+	}
 }
