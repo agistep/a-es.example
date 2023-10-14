@@ -28,8 +28,7 @@ class EventBuilderTest {
 
 	@BeforeEach
 	void setUp() {
-		EventList.instance().clear();
-		ThreadLocalEventVersionMap.instance().clear();
+		EventHolder.instance().clearAll();
 	}
 
 	@Test
@@ -42,8 +41,8 @@ class EventBuilderTest {
 				.build();
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
-		assertThat(actual.getVersion()).isEqualTo(ThreadLocalEventVersionMap.BEGIN_VERSION);
-		assertThat(actual.getAggregateIdValue()).isEqualTo(1L);
+		assertThat(actual.getVersion()).isEqualTo(ThreadLocalEventVersionHolder.BEGIN_VERSION);
+		assertThat(actual.getAggregateId()).isEqualTo(1L);
 		assertThat(actual.getPayload()).isSameAs(payload);
 		assertThat(actual.getOccurredAt()).isEqualToIgnoringSeconds(LocalDateTime.now());
 	}
@@ -60,8 +59,8 @@ class EventBuilderTest {
 				.build();
 
 		assertThat(actual.getName()).isEqualTo(SomePayload.class.getName());
-		assertThat(actual.getVersion()).isNotEqualTo(ThreadLocalEventVersionMap.BEGIN_VERSION);
-		assertThat(actual.getAggregateIdValue()).isEqualTo(aggregate.id.getValue());
+		assertThat(actual.getVersion()).isNotEqualTo(ThreadLocalEventVersionHolder.BEGIN_VERSION);
+		assertThat(actual.getAggregateId()).isEqualTo(aggregate.id.getValue());
 		assertThat(actual.getPayload()).isSameAs(payload);
 		assertThat(actual.getOccurredAt()).isEqualToIgnoringSeconds(LocalDateTime.now());
 	}

@@ -11,18 +11,18 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class EventReorganizer {
+public class EventReorganizor {
 
 	public static void reorganize(Object aggregate, Event[] events) {
 		Arrays.stream(events)
-				.forEach(e-> EventReorganizer.reorganize(aggregate, e));
+				.forEach(e-> EventReorganizor.reorganize(aggregate, e));
 	}
 
 	public static void reorganize(Object aggregate, Event anEvent) {
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
-		ThreadLocalEventVersionMap.instance().setVersion(aggregate, anEvent);
+		ThreadLocalEventVersionHolder.instance().setVersion(aggregate, anEvent);
 	}
 
 	private static HandlerAdapter findHandler(Object aggregate) {

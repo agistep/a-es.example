@@ -1,8 +1,7 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventList;
+import io.agistep.event.EventHolder;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
@@ -14,7 +13,7 @@ class TodoCreatedEventTest {
 
 	@BeforeEach
 	void setUp() {
-		EventList.instance().clear();
+		EventHolder.instance().clearAll();
 		sut = new Todo("Some Text");
 	}
 

@@ -20,8 +20,8 @@ class EventApplierImpl implements EventApplier {
                 .occurredAt(LocalDateTime.now())
                 .build();
 
-        EventList.instance().occurs(anEvent);
-        EventReorganizer.reorganize(aggregate, anEvent);
+        EventHolder.instance().occurs(anEvent);
+        EventReorganizor.reorganize(aggregate, anEvent);
     }
 
 }

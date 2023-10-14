@@ -32,7 +32,7 @@ class ObjectPayloadEnvelop implements Event {
 	}
 
 	@Override
-	public long getAggregateIdValue() {
+	public long getAggregateId() {
 		return aggregateIdValue;
 	}
 

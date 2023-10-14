@@ -1,8 +1,8 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventList;
+import io.agistep.event.EventHolder;
 import io.agistep.event.TestEvents;
-import io.agistep.event.ThreadLocalEventVersionMap;
+import io.agistep.event.ThreadLocalEventVersionHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +15,7 @@ class TodoDoneEventTest {
 
 	@BeforeEach
 	void setUp() {
-		EventList.instance().clear();
-		ThreadLocalEventVersionMap.instance().clear();
+		EventHolder.instance().clearAll();
 
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
 		sut = Todo.reorganize(TestEvents.events(1919, created));
@@ -27,7 +26,7 @@ class TodoDoneEventTest {
 	@Test
 	void done() {
 		sut.done();
-		assertThat(EventList.instance().getLatestVersionOf(sut)).isEqualTo(1);
+		assertThat(EventHolder.instance().getLatestVersionOf(sut)).isEqualTo(1);
 		assertThatOccurredExactlyOnes(sut, TodoDone.newBuilder().build());
 	}
 

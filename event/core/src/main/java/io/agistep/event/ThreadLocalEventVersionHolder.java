@@ -7,22 +7,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ThreadLocalEventVersionMap {
+public class ThreadLocalEventVersionHolder {
 
 	public static final long BEGIN_VERSION = 0;
 
 	private final static ThreadLocal<Map<Long,Long>> changes = new ThreadLocal<>();
 
-	public static ThreadLocalEventVersionMap instance() {
-		return new ThreadLocalEventVersionMap();
+	public static ThreadLocalEventVersionHolder instance() {
+		return new ThreadLocalEventVersionHolder();
 	}
 
-	private ThreadLocalEventVersionMap() {
+	private ThreadLocalEventVersionHolder() {
 		// Do Nothing
 	}
 
 	public void setVersion(Object aggregate, Event anEvent) {
-		Long aggregateId = AggregateSupports.getId(aggregate);
+		Long aggregateId = AggregateIdUtils.getIdFrom(aggregate);
 
 		if (isNotInit(aggregateId)) {
 			init(aggregate);
@@ -35,7 +35,7 @@ public class ThreadLocalEventVersionMap {
 	}
 
 	private void init(Object aggregate) {
-		Long aggregateId = AggregateSupports.getId(aggregate);
+		Long aggregateId = AggregateIdUtils.getIdFrom(aggregate);
 		Map<Long, Long> map = new HashMap<>();
 		map.put(aggregateId, 0L);
 		changes.set(map);
@@ -53,8 +53,8 @@ public class ThreadLocalEventVersionMap {
 			changes.set(new HashMap<>());
 		}
 
-		final long aggregateIdValue = AggregateSupports.getId(aggregate) == -1 ?
-				IdentityValueProvider.instance().newLong() : AggregateSupports.getId(aggregate);
+		final long aggregateIdValue = AggregateIdUtils.getIdFrom(aggregate) == -1 ?
+				IdentityValueProvider.instance().newLong() : AggregateIdUtils.getIdFrom(aggregate);
 		if (!changes.get().containsKey(aggregateIdValue)) {
 			changes.get().put(aggregateIdValue, BEGIN_VERSION);
 		} else {
@@ -64,7 +64,12 @@ public class ThreadLocalEventVersionMap {
 		return changes.get().get(aggregateIdValue);
 	}
 
-	public void clear() {
+	public void clearAll() {
+		changes.remove();
+	}
+
+	public void clear(Object aggregate) {
+		//TODO
 		changes.remove();
 	}
 }
