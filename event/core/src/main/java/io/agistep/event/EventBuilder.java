@@ -48,9 +48,9 @@ class EventBuilder {
 	}
 
 	public EventBuilder aggregate(Object aggregate) {
-		this.version = ThreadLocalEventVersionMap.instance().setVersion(aggregate);
-		this.aggregateId = AggregateSupports.getId(aggregate) == -1 ?
-				IdentityValueProvider.instance().newLong() : AggregateSupports.getId(aggregate);
+		this.version = ThreadLocalEventVersionHolder.instance().setVersion(aggregate);
+		this.aggregateId = AggregateIdUtils.getIdFrom(aggregate) == -1 ?
+				IdentityValueProvider.instance().newLong() : AggregateIdUtils.getIdFrom(aggregate);
 		return this;
 	}
 }

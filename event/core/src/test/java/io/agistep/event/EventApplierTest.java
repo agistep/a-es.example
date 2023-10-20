@@ -9,21 +9,20 @@ class EventApplierTest {
 
     @BeforeEach
     void setUp() {
-        EventList.instance().clear();
-        ThreadLocalEventVersionMap.instance().clear();
+        EventHolder.instance().clearAll();
     }
 
     @Test
     void apply() {
         Foo aggregate = new Foo(()->1L);
 
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(0);
+        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(0);
 
         EventApplier.instance().apply(aggregate, new FooCreated());
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(1);
+        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(1);
 
         EventApplier.instance().apply(aggregate, new FooDone());
-        assertThat(EventList.instance().occurredListBy(aggregate)).hasSize(2);
+        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(2);
 
     }
 }

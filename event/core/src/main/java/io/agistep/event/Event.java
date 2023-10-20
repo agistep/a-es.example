@@ -6,7 +6,7 @@ public interface Event {
 
 	long getVersion();
 	String getName();
-	long getAggregateIdValue();
+	long getAggregateId();
 	Object getPayload();
 	LocalDateTime getOccurredAt();
 

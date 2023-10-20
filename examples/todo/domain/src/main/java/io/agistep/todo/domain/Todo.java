@@ -1,6 +1,9 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.*;
+import io.agistep.event.Event;
+import io.agistep.event.EventApplier;
+import io.agistep.event.EventHandler;
+import io.agistep.event.EventReorganizor;
 import lombok.Getter;
 
 import java.util.List;
@@ -23,7 +26,7 @@ public class Todo {
 		if(events == null || events.length == 0) {
 			return null;
 		}
-		EventReorganizer.reorganize(aggregate, events);
+		EventReorganizor.reorganize(aggregate, events);
 		return aggregate;
 	}
 
@@ -47,7 +50,7 @@ public class Todo {
 
 	@EventHandler(payload = TodoCreated.class)
 	void onCreated(Event anEvent) {
-		this.id = new TodoIdentity(anEvent.getAggregateIdValue());
+		this.id = new TodoIdentity(anEvent.getAggregateId());
 		this.text = ((TodoCreated) anEvent.getPayload()).getText();
 		this.done = false;
 	}

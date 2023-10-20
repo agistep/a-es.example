@@ -11,7 +11,7 @@ class Foo {
 
     @EventHandler(payload=FooCreated.class)
     void onCreated(Event anEvent) {
-        this.id = anEvent::getAggregateIdValue;
+        this.id = anEvent::getAggregateId;
     }
 
     @EventHandler(payload=FooDone.class)

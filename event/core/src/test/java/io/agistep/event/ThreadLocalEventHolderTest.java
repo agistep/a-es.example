@@ -6,22 +6,22 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-class ThreadLocalEventListTest {
+class ThreadLocalEventHolderTest {
 
 
-    private ThreadLocalEventList sut;
+    private ThreadLocalEventHolder sut;
 
     @BeforeEach
     void setUp() {
-        sut = (ThreadLocalEventList) ThreadLocalEventList.instance();
-        sut.clear();
+        sut = (ThreadLocalEventHolder) ThreadLocalEventHolder.instance();
+        sut.clearAll();
     }
 
     @Test
     void create() {
-        assertThat(sut).isInstanceOf(ThreadLocalEventList.class);
+        assertThat(sut).isInstanceOf(ThreadLocalEventHolder.class);
     }
 
     @Test
@@ -30,16 +30,16 @@ class ThreadLocalEventListTest {
         Object payload = new FooEventPayload();
         sut.occurs(new EventBuilder()
                 .name(payload.getClass().getName())
-                .version(ThreadLocalEventVersionMap.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
+                .version(ThreadLocalEventVersionHolder.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
                 .aggregateIdValue(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())
                 .build());
 
-        List<Event> actual = sut.occurredListAll();
+        List<Event> actual = sut.getEventAll();
         assertThat(actual).hasSize(1);
         Event event = actual.get(0);
-        assertThat(event.getAggregateIdValue()).isEqualTo(aggregateId);
+        assertThat(event.getAggregateId()).isEqualTo(aggregateId);
         assertThat(event.getPayload()).isInstanceOf(FooEventPayload.class);
 
     }
