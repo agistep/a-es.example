@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public interface Event {
 
+	long getId();
 	long getVersion();
 	String getName();
 	long getAggregateId();

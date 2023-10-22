@@ -10,6 +10,7 @@ class EventApplierTest {
     @BeforeEach
     void setUp() {
         EventHolder.instance().clearAll();
+        ThreadLocalEventVersionHolder.instance().clearAll();
     }
 
     @Test

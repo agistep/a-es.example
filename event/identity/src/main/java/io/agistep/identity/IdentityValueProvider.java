@@ -2,7 +2,7 @@ package io.agistep.identity;
 
 public interface IdentityValueProvider {
 	static IdentityValueProvider instance() {
-		return FooLongValueProvider.instance();
+		return RandomProvider.instance();
 	}
 
 	long newLong();

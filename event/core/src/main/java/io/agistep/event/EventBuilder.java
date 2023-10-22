@@ -4,15 +4,17 @@ import io.agistep.identity.IdentityValueProvider;
 
 import java.time.LocalDateTime;
 
-class EventBuilder {
+public class EventBuilder {
+	private long id;
 	private String name;
 	private long version;
 	private long aggregateId;
 	private Object payload;
 	private LocalDateTime occurredAt;
 
-	Event build() {
+	public Event build() {
 		return new ObjectPayloadEnvelop(
+				id,
 				name,
 				version,
 				aggregateId,
@@ -20,29 +22,34 @@ class EventBuilder {
 				occurredAt);
 	}
 
-	EventBuilder name(String name) {
+	public EventBuilder id(long id) {
+		this.id = id;
+		return this;
+	}
+
+	public EventBuilder name(String name) {
 		this.name = name;
 		return this;
 	}
 
 	@Deprecated
-	EventBuilder version(long version) {
+	public EventBuilder version(long version) {
 		this.version = version;
 		return this;
 	}
 
 	@Deprecated
-	EventBuilder aggregateIdValue(long aggregateIdValue) {
+	public EventBuilder aggregateId(long aggregateIdValue) {
 		this.aggregateId = aggregateIdValue;
 		return this;
 	}
 
-	EventBuilder payload(Object payload) {
+	public EventBuilder payload(Object payload) {
 		this.payload = payload;
 		return this;
 	}
 
-	EventBuilder occurredAt(LocalDateTime occurredAt) {
+	public EventBuilder occurredAt(LocalDateTime occurredAt) {
 		this.occurredAt = occurredAt;
 		return this;
 	}
