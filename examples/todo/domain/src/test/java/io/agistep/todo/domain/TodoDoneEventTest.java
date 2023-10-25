@@ -18,7 +18,7 @@ class TodoDoneEventTest {
 		EventHolder.instance().clearAll();
 
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
-		sut = Todo.reorganize(TestEvents.events(1919, created));
+		sut = Todo.reorganize(TestEvents.anEvent(1919, created));
 
 		//assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
 	}
