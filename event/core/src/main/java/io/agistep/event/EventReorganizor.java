@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class EventReorganizor {
+public final class EventReorganizor {
 
 	public static void reorganize(Object aggregate, Event[] events) {
 		Arrays.stream(events)

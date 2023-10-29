@@ -1,5 +1,5 @@
 package io.agistep.event;
 
-class FooDone {
+public class FooDone {
 
 }

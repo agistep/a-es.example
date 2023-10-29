@@ -4,7 +4,8 @@ package io.agistep.event;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-class ObjectPayloadEnvelop implements Event {
+public class ObjectPayloadEnvelop implements Event {
+	private final long id;
 	private final  String name;
 	private final  long version;
 	private final  long aggregateIdValue;
@@ -12,13 +13,18 @@ class ObjectPayloadEnvelop implements Event {
 	private final  LocalDateTime occurredAt;
 
 
-	ObjectPayloadEnvelop(String name, long version, long aggregateIdValue, Object payload, LocalDateTime occurredAt) {
-
+	public ObjectPayloadEnvelop(long id, String name, long version, long aggregateIdValue, Object payload, LocalDateTime occurredAt) {
+		this.id = id;
 		this.name = name;
 		this.version = version;
 		this.aggregateIdValue = aggregateIdValue;
 		this.payload = payload;
 		this.occurredAt = occurredAt;
+	}
+
+	@Override
+	public long getId() {
+		return id;
 	}
 
 	@Override
@@ -58,4 +64,17 @@ class ObjectPayloadEnvelop implements Event {
 	public int hashCode() {
 		return Objects.hash(name, version, aggregateIdValue, payload, occurredAt);
 	}
+
+	@Override
+	public String toString() {
+		return "ObjectPayloadEnvelop{" +
+				"name='" + name + '\'' +
+				", version=" + version +
+				", aggregateIdValue=" + aggregateIdValue +
+				", payload=" + payload +
+				", occurredAt=" + occurredAt +
+				'}';
+	}
+
+
 }

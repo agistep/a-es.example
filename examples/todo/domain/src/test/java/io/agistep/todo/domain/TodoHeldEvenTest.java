@@ -15,7 +15,7 @@ class TodoHeldEvenTest {
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
 		TodoDone done = TodoDone.newBuilder().build();
 		int aggregateIdValue = 99;
-		Event[] events = TestEvents.events(aggregateIdValue, created, done);
+		Event[] events = TestEvents.anEvent(aggregateIdValue, created, done);
 
 		Todo sut = Todo.reorganize(events);
 

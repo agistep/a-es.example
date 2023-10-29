@@ -10,7 +10,7 @@ class TodoTextUpdatedEventTest {
 	@Test
 	void textChangedEvent() {
 		Object[] payload = new Object[]{TodoCreated.newBuilder().setText("Some Text").build()};
-		Todo sut = Todo.reorganize(TestEvents.events(1L, payload));
+		Todo sut = Todo.reorganize(TestEvents.anEvent(1L, payload));
 
 		sut.updateText("Updated Text");
 

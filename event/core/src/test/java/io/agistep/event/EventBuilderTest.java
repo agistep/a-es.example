@@ -29,6 +29,7 @@ class EventBuilderTest {
 	@BeforeEach
 	void setUp() {
 		EventHolder.instance().clearAll();
+		ThreadLocalEventVersionHolder.instance().clearAll();
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class EventBuilderTest {
 		Event actual = new EventBuilder()
 				.name(((Object) payload).getClass().getName())
 				.version(-1) //TODO 이전 version 를 알아야한다.
-				.aggregateIdValue(aggregate.id.getValue())
+				.aggregateId(aggregate.id.getValue())
 				.payload(payload)
 				.occurredAt(LocalDateTime.now())
 				.build();
