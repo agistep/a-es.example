@@ -21,9 +21,6 @@ class TodoCreationApplicationServiceTest {
 	ReturnCapture<Todo> createdTodo = new ReturnCapture<>();
 
 	@Mock
-	EventStore eventStore;
-
-	@Mock
 	TodoRepository todoRepository;
 
 	TodoCreationApplicationService sut;
