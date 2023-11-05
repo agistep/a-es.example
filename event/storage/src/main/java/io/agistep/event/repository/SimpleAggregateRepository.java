@@ -30,8 +30,12 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
         List<Event> events = EventHolder.instance().getEvents(aggregate);
 
         storage.save(events);
-
-        EventLogger.log(events);
+//
+//        try {
+//            EventLogger.log(events);
+//        }catch (Exception e) {
+//
+//        }
 
         EventHolder.instance().clear(aggregate);
     }

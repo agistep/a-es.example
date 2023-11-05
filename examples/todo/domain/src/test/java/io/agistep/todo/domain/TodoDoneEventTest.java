@@ -1,8 +1,6 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventHolder;
-import io.agistep.event.TestEvents;
-import io.agistep.event.ThreadLocalEventVersionHolder;
+import io.agistep.event.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +16,10 @@ class TodoDoneEventTest {
 		EventHolder.instance().clearAll();
 
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
-		sut = Todo.reorganize(TestEvents.anEvent(1919, created));
+		Event[] events = TestEvents.anEvent(1919, created);
+		sut = new Todo();
+		EventReorganizor.reorganize(sut, events);
 
-		//assertThat(EventList.instance().getLatestOrderOf(sut)).isEqualTo(1);
 	}
 
 	@Test
