@@ -10,35 +10,31 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
-    id "io.freefair.lombok" version "8.0.1"
-    id "com.google.protobuf" version "0.9.3" // for-event-payload
-    id 'idea'
-}
-
-idea {
-    module {
-        jdkName = '17'
-    }
-}
-
-java {
-    sourceCompatibility = 17
-    targetCompatibility = 17
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
-
+java {
+    sourceCompatibility = 17
+    targetCompatibility = 17
+}
 dependencies {
+    api project(":event:core")
+
     implementation 'org.valid4j:valid4j:0.5.0'
-    implementation project(":examples:todo:domain")
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-csv:1.10.0'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.2.12'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.5'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.5'
 
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
-    testImplementation project(':event:test')
+
 }
 
 testing {
@@ -48,12 +44,5 @@ testing {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('5.8.2')
         }
-    }
-}
-
-
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:3.23.0'
     }
 }
