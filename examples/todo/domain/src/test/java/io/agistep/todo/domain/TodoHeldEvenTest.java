@@ -1,6 +1,8 @@
 package io.agistep.todo.domain;
 
 import io.agistep.event.Event;
+import io.agistep.event.EventHolder;
+import io.agistep.event.EventReorganizor;
 import io.agistep.event.TestEvents;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +19,8 @@ class TodoHeldEvenTest {
 		int aggregateIdValue = 99;
 		Event[] events = TestEvents.anEvent(aggregateIdValue, created, done);
 
-		Todo sut = Todo.reorganize(events);
+		Todo sut = new Todo();
+		EventReorganizor.reorganize(sut, events);
 
 		assertThat(sut.isDone()).isTrue();
 
