@@ -9,21 +9,26 @@ class EventApplierTest {
 
     @BeforeEach
     void setUp() {
-        EventHolder.instance().clearAll();
-        ThreadLocalEventVersionHolder.instance().clearAll();
+        Events.clearAll();
     }
 
     @Test
     void apply() {
-        Foo aggregate = new Foo(()->1L);
+        Foo aggregate = new Foo();
 
-        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(0);
+        assertThat(Events.getHoldEvents(aggregate)).hasSize(0);
 
-        EventApplier.instance().apply(aggregate, new FooCreated());
-        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(1);
+        Events.apply(aggregate, new FooCreated());
 
-        EventApplier.instance().apply(aggregate, new FooDone());
-        assertThat(EventHolder.instance().getEvents(aggregate)).hasSize(2);
+        assertThat(aggregate.isDone()).isFalse();
+        assertThat(Events.getHoldEvents(aggregate)).hasSize(1);
+        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.BEGIN_VERSION);
+
+        Events.apply(aggregate, new FooDone());
+
+        assertThat(aggregate.isDone()).isTrue();
+        assertThat(Events.getHoldEvents(aggregate)).hasSize(2);
+        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.BEGIN_VERSION+1);
 
     }
 }

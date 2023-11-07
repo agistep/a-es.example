@@ -1,6 +1,5 @@
 package io.agistep.todo.applications;
 
-import io.agistep.event.EventStore;
 import io.agistep.todo.domain.Todo;
 import io.agistep.todo.domain.TodoFactory;
 import io.agistep.todo.domain.TodoRepository;
@@ -19,9 +18,6 @@ class TodoCreationApplicationServiceTest {
 	@Spy
 	TodoFactory todoFactory = new TodoFactory();
 	ReturnCapture<Todo> createdTodo = new ReturnCapture<>();
-
-	@Mock
-	EventStore eventStore;
 
 	@Mock
 	TodoRepository todoRepository;

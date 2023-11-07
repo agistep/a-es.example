@@ -1,6 +1,9 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.IdUtils;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,7 +29,7 @@ class ThreadLocalEventHolder implements EventHolder {
 	}
 
 	@Override
-	public void occurs(Event anEvent) {
+	public void hold(Event anEvent) {
 		List<Event> events = changes.get();
 
 		if (isEmpty(events)) {
@@ -34,6 +37,7 @@ class ThreadLocalEventHolder implements EventHolder {
 		}
 
 		events.add(anEvent);
+		Events.updateVersion((Long)anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
 	private static List<Event> init() {
@@ -47,7 +51,10 @@ class ThreadLocalEventHolder implements EventHolder {
 
 	@Override
 	public List<Event> getEvents(Object aggregate) {
-		long idValue = AggregateIdUtils.getIdFrom(aggregate);
+		if(IdUtils.assertThatNotAssignIdOf(aggregate)) {
+			return Collections.EMPTY_LIST;
+		}
+		Object idValue = IdUtils.idOf(aggregate);
 		return getEventAll().stream().filter(e-> Objects.equals(idValue, e.getAggregateId())).collect(Collectors.<Event>toList());
 	}
 
@@ -62,10 +69,10 @@ class ThreadLocalEventHolder implements EventHolder {
 
 	@Override
 	public void clear(Object aggregate) {
-		final long id = AggregateIdUtils.getIdFrom(aggregate);
+        final long id = IdUtils.idOf(aggregate);
 
 		List<Event> events = changes.get().stream()
-				.filter(e -> e.getAggregateId() == id).collect(Collectors.toList());
+				.filter(e -> e.getAggregateId() == id).toList();
 
 		List<Event> remained = changes.get().stream().filter(e -> !events.contains(e)).collect(Collectors.toList());
 		changes.set(remained);

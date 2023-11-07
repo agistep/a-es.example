@@ -12,24 +12,49 @@ class EventReorganizorTest {
 
 	@BeforeEach
 	void setUp() {
-		EventHolder.instance().clearAll();
-		ThreadLocalEventVersionHolder.instance().clearAll();
+		Events.clearAll();
 	}
 
 	@Test
 	void reorganize() {
 
-		Foo aggregate = new Foo(()->1L);
-		Object payload = new FooCreated();
-		Event anEvent = new EventBuilder()
-				.name(payload.getClass().getName())
-				.aggregate(aggregate)
-				.payload(payload)
+		Foo aggregate = new Foo();
+		Object created = new FooCreated();
+		Object done = new FooDone();
+		Object reOpened = new FooReOpened();
+
+		Event anEvent1 = Events.builder()
+				.id(1L)
+				.version(0L)
+
+				.aggregateId(1L)
+
+				.name(created.getClass().getName())
+				.payload(created)
 				.occurredAt(LocalDateTime.now())
 				.build();
 
-		EventReorganizor.reorganize(aggregate, anEvent);
+		Event anEvent2 = Events.builder()
+				.id(2L)
+				.version(1L)
 
-		assertThat(aggregate.id.getValue()).isEqualTo(1L);
+				.aggregateId(1L)
+
+				.name(done.getClass().getName())
+				.payload(done)
+				.occurredAt(LocalDateTime.now())
+				.build();
+
+		Events.reorganize(aggregate, new Event[]{anEvent1, anEvent2});
+
+		assertThat(aggregate.id).isEqualTo(1L);
+		assertThat(aggregate.done).isTrue();
+		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(1);
+
+		Events.apply(aggregate, reOpened);
+
+		assertThat(aggregate.done).isFalse();
+		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(2);
+
 	}
 }

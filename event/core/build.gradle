@@ -21,7 +21,6 @@ java {
     targetCompatibility = 17
 }
 dependencies {
-    api project(":event:identity")
     api 'com.google.protobuf:protobuf-java:3.23.0'
 
     implementation 'org.valid4j:valid4j:0.5.0'

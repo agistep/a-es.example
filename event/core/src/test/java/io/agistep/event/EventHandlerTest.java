@@ -20,8 +20,9 @@ class EventHandlerTest {
 
         assertThat(actual).contains(
                 eventHandler(FooCreated.class),
-                eventHandler(FooDone.class));
-        assertThat(actual).hasSize(2);
+                eventHandler(FooDone.class),
+                eventHandler(FooReOpened.class));
+        assertThat(actual).hasSize(3);
     }
 
     private static EventHandler eventHandler(Class<?> aClass) {

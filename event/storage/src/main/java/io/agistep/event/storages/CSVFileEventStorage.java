@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.ObjectPayloadEnvelop;
+import io.agistep.event.Events;
 import io.agistep.event.sed.Deserializer;
 import io.agistep.event.sed.ProtocolBufferDeserializer;
 import io.agistep.event.sed.ProtocolBufferSerializer;
@@ -103,13 +103,13 @@ class CSVFileEventStorage implements EventStorage {
     }
 
     private static Event getEvent(CSVRecord record) {
-        return new ObjectPayloadEnvelop(
-                Long.parseLong(record.get("id")),
-                record.get("name"),
-                Long.parseLong(record.get("version")),
-                Long.parseLong(record.get("aggregateId")),
-                deserialize(record),
-                LocalDateTime.parse(record.get("occurredAt"),DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return Events.builder()
+                .id(Long.parseLong(record.get("id")))
+                .name(record.get("name"))
+                .version(Long.parseLong(record.get("version")))
+                .aggregateId(Long.parseLong(record.get("aggregateId")))
+                .payload(deserialize(record))
+                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();
     }
 
     private static Object deserialize(CSVRecord record) {

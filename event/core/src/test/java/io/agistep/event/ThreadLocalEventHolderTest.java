@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ThreadLocalEventHolderTest {
 
@@ -28,9 +28,10 @@ class ThreadLocalEventHolderTest {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.occurs(new EventBuilder()
+        sut.hold(Events.builder()
+                        .id(1L)
                 .name(payload.getClass().getName())
-                .version(ThreadLocalEventVersionHolder.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
+                .version(Events.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
                 .aggregateId(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())
