@@ -14,7 +14,7 @@ final class EventApplier {
 
 		if(IdUtils.notAssignedIdOf(aggregate)) {
 			aggregateId = IdUtils.gen();
-			nextVersion = Events.BEGIN_VERSION;
+			nextVersion = Events.INITIAL_VERSION;
 		} else {
 			aggregateId = IdUtils.idOf(aggregate);
 			nextVersion = Events.nextVersion(aggregateId);

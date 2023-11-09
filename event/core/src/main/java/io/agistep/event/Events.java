@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Assertive.require;
 
 public final class Events {
-    public static final long BEGIN_VERSION = 0;
+    public static final long INITIAL_VERSION = 0;
 
     private Events() {
         /* This is Utility */

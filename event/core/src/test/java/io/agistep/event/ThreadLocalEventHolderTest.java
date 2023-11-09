@@ -31,7 +31,7 @@ class ThreadLocalEventHolderTest {
         sut.hold(Events.builder()
                         .id(1L)
                 .name(payload.getClass().getName())
-                .version(Events.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
+                .version(Events.INITIAL_VERSION) //TODO 이전 version 를 알아야한다.
                 .aggregateId(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())

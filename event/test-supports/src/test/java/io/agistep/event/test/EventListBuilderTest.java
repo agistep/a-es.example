@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static io.agistep.event.Events.BEGIN_VERSION;
+import static io.agistep.event.Events.INITIAL_VERSION;
 import static io.agistep.event.test.EventListBuilder.forTestWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +44,7 @@ class EventListBuilderTest {
         //assertThat(actual[0].getId()).isEqualTo(???)
         assertThat(actual[0].getAggregateId()).isEqualTo(actual[1].getAggregateId());
 
-        assertThat(actual[0].getVersion()).isEqualTo(BEGIN_VERSION);
+        assertThat(actual[0].getVersion()).isEqualTo(INITIAL_VERSION);
         assertThat(actual[0].getName()).isEqualTo(FIRST_PAYLOAD.getClass().getName());
         assertThat(actual[0].getPayload()).isEqualTo(FIRST_PAYLOAD);
         assertThat(actual[0].getOccurredAt()).isEqualToIgnoringNanos(LocalDateTime.now());

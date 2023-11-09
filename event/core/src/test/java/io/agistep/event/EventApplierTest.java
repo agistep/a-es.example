@@ -22,13 +22,13 @@ class EventApplierTest {
 
         assertThat(aggregate.isDone()).isFalse();
         assertThat(Events.getHoldEvents(aggregate)).hasSize(1);
-        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.BEGIN_VERSION);
+        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.INITIAL_VERSION);
 
         Events.apply(aggregate, new FooDone());
 
         assertThat(aggregate.isDone()).isTrue();
         assertThat(Events.getHoldEvents(aggregate)).hasSize(2);
-        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.BEGIN_VERSION+1);
+        assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(Events.INITIAL_VERSION +1);
 
     }
 }

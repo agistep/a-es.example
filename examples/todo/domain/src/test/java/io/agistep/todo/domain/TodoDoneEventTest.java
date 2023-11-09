@@ -32,7 +32,7 @@ class TodoDoneEventTest {
 				.build();
 
 		Events.reorganize(sut, new Event[]{anEvent1});
-		assertThat(Events.getLatestVersionOf(sut)).isEqualTo(Events.BEGIN_VERSION);
+		assertThat(Events.getLatestVersionOf(sut)).isEqualTo(Events.INITIAL_VERSION);
 	}
 
 	@Test
@@ -41,9 +41,9 @@ class TodoDoneEventTest {
 
 		List<Event> actual = Events.getHoldEvents(sut);
 		assertThat(actual).hasSize(1);
-		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(Events.BEGIN_VERSION+1);
+		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(Events.INITIAL_VERSION +1);
 		assertThat(actual.get(0).getAggregateId()).isEqualTo(sut.getId());
-		assertThat(actual.get(0).getVersion()).isEqualTo(Events.BEGIN_VERSION +1);
+		assertThat(actual.get(0).getVersion()).isEqualTo(Events.INITIAL_VERSION +1);
 		assertThat(actual.get(0).getName()).isEqualTo(TodoDone.class.getName());
 		assertThat(actual.get(0).getPayload()).isInstanceOf(TodoDone.class);
 	}

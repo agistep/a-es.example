@@ -24,9 +24,9 @@ class TodoCreatedEventTest {
 
 		List<Event> actual = Events.getHoldEvents(sut);
 		assertThat(actual).hasSize(1);
-		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(Events.BEGIN_VERSION);
+		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(Events.INITIAL_VERSION);
 		assertThat(actual.get(0).getAggregateId()).isEqualTo(sut.getId());
-		assertThat(actual.get(0).getVersion()).isEqualTo(Events.BEGIN_VERSION);
+		assertThat(actual.get(0).getVersion()).isEqualTo(Events.INITIAL_VERSION);
 		assertThat(actual.get(0).getName()).isEqualTo(TodoCreated.class.getName());
 		assertThat(actual.get(0).getPayload()).isInstanceOf(TodoCreated.class);
 		assertThat(actual.get(0).getPayload()).extracting("text").isEqualTo("Some Text");
