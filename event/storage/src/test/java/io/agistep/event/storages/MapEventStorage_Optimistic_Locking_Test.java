@@ -23,7 +23,6 @@ class MapEventStorage_Optimistic_Locking_Test {
 
             .name("TEST")
             .payload("Hello ~~~")
-            .occurredAt(LocalDateTime.of(2023,12,12,0,0))
             .build();
 
     Event anEvent2 = Events.builder()
@@ -34,7 +33,6 @@ class MapEventStorage_Optimistic_Locking_Test {
 
             .name("TEST")
             .payload("Hello ~~~")
-            .occurredAt(LocalDateTime.of(2023,12,12,0,0))
             .build();
 
     Event anEvent3 = Events.builder()
@@ -45,7 +43,6 @@ class MapEventStorage_Optimistic_Locking_Test {
 
             .name("TEST")
             .payload("Hello ~~~")
-            .occurredAt(LocalDateTime.of(2023,12,12,0,0))
             .build();
 
     @BeforeEach

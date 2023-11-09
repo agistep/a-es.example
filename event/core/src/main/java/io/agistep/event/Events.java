@@ -77,6 +77,10 @@ public final class Events {
         private EventBuilder() {}
 
         public Event build() {
+            if(this.occurredAt == null) {
+                this.occurredAt(LocalDateTime.now());
+            }
+
             //TODO required validation
             return new ObjectPayloadEnvelop(
                     require(id, is(not(nullValue()))),
