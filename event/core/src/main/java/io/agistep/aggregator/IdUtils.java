@@ -51,7 +51,7 @@ public final class IdUtils {
 		return Arrays.stream(SUPPORTED_TYPES).noneMatch(t -> t.getTypeName().equals(field.getType().getTypeName()));
 	}
 
-	public static boolean assertThatNotAssignIdOf(Object aggregate) {
+	public static boolean notAssignedIdOf(Object aggregate) {
 		Field field = getIdField(aggregate);
 		try {
 			Object id = field.get(aggregate);

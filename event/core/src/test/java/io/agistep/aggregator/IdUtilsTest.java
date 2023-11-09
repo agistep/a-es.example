@@ -55,8 +55,8 @@ class IdUtilsTest {
 
     @Test
     void assertThatNotAssignIdOf() {
-        assertThat(IdUtils.assertThatNotAssignIdOf(A)).isFalse();
-        assertThat(IdUtils.assertThatNotAssignIdOf(H)).isTrue();
-        assertThat(IdUtils.assertThatNotAssignIdOf(I)).isTrue();
+        assertThat(IdUtils.notAssignedIdOf(A)).isFalse();
+        assertThat(IdUtils.notAssignedIdOf(H)).isTrue();
+        assertThat(IdUtils.notAssignedIdOf(I)).isTrue();
     }
 }

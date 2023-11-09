@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import static io.agistep.event.test.EventListBuilder.forTestWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventReorganizorTest {
+class EventReorganizerTest {
 
 
 	@BeforeEach

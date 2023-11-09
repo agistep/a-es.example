@@ -12,7 +12,7 @@ final class EventApplier {
 		final long aggregateId;
 		final long nextVersion;
 
-		if(IdUtils.assertThatNotAssignIdOf(aggregate)) {
+		if(IdUtils.notAssignedIdOf(aggregate)) {
 			aggregateId = IdUtils.gen();
 			nextVersion = Events.BEGIN_VERSION;
 		} else {

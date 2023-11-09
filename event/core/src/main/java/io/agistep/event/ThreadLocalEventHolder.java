@@ -51,7 +51,7 @@ class ThreadLocalEventHolder implements EventHolder {
 
 	@Override
 	public List<Event> getEvents(Object aggregate) {
-		if(IdUtils.assertThatNotAssignIdOf(aggregate)) {
+		if(IdUtils.notAssignedIdOf(aggregate)) {
 			return Collections.EMPTY_LIST;
 		}
 		Object idValue = IdUtils.idOf(aggregate);

@@ -42,7 +42,7 @@ public final class Events {
     }
 
     public static void reorganize(Object aggregate, Event anEvent) {
-        EventReorganizor.reorganize(aggregate, anEvent);
+        EventReorganizer.reorganize(aggregate, anEvent);
     }
 
     public static void reorganize(Object aggregate, Event[] events) {

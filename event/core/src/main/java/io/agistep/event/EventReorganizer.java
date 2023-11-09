@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-final class EventReorganizor {
+final class EventReorganizer {
 
 	static void reorganize(Object aggregate, Event anEvent) {
 		//TODO null empty
