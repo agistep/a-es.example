@@ -6,17 +6,17 @@ import java.util.List;
 
 abstract class UnsupportedEventStorage implements EventStorage {
     @Override
-    public void save(List<Event> events) {
+    public void save(Event anEvents) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Event> findAll() {
+    public List<Event> findByAggregate(long id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Event> findById(long id) {
+    public long findLatestVersionOfAggregate(long id) {
         throw new UnsupportedOperationException();
     }
 }

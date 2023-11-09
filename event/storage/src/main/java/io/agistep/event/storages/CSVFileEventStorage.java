@@ -19,7 +19,7 @@ import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-class CSVFileEventStorage implements EventStorage {
+class CSVFileEventStorage extends OptimisticLockingSupport {
     final static String[] HEADERS = {"id", "version", "name", "aggregateId", "payload", "occurredAt"};
     public static final int COMMA_ASCII = 44;
 
@@ -30,45 +30,51 @@ class CSVFileEventStorage implements EventStorage {
     }
 
 
-    @Override
-    public void save(List<Event> events) {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+    private static CSVFormat getCsvFormat() {
+        return CSVFormat.DEFAULT.builder()
                 .setHeader(HEADERS)
                 .setSkipHeaderRecord(true)
                 .build();
+    }
+
+    @Override
+    public void lockedSave(Event anEvent) {
+        CSVFormat csvFormat = getCsvFormat();
 
         try (CSVPrinter printer = new CSVPrinter(new FileWriter(this.path.toFile()), csvFormat)) {
-            events.forEach(e->{
-                try {
-                    Object payload1 = e.getPayload();
-                    byte[] serialize = serialize(payload1);
-                    encodingWithCommaAscii(serialize);
-                    final String serialized = new String(serialize);
-                    printer.printRecord(
-                            e.getId(),
-                            e.getVersion(),
-                            e.getName(),
-                            e.getAggregateId(),
-                            serialized,
-                            e.getOccurredAt().format(ISO_LOCAL_DATE_TIME));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
+            save(anEvent, printer);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
+    private void save(Event anEvent, CSVPrinter printer) {
+        try {
+            Object payload1 = anEvent.getPayload();
+            byte[] serialize = serialize(payload1);
+            encodingWithCommaAscii(serialize);
+            final String serialized = new String(serialize);
+            printer.printRecord(
+                    anEvent.getId(),
+                    anEvent.getVersion(),
+                    anEvent.getName(),
+                    anEvent.getAggregateId(),
+                    serialized,
+                    anEvent.getOccurredAt().format(ISO_LOCAL_DATE_TIME));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private static void encodingWithCommaAscii(byte[] serialize) {
         for (int i = 0; i < serialize.length; i++) {
-            serialize[i] = (byte) (serialize[i]+ COMMA_ASCII);
+            serialize[i] = (byte) (serialize[i] + COMMA_ASCII);
         }
     }
 
     private static byte[] serialize(Object payload) {
         Serializer serializer = new ProtocolBufferSerializer();
-        if(serializer.isSupport(payload)) {
+        if (serializer.isSupport(payload)) {
             return serializer.serialize(payload);
         } else {
             throw new UnsupportedOperationException();
@@ -76,30 +82,22 @@ class CSVFileEventStorage implements EventStorage {
     }
 
     @Override
-    public List<Event> findAll() {
+    public List<Event> findByAggregate(long id) {
         Iterable<CSVRecord> records = getCsvRecords();
 
         List<Event> events = new ArrayList<>();
         for (CSVRecord record : records) {
             Event event = getEvent(record);
-
-            events.add(event);
+            if (event.getAggregateId() == id) {
+                events.add(event);
+            }
         }
         return events;
     }
 
     @Override
-    public List<Event> findById(long id) {
-        Iterable<CSVRecord> records = getCsvRecords();
-
-        List<Event> events = new ArrayList<>();
-        for (CSVRecord record : records) {
-            Event event = getEvent(record);
-            if(event.getAggregateId() == id) {
-                events.add(event);
-            }
-        }
-        return events;
+    public long findLatestVersionOfAggregate(long id) {
+        return 0;
     }
 
     private static Event getEvent(CSVRecord record) {
@@ -127,7 +125,7 @@ class CSVFileEventStorage implements EventStorage {
 
     private static void decodingWithCommaAscii(byte[] byteArray) {
         for (int i = 0; i < byteArray.length; i++) {
-            byteArray[i] = (byte) (byteArray[i]- COMMA_ASCII);
+            byteArray[i] = (byte) (byteArray[i] - COMMA_ASCII);
         }
     }
 
@@ -137,7 +135,7 @@ class CSVFileEventStorage implements EventStorage {
                     .setHeader(HEADERS)
                     .setSkipHeaderRecord(false)
                     .build();
-            return csvFormat.parse (getReader());
+            return csvFormat.parse(getReader());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

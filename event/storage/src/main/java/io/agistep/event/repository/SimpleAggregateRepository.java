@@ -28,12 +28,6 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
         List<Event> events = Events.getHoldEvents(aggregate);
 
         storage.save(events);
-//
-//        try {
-//            EventLogger.log(events);
-//        }catch (Exception e) {
-//
-//        }
 
         Events.clear(aggregate);
     }
@@ -42,7 +36,7 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
 
     @Override
     public Optional<AGG> findById(long id) {
-        List<Event> events = storage.findById(id);
+        List<Event> events = storage.findByAggregate(id);
         if (events==null || events.isEmpty()) {
             return Optional.empty();
         }
