@@ -1,7 +1,6 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.repository.OptimisticLockedException;
 
 abstract class OptimisticLockingSupport implements EventStorage {
     @Override
