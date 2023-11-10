@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.util.Collections.synchronizedList;
 import static java.util.Collections.unmodifiableList;
 
 class ThreadLocalEventHolder implements EventHolder {
 
-	private final static ThreadLocal<List<Event>> changes = new ThreadLocal<>();
+	private final static ThreadLocal<List<Event>> changes = withInitial(() -> synchronizedList(new ArrayList<>()));
 
 	static EventHolder instance() {
 		return new ThreadLocalEventHolder();
@@ -32,18 +33,10 @@ class ThreadLocalEventHolder implements EventHolder {
 	public void hold(Event anEvent) {
 		List<Event> events = changes.get();
 
-		if (isEmpty(events)) {
-			events = init();
-		}
-
 		events.add(anEvent);
 		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
-	private static List<Event> init() {
-		changes.set(synchronizedList(new ArrayList<>()));
-		return changes.get();
-	}
 
 	private static boolean isEmpty(List<Event> events) {
 		return events == null || events.isEmpty();
@@ -52,7 +45,7 @@ class ThreadLocalEventHolder implements EventHolder {
 	@Override
 	public List<Event> getEvents(Object aggregate) {
 		if(IdUtils.notAssignedIdOf(aggregate)) {
-			return Collections.EMPTY_LIST;
+			return List.of();
 		}
 		Object idValue = IdUtils.idOf(aggregate);
 		return getEventAll().stream().filter(e-> Objects.equals(idValue, e.getAggregateId())).collect(Collectors.<Event>toList());

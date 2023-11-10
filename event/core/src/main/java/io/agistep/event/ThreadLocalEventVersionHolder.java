@@ -5,7 +5,7 @@ import java.util.Map;
 
 class ThreadLocalEventVersionHolder {
 
-	private final static ThreadLocal<Map<Object,Long>> changes = ThreadLocal.withInitial(HashMap::new);
+	private final static ThreadLocal<Map<Long,Long>> changes = ThreadLocal.withInitial(HashMap::new);
 
 	public static ThreadLocalEventVersionHolder instance() {
 		return new ThreadLocalEventVersionHolder();

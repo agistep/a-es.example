@@ -60,7 +60,7 @@ public final class Events {
         Events.holdListener = holdListener;
     }
 
-    static void setListener(ReorganizeListener reorganizeListener) {
+    public static void setListener(ReorganizeListener reorganizeListener) {
         Events.reorganizeListener = reorganizeListener;
     }
 

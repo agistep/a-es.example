@@ -14,12 +14,5 @@ public interface EventHolder {
 
 	void clear(Object aggregate);
 
-	default boolean hasEventsOf(Object aggregate) {
-		return !getEvents(aggregate).isEmpty();
-	}
 
-	@Deprecated
-	default long getLatestVersionOf(Object aggregate) {
-		return this.getEvents(aggregate).get(this.getEvents(aggregate).size()-1).getVersion();
-	}
 }
