@@ -12,30 +12,38 @@ import static io.agistep.event.Events.INITIAL_VERSION;
 import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Validation.validate;
 
-public final class EventListBuilder {
+public final class EventFixtureBuilder {
 
-    public static EventListBuilder forTestWith(Object firstPayload) {
-        return new EventListBuilder(getRandom(), firstPayload);
+    public static Event anEventWith(Object firstPayload) {
+        return anEventWith(getRandom(), firstPayload);
+    }
+
+    public static Event anEventWith(long aggregateId, Object firstPayload) {
+        return new EventFixtureBuilder(aggregateId, firstPayload).build()[0];
+    }
+
+    public static EventFixtureBuilder eventsWith(Object firstPayload) {
+        return new EventFixtureBuilder(getRandom(), firstPayload);
     }
 
     private static long getRandom() {
         return (long) (Math.random() % 10000);
     }
 
-    public static EventListBuilder forTestWith(long aggregateId, Object firstPayload) {
-        return new EventListBuilder(aggregateId, firstPayload);
+    public static EventFixtureBuilder eventsWith(long aggregateId, Object firstPayload) {
+        return new EventFixtureBuilder(aggregateId, firstPayload);
     }
 
     private final long aggregateId;
     private final List<Object> payloads;
 
-    public EventListBuilder(long aggregateId, Object firstPayload) {
+    public EventFixtureBuilder(long aggregateId, Object firstPayload) {
         this.aggregateId = aggregateId;
         this.payloads = new ArrayList<>();
         addPayload(firstPayload);
     }
 
-    public EventListBuilder next(Object payload) {
+    public EventFixtureBuilder next(Object payload) {
         addPayload(payload);
         return this;
     }

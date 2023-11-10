@@ -17,7 +17,7 @@ final class EventReorganizer {
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
-		Events.updateVersion((Long)anEvent.getAggregateId(), anEvent.getVersion());
+		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
 	private static HandlerAdapter findHandler(Object aggregate) {
@@ -52,5 +52,9 @@ final class EventReorganizer {
 	private static HandlerAdapter caching(HandlerAdapter handler) {
 		handlers.put(handler.getAggregateName(), handler);
 		return handler;
+	}
+
+	private static void updateVersion(long aggregateId, long version) {
+		ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
 	}
 }

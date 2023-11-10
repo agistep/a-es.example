@@ -37,7 +37,7 @@ class ThreadLocalEventHolder implements EventHolder {
 		}
 
 		events.add(anEvent);
-		Events.updateVersion((Long)anEvent.getAggregateId(), anEvent.getVersion());
+		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
 	private static List<Event> init() {
@@ -78,5 +78,9 @@ class ThreadLocalEventHolder implements EventHolder {
 		changes.set(remained);
 
 		ThreadLocalEventVersionHolder.instance().clear(aggregate);
+	}
+
+	private static void updateVersion(long aggregateId, long version) {
+		ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
 	}
 }

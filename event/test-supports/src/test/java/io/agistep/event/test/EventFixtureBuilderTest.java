@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static io.agistep.event.Events.INITIAL_VERSION;
-import static io.agistep.event.test.EventListBuilder.forTestWith;
+import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class EventListBuilderTest {
+class EventFixtureBuilderTest {
 
     public static final Created FIRST_PAYLOAD = new Created();
     public static final Done SECOND_PAYLOAD = new Done();
@@ -23,21 +23,21 @@ class EventListBuilderTest {
     @Test
     @DisplayName("Exception: payload must be not null")
     void forTestWith0() {
-        assertThatThrownBy(()->forTestWith(NULL_PAYLOAD));
+        assertThatThrownBy(()-> EventFixtureBuilder.eventsWith(NULL_PAYLOAD));
     }
 
     @Test
     @DisplayName("Exception: payload must be not null")
     void forTestWith00() {
         assertThatThrownBy(()->
-                forTestWith(aggregate(1L), FIRST_PAYLOAD)
+                eventsWith(aggregate(1L), FIRST_PAYLOAD)
                 .next(NULL_PAYLOAD));
     }
 
     @Test
     void forTestWith1() {
 
-        Event[] actual = forTestWith(FIRST_PAYLOAD)
+        Event[] actual = EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build();
 

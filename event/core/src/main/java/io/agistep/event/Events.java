@@ -12,6 +12,8 @@ import static org.valid4j.Assertive.require;
 
 public final class Events {
     public static final long INITIAL_VERSION = 0;
+    public static HoldListener holdListener;
+    public static ReorganizeListener reorganizeListener;
 
     private Events() {
         /* This is Utility */
@@ -25,16 +27,12 @@ public final class Events {
         EventApplier.apply(aggregate, payload);
     }
 
-    public static void hold(Event anEvent) {
-        ThreadLocalEventHolder.instance().hold(anEvent);
-    }
-
     public static List<Event> getHoldEvents(Object aggregate) {
         return ThreadLocalEventHolder.instance().getEvents(aggregate);
     }
 
     public static long getLatestVersionOf(Object aggregate) {
-        return getLatestVersionOf((Long)IdUtils.idOf(aggregate));
+        return getLatestVersionOf(IdUtils.idOf(aggregate));
     }
 
     public static long getLatestVersionOf(Long aggregateId) {
@@ -50,14 +48,6 @@ public final class Events {
                 .forEach(e -> Events.reorganize(aggregate, e));
     }
 
-    static void updateVersion(long aggregateId, long version) {
-        ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
-    }
-
-    static long nextVersion(Object aggregateId) {
-        return ThreadLocalEventVersionHolder.instance().nextVersion((Long)aggregateId);
-    }
-
     public static void clearAll() {
         ThreadLocalEventHolder.instance().clearAll();
     }
@@ -65,6 +55,15 @@ public final class Events {
     public static void clear(Object aggregate) {
         ThreadLocalEventHolder.instance().clear(aggregate);
     }
+
+    public static void setListener(HoldListener holdListener) {
+        Events.holdListener = holdListener;
+    }
+
+    static void setListener(ReorganizeListener reorganizeListener) {
+        Events.reorganizeListener = reorganizeListener;
+    }
+
 
     public static final class EventBuilder {
         private Long id;

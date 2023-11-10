@@ -16,10 +16,10 @@ class ThreadLocalEventVersionHolderTest {
     void name() {
         assertThat(Events.getLatestVersionOf(1L)).isEqualTo(-1);
 
-        Events.updateVersion(1L,0);
+        ThreadLocalEventVersionHolder.instance().setVersion(1L,0);
         assertThat(Events.getLatestVersionOf(1L)).isEqualTo(0);
 
-        Events.updateVersion(1L,1);
+        ThreadLocalEventVersionHolder.instance().setVersion(1L,1);
         assertThat(Events.getLatestVersionOf(1L)).isEqualTo(1);
 
         Events.clearAll();
