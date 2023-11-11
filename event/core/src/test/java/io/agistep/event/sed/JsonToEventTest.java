@@ -1,11 +1,6 @@
 package io.agistep.event.sed;
 
-import io.agistep.event.Event;
-import io.agistep.event.FooCreated;
-import io.agistep.event.TestEvents;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonToEventTest {
 

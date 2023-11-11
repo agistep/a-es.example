@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static io.agistep.event.test.EventFixtureBuilder.anEventWith;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ThreadLocalEventHolderTest {
 
@@ -28,9 +29,10 @@ class ThreadLocalEventHolderTest {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.occurs(new EventBuilder()
+        sut.hold(Events.builder()
+                        .id(1L)
                 .name(payload.getClass().getName())
-                .version(ThreadLocalEventVersionHolder.BEGIN_VERSION) //TODO 이전 version 를 알아야한다.
+                .version(Events.INITIAL_VERSION)
                 .aggregateId(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())
@@ -42,6 +44,18 @@ class ThreadLocalEventHolderTest {
         assertThat(event.getAggregateId()).isEqualTo(aggregateId);
         assertThat(event.getPayload()).isInstanceOf(FooEventPayload.class);
 
+    }
+
+
+    @Test
+    void clear() {
+        Foo aggregate = new Foo();
+        Events.reorganize(aggregate, anEventWith(new FooCreated()));
+
+        sut.clear(aggregate);
+
+        List<Event> events = sut.getEvents(aggregate);
+        assertThat(events.stream().noneMatch(a->aggregate.getId()==a.getId())).isTrue();
     }
 
     private static class FooEventPayload {

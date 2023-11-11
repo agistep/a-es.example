@@ -1,16 +1,20 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.IdUtils;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.util.Collections.synchronizedList;
 import static java.util.Collections.unmodifiableList;
 
 class ThreadLocalEventHolder implements EventHolder {
 
-	private final static ThreadLocal<List<Event>> changes = new ThreadLocal<>();
+	private final static ThreadLocal<List<Event>> changes = withInitial(() -> synchronizedList(new ArrayList<>()));
 
 	static EventHolder instance() {
 		return new ThreadLocalEventHolder();
@@ -26,20 +30,13 @@ class ThreadLocalEventHolder implements EventHolder {
 	}
 
 	@Override
-	public void occurs(Event anEvent) {
+	public void hold(Event anEvent) {
 		List<Event> events = changes.get();
 
-		if (isEmpty(events)) {
-			events = init();
-		}
-
 		events.add(anEvent);
+		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
-	private static List<Event> init() {
-		changes.set(synchronizedList(new ArrayList<>()));
-		return changes.get();
-	}
 
 	private static boolean isEmpty(List<Event> events) {
 		return events == null || events.isEmpty();
@@ -47,7 +44,10 @@ class ThreadLocalEventHolder implements EventHolder {
 
 	@Override
 	public List<Event> getEvents(Object aggregate) {
-		long idValue = AggregateIdUtils.getIdFrom(aggregate);
+		if(IdUtils.notAssignedIdOf(aggregate)) {
+			return List.of();
+		}
+		Object idValue = IdUtils.idOf(aggregate);
 		return getEventAll().stream().filter(e-> Objects.equals(idValue, e.getAggregateId())).collect(Collectors.<Event>toList());
 	}
 
@@ -62,14 +62,18 @@ class ThreadLocalEventHolder implements EventHolder {
 
 	@Override
 	public void clear(Object aggregate) {
-		final long id = AggregateIdUtils.getIdFrom(aggregate);
+        final long id = IdUtils.idOf(aggregate);
 
 		List<Event> events = changes.get().stream()
-				.filter(e -> e.getAggregateId() == id).collect(Collectors.toList());
+				.filter(e -> e.getAggregateId() == id).toList();
 
 		List<Event> remained = changes.get().stream().filter(e -> !events.contains(e)).collect(Collectors.toList());
 		changes.set(remained);
 
 		ThreadLocalEventVersionHolder.instance().clear(aggregate);
+	}
+
+	private static void updateVersion(long aggregateId, long version) {
+		ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
 	}
 }

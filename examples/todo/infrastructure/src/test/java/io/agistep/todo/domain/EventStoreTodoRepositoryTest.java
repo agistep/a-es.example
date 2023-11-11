@@ -34,7 +34,7 @@ class EventStoreTodoRepositoryTest {
 
 		sut.save(todo);
 
-		Optional<Todo> find = sut.findById(todo.getId().getValue());
+		Optional<Todo> find = sut.findById(todo.getId());
 
 		assertThat(find).isPresent();
 	}

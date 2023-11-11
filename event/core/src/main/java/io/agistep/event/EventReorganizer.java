@@ -4,25 +4,20 @@ import io.agistep.utils.AnnotationHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public final class EventReorganizor {
+final class EventReorganizer {
 
-	public static void reorganize(Object aggregate, Event[] events) {
-		Arrays.stream(events)
-				.forEach(e-> EventReorganizor.reorganize(aggregate, e));
-	}
-
-	public static void reorganize(Object aggregate, Event anEvent) {
+	static void reorganize(Object aggregate, Event anEvent) {
+		//TODO null empty
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
-		ThreadLocalEventVersionHolder.instance().setVersion(aggregate, anEvent);
+		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
 	}
 
 	private static HandlerAdapter findHandler(Object aggregate) {
@@ -57,5 +52,9 @@ public final class EventReorganizor {
 	private static HandlerAdapter caching(HandlerAdapter handler) {
 		handlers.put(handler.getAggregateName(), handler);
 		return handler;
+	}
+
+	private static void updateVersion(long aggregateId, long version) {
+		ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
 	}
 }

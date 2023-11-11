@@ -3,8 +3,7 @@ package io.agistep.event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
+import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EventReorganizerTest {
@@ -12,23 +11,30 @@ class EventReorganizerTest {
 
 	@BeforeEach
 	void setUp() {
-		EventHolder.instance().clearAll();
+		Events.clearAll();
 	}
 
 	@Test
 	void reorganize() {
 
-		Foo aggregate = new Foo(()->1L);
-		Object payload = new FooCreated();
-		Event anEvent = new EventBuilder()
-				.name(payload.getClass().getName())
-				.aggregate(aggregate)
-				.payload(payload)
-				.occurredAt(LocalDateTime.now())
-				.build();
+		Foo aggregate = new Foo();
 
-		EventReorganizor.reorganize(aggregate, anEvent);
+		Object created = new FooCreated();
+		Object done = new FooDone();
+		Object reOpened = new FooReOpened();
 
-		assertThat(aggregate.id.getValue()).isEqualTo(1L);
+
+		Events.reorganize(aggregate, eventsWith(1L, created)
+				.next(done).build());
+
+		assertThat(aggregate.id).isEqualTo(1L);
+		assertThat(aggregate.done).isTrue();
+		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(1);
+
+		Events.apply(aggregate, reOpened);
+
+		assertThat(aggregate.done).isFalse();
+		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(2);
+
 	}
 }

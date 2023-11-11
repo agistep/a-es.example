@@ -6,9 +6,18 @@ import java.util.List;
 
 public interface EventStorage {
 
-    void save(List<Event> events);
+    default void save(List<Event> events) {
+        events.forEach(this::save);
+    }
 
-    List<Event> findAll();
+    void save(Event anEvent);
 
-    List<Event> findById(long id);
+    List<Event> findByAggregate(long id);
+
+    default long findLatestVersionOfAggregate(long id) {
+        List<Event> byAggregate = findByAggregate(id);
+
+        return byAggregate.size() == 0 ? -1 : byAggregate.get(byAggregate.size()-1).getVersion();
+    }
+
 }

@@ -2,34 +2,30 @@ package io.agistep.event.storages;
 
 import io.agistep.event.Event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class MapEventStorage implements EventStorage {
+public class MapEventStorage extends OptimisticLockingSupport {
 
     Map<Long, List<Event>> events;
+
+    public MapEventStorage() {
+        this(new HashMap<>());
+    }
 
     public MapEventStorage(Map<Long, List<Event>> events) {
         this.events = events;
     }
 
     @Override
-    public void save(List<Event> events) {
-        events.forEach(e-> {
-            this.events.putIfAbsent(e.getAggregateId(), new ArrayList<>());
-            this.events.get(e.getAggregateId()).add(e);
-        });
+    public void lockedSave(Event anEvent) {
+        this.events.putIfAbsent(anEvent.getAggregateId(), new ArrayList<>());
+        this.events.get(anEvent.getAggregateId()).add(anEvent);
     }
 
     @Override
-    public List<Event> findAll() {
-        return events.values().stream().flatMap(Collection::stream).toList();
+    public List<Event> findByAggregate(long id) {
+        return Collections.unmodifiableList(this.events.getOrDefault(id, List.of()));
     }
 
-    @Override
-    public List<Event> findById(long id) {
-        return this.events.get(id);
-    }
+
 }

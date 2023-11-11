@@ -1,10 +1,12 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventHolder;
+import io.agistep.event.Event;
+import io.agistep.event.Events;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static io.agistep.event.EventAssertions.assertThatOccurredExactlyOnes;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TodoCreatedEventTest {
@@ -13,22 +15,23 @@ class TodoCreatedEventTest {
 
 	@BeforeEach
 	void setUp() {
-		EventHolder.instance().clearAll();
-		sut = new Todo("Some Text");
+		Events.clearAll();
 	}
 
 	@Test
 	void created() {
-		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
+		sut = new Todo("Some Text");
 
-		assertThatOccurredExactlyOnes(sut, created);
+		List<Event> actual = Events.getHoldEvents(sut);
+		assertThat(actual).hasSize(1);
+		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(Events.INITIAL_VERSION);
+		assertThat(actual.get(0).getAggregateId()).isEqualTo(sut.getId());
+		assertThat(actual.get(0).getVersion()).isEqualTo(Events.INITIAL_VERSION);
+		assertThat(actual.get(0).getName()).isEqualTo(TodoCreated.class.getName());
+		assertThat(actual.get(0).getPayload()).isInstanceOf(TodoCreated.class);
+		assertThat(actual.get(0).getPayload()).extracting("text").isEqualTo("Some Text");
+
+
 	}
 
-
-
-	@Test
-	void properties() {
-		assertThat(sut.getText()).isEqualTo("Some Text");
-		assertThat(sut.isDone()).isEqualTo(false);
-	}
 }

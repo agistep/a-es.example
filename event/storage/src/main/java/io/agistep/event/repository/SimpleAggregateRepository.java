@@ -1,10 +1,8 @@
 package io.agistep.event.repository;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventHolder;
-import io.agistep.event.EventReorganizor;
+import io.agistep.event.Events;
 import io.agistep.event.storages.EventStorage;
-import io.agistep.identity.IdentityValueProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,35 +20,29 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
     @Override
     public long getNextId() {
         //TODO id generator
-        return IdentityValueProvider.instance().newLong();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void save(AGG aggregate) {
-        List<Event> events = EventHolder.instance().getEvents(aggregate);
+        List<Event> events = Events.getHoldEvents(aggregate);
 
         storage.save(events);
-//
-//        try {
-//            EventLogger.log(events);
-//        }catch (Exception e) {
-//
-//        }
 
-        EventHolder.instance().clear(aggregate);
+        Events.clear(aggregate);
     }
 
 
 
     @Override
     public Optional<AGG> findById(long id) {
-        List<Event> events = storage.findById(id);
+        List<Event> events = storage.findByAggregate(id);
         if (events==null || events.isEmpty()) {
             return Optional.empty();
         }
 
         AGG aggregate = initializer.initAgg();
-        EventReorganizor.reorganize(aggregate, events.toArray(new Event[0]));
+        Events.reorganize(aggregate, events.toArray(new Event[0]));
         return Optional.of(aggregate);
     }
 

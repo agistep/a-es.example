@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.agistep.event.Event;
-import io.agistep.event.ObjectPayloadEnvelop;
+import io.agistep.event.Events;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public final class ConvertUtil {
     public static String convert(Event e) {
@@ -62,7 +61,13 @@ public final class ConvertUtil {
                 ProtocolBufferDeserializer deserialize = new ProtocolBufferDeserializer(clazz);
                 Object payload = deserialize.deserialize(eventDTO.getPayload().getBytes());
                 LocalDateTime occurredAt = LocalDateTime.parse(eventDTO.getOccurredAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                return new ObjectPayloadEnvelop(eventDTO.getId(), eventDTO.getName(), eventDTO.getVersion(), eventDTO.getAggregateId(), payload, occurredAt);
+                return Events.builder()
+                        .id(eventDTO.getId())
+                        .name(eventDTO.getName())
+                        .version(eventDTO.getVersion())
+                        .aggregateId(eventDTO.getAggregateId())
+                        .payload(payload)
+                        .occurredAt(occurredAt).build();
             } catch (JsonProcessingException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }

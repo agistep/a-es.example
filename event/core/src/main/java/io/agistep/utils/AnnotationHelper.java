@@ -20,8 +20,5 @@ public final class AnnotationHelper {
 		return MethodUtils.getAnnotation(method, annotationClass, true, true);
 	}
 
-	public static boolean objectHasAnnotation(Object object, Class<? extends Annotation> annotationClass) {
-		return hasAnnotation(object.getClass(), annotationClass);
-	}
 
 }

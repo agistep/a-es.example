@@ -15,7 +15,7 @@ include('event:core')
 include('event:storage')
 include('event:storage-jdbc')
 
-include('event:test')
+include('event:test-supports')
 
 include('examples:todo:application')
 include('examples:todo:domain')
