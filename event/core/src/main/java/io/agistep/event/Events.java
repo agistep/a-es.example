@@ -56,6 +56,11 @@ public final class Events {
         ThreadLocalEventHolder.instance().clear(aggregate);
     }
 
+    public static void setListener(Listener listener) {
+        setListener((HoldListener)listener);
+        setListener((ReorganizeListener)listener);
+    }
+
     public static void setListener(HoldListener holdListener) {
         Events.holdListener = holdListener;
     }
