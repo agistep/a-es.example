@@ -3,20 +3,20 @@ package io.agistep.event;
 import java.util.HashMap;
 import java.util.Map;
 
-class ThreadLocalEventVersionHolder {
+class ThreadLocalEventSeqHolder {
 
 	private final static ThreadLocal<Map<Long,Long>> changes = ThreadLocal.withInitial(HashMap::new);
 
-	public static ThreadLocalEventVersionHolder instance() {
-		return new ThreadLocalEventVersionHolder();
+	public static ThreadLocalEventSeqHolder instance() {
+		return new ThreadLocalEventSeqHolder();
 	}
 
-	private ThreadLocalEventVersionHolder() {
+	private ThreadLocalEventSeqHolder() {
 		// Do Nothing
 	}
 
-	public void setVersion(long aggregateId, long version) {
-		changes.get().put(aggregateId, version);
+	public void setSeq(long aggregateId, long seq) {
+		changes.get().put(aggregateId, seq);
 	}
 
 

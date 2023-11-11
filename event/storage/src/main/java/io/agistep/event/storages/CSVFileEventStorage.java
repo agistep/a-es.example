@@ -56,7 +56,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
             final String serialized = new String(serialize);
             printer.printRecord(
                     anEvent.getId(),
-                    anEvent.getVersion(),
+                    anEvent.getSeq(),
                     anEvent.getName(),
                     anEvent.getAggregateId(),
                     serialized,
@@ -104,7 +104,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
         return Events.builder()
                 .id(Long.parseLong(record.get("id")))
                 .name(record.get("name"))
-                .version(Long.parseLong(record.get("version")))
+                .seq(Long.parseLong(record.get("version")))
                 .aggregateId(Long.parseLong(record.get("aggregateId")))
                 .payload(deserialize(record))
                 .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();

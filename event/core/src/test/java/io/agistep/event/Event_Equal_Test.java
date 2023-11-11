@@ -14,7 +14,7 @@ class Event_Equal_Test {
     void equals() {
         Event anEvent = Events.builder()
                 .id(1L)
-                .version(0L)
+                .seq(0L)
 
                 .aggregateId(1L)
 
@@ -25,7 +25,7 @@ class Event_Equal_Test {
 
         Event anEvent2 = Events.builder()
                 .id(1L)
-                .version(0L)
+                .seq(0L)
 
                 .aggregateId(1L)
 

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings("ClassNamingConvention")
@@ -17,7 +15,7 @@ class MapEventStorage_Optimistic_Locking_Test {
 
     Event anEvent1 = Events.builder()
             .id(1L)
-            .version(0L)
+            .seq(0L)
 
             .aggregateId(1L)
 
@@ -27,7 +25,7 @@ class MapEventStorage_Optimistic_Locking_Test {
 
     Event anEvent2 = Events.builder()
             .id(1L)
-            .version(1L)
+            .seq(1L)
 
             .aggregateId(1L)
 
@@ -37,7 +35,7 @@ class MapEventStorage_Optimistic_Locking_Test {
 
     Event anEvent3 = Events.builder()
             .id(1L)
-            .version(1L)
+            .seq(1L)
 
             .aggregateId(1L)
 

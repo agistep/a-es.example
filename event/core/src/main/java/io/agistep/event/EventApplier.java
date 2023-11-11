@@ -23,7 +23,7 @@ final class EventApplier {
 
         if (IdUtils.notAssignedIdOf(aggregate)) {
             aggregateId = IdUtils.gen();
-            nextVersion = Events.INITIAL_VERSION;
+            nextVersion = Events.INITIAL_SEQ;
         } else {
             aggregateId = IdUtils.idOf(aggregate);
             nextVersion = nextVersion(aggregateId);
@@ -32,7 +32,7 @@ final class EventApplier {
         return Events.builder()
                 .id(eventId)
                 .aggregateId(aggregateId)
-                .version(nextVersion)
+                .seq(nextVersion)
                 //TODO payload 가 string 같은 놈이라면 ???
                 .name(payload.getClass().getName())
                 .payload(payload)
@@ -53,7 +53,7 @@ final class EventApplier {
     }
 
     private static long nextVersion(Object aggregateId) {
-        return ThreadLocalEventVersionHolder.instance().nextVersion((Long) aggregateId);
+        return ThreadLocalEventSeqHolder.instance().nextVersion((Long) aggregateId);
     }
 
     final static ReorganizeListener DUMMY = new ReorganizeListener() {
