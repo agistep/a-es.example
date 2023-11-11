@@ -10,10 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Predicate;
-
-import static io.agistep.event.test.EventFixtureBuilder.anEventWith;
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
+import static io.agistep.event.test.EventPredicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -65,28 +63,6 @@ class TestEventLoggerTest {
 
     }
 
-    private static Predicate<Event> equalsOccurredAt(Event expected1) {
-        return (e) -> e.getOccurredAt() == expected1.getOccurredAt();
-    }
 
-    private static Predicate<Event> sameAggregateId(Event expected1) {
-        return (e) -> e.getAggregateId() == expected1.getAggregateId();
-    }
-
-    private static Predicate<Event> sameId(Event expected1) {
-        return (e) -> e.getId() == expected1.getId();
-    }
-
-    private static Predicate<Event> samePayload(Event expected1) {
-        return (e) -> e.getPayload() == expected1.getPayload();
-    }
-
-    private static Predicate<Event> sameName(Event expected1) {
-        return (e) -> e.getName().equals(expected1.getName());
-    }
-
-    private static Predicate<Event> sameVersion(Event expected1) {
-        return (e) -> e.getVersion() == expected1.getVersion();
-    }
 
 }
