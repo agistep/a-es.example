@@ -2,6 +2,8 @@ package io.agistep.event.test;
 
 import io.agistep.event.Event;
 import io.agistep.event.Events;
+import io.agistep.foo.Foo;
+import io.agistep.foo.FooCreated;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

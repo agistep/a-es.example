@@ -1,5 +1,9 @@
 package io.agistep.event;
 
+import io.agistep.foo.Foo;
+import io.agistep.foo.FooCreated;
+import io.agistep.foo.FooDone;
+import io.agistep.foo.FooReOpened;
 import io.agistep.utils.AnnotationHelper;
 import org.junit.jupiter.api.Test;
 
