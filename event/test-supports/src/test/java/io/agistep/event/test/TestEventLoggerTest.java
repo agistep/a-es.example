@@ -4,6 +4,7 @@ import io.agistep.event.Event;
 import io.agistep.event.Events;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
+import io.agistep.foo.FooDone;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Predicate;
 
 import static io.agistep.event.test.EventFixtureBuilder.anEventWith;
+import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -42,26 +44,49 @@ class TestEventLoggerTest {
     void get1() {
         Foo aggregate = new Foo();
         FooCreated created = new FooCreated();
+        FooDone done = new FooDone();
 
         Events.apply(aggregate, created);
+        Events.apply(aggregate, done);
 
-        assertThat(sut.size()).isEqualTo(1);
+        assertThat(sut.size()).isEqualTo(2);
 
-        Event expected = anEventWith(created);
+        Event[] expected = eventsWith(created).next(done).build();
 
-        Event actual = sut.get(0);
-        Predicate<Event> pId = (e) -> e.getId() == expected.getId();
-        Predicate<Event> pAggregateId = (e) -> e.getAggregateId() == expected.getAggregateId();
-        Predicate<Event> pOccurredAt = (e) -> e.getOccurredAt() == expected.getOccurredAt();
+        Event actual1 = sut.get(0);
+        assertThat(actual1).matches(sameVersion(expected[0]));
+        assertThat(actual1).matches(sameName(expected[0]));
+        assertThat(actual1).matches(samePayload(expected[0]));
 
-        Predicate<Event> pVersion = (e) -> e.getVersion() == expected.getVersion();
-        Predicate<Event> pName = (e) -> e.getName().equals(expected.getName());
-        Predicate<Event> pPayload = (e) -> e.getPayload() == expected.getPayload();
+        Event actual2 = sut.get(1);
+        assertThat(actual2).matches(sameVersion(expected[1]));
+        assertThat(actual2).matches(sameName(expected[1]));
+        assertThat(actual2).matches(samePayload(expected[1]));
 
-        assertThat(actual).matches(pVersion);
-        assertThat(actual).matches(pName);
-        assertThat(actual).matches(pPayload);
+    }
 
+    private static Predicate<Event> equalsOccurredAt(Event expected1) {
+        return (e) -> e.getOccurredAt() == expected1.getOccurredAt();
+    }
+
+    private static Predicate<Event> sameAggregateId(Event expected1) {
+        return (e) -> e.getAggregateId() == expected1.getAggregateId();
+    }
+
+    private static Predicate<Event> sameId(Event expected1) {
+        return (e) -> e.getId() == expected1.getId();
+    }
+
+    private static Predicate<Event> samePayload(Event expected1) {
+        return (e) -> e.getPayload() == expected1.getPayload();
+    }
+
+    private static Predicate<Event> sameName(Event expected1) {
+        return (e) -> e.getName().equals(expected1.getName());
+    }
+
+    private static Predicate<Event> sameVersion(Event expected1) {
+        return (e) -> e.getVersion() == expected1.getVersion();
     }
 
 }
