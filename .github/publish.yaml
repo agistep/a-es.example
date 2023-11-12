@@ -19,8 +19,8 @@ jobs:
         run: chmod +x gradlew
       - name: Publish package
         run: >
-          ./gradlew
-          event:core:publish
+          gradle
+          gamja-event:publish
           --info
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
