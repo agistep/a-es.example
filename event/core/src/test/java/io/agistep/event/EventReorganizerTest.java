@@ -33,12 +33,12 @@ class EventReorganizerTest {
 
 		assertThat(aggregate.getId()).isEqualTo(1L);
 		assertThat(aggregate.isDone()).isTrue();
-		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(1);
+		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(1);
 
 		Events.apply(aggregate, reOpened);
 
 		assertThat(aggregate.isDone()).isFalse();
-		assertThat(Events.getLatestVersionOf(aggregate)).isEqualTo(2);
+		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(2);
 
 	}
 }

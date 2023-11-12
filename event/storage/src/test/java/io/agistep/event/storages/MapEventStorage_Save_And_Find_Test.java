@@ -18,7 +18,7 @@ class MapEventStorage_Save_And_Find_Test {
 
     Event anEvent = Events.builder()
             .id(1L)
-            .version(0L)
+            .seq(0L)
 
             .aggregateId(1L)
 

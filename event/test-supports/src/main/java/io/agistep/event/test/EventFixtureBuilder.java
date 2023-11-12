@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static io.agistep.event.Events.INITIAL_VERSION;
+import static io.agistep.event.Events.INITIAL_SEQ;
 import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Validation.validate;
 
@@ -56,12 +56,12 @@ public final class EventFixtureBuilder {
 
     public Event[] build() {
         AtomicLong eventId = new AtomicLong(getRandom());
-        long latestVersion = Events.getLatestVersionOf(this.aggregateId);
+        long latestVersion = Events.getLatestSeqOf(this.aggregateId);
+        AtomicLong seq = new AtomicLong(latestVersion ==-1 ? INITIAL_SEQ : latestVersion );
 
-        AtomicLong version = new AtomicLong(latestVersion ==-1 ? INITIAL_VERSION : latestVersion );
         return payloads.stream().map(p-> Events.builder()
                 .id(eventId.getAndIncrement())
-                .version(version.getAndIncrement())
+                .seq(seq.getAndIncrement())
                 .aggregateId(this.aggregateId)
                 .name(p.getClass().getName())
                 .payload(p)

@@ -3,7 +3,6 @@ package io.agistep.event;
 import io.agistep.aggregator.IdUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ class ThreadLocalEventHolder implements EventHolder {
 		List<Event> events = changes.get();
 
 		events.add(anEvent);
-		updateVersion(anEvent.getAggregateId(), anEvent.getVersion());
+		updateSeq(anEvent.getAggregateId(), anEvent.getSeq());
 	}
 
 
@@ -56,7 +55,7 @@ class ThreadLocalEventHolder implements EventHolder {
 		// TODO 이벤트 스토어에 저장 요청
 		changes.remove();
 
-		ThreadLocalEventVersionHolder.instance().clearAll();
+		ThreadLocalEventSeqHolder.instance().clearAll();
 
 	}
 
@@ -70,10 +69,10 @@ class ThreadLocalEventHolder implements EventHolder {
 		List<Event> remained = changes.get().stream().filter(e -> !events.contains(e)).collect(Collectors.toList());
 		changes.set(remained);
 
-		ThreadLocalEventVersionHolder.instance().clear(aggregate);
+		ThreadLocalEventSeqHolder.instance().clear(aggregate);
 	}
 
-	private static void updateVersion(long aggregateId, long version) {
-		ThreadLocalEventVersionHolder.instance().setVersion(aggregateId, version);
+	private static void updateSeq(long aggregateId, long seq) {
+		ThreadLocalEventSeqHolder.instance().setSeq(aggregateId, seq);
 	}
 }

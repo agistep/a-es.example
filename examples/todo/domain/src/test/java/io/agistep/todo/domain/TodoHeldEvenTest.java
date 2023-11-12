@@ -21,7 +21,7 @@ class TodoHeldEvenTest {
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
 		Event anEvent1 = Events.builder()
 				.id(1L)
-				.version(0L)
+				.seq(0L)
 
 				.aggregateId(1L)
 
@@ -41,9 +41,9 @@ class TodoHeldEvenTest {
 
 		List<Event> actual = Events.getHoldEvents(sut);
 		assertThat(actual).hasSize(1);
-		assertThat(Events.getLatestVersionOf(sut.getId())).isEqualTo(1);
+		assertThat(Events.getLatestSeqOf(sut.getId())).isEqualTo(1);
 		assertThat(actual.get(0).getAggregateId()).isEqualTo(sut.getId());
-		assertThat(actual.get(0).getVersion()).isEqualTo(Events.getLatestVersionOf(sut.getId()));
+		assertThat(actual.get(0).getSeq()).isEqualTo(Events.getLatestSeqOf(sut.getId()));
 		assertThat(actual.get(0).getName()).isEqualTo(TodoHeld.class.getName());
 		assertThat(actual.get(0).getPayload()).isInstanceOf(TodoHeld.class);
 	}
@@ -53,7 +53,7 @@ class TodoHeldEvenTest {
 		TodoDone done = TodoDone.newBuilder().build();
 		Event anEvent2 = Events.builder()
 				.id(2L)
-				.version(1L)
+				.seq(1L)
 
 				.aggregateId(1L)
 

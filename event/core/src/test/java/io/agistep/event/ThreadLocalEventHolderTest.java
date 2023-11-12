@@ -34,7 +34,7 @@ class ThreadLocalEventHolderTest {
         sut.hold(Events.builder()
                         .id(1L)
                 .name(payload.getClass().getName())
-                .version(Events.INITIAL_VERSION)
+                .seq(Events.INITIAL_SEQ)
                 .aggregateId(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())

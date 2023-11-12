@@ -30,7 +30,7 @@ public final class EventPredicates {
     }
 
     public static Predicate<Event> sameVersion(Event expected) {
-        return (e) -> e.getVersion() == expected.getVersion();
+        return (e) -> e.getSeq() == expected.getSeq();
     }
 
 }

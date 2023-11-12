@@ -84,7 +84,7 @@ class TestEventLoggerTest {
 
         assertThat(expected[0].getAggregateId()).isEqualTo(aggregate.getId());
 
-        assertThat(expected[0].getVersion()).isEqualTo(2);
+        assertThat(expected[0].getSeq()).isEqualTo(2);
         assertThat(expected[0].getName()).isEqualTo(THIRD_PAYLOAD.getClass().getName());
         assertThat(expected[0].getPayload()).isEqualTo(THIRD_PAYLOAD);
         assertThat(expected[0].getOccurredAt()).isEqualToIgnoringNanos(LocalDateTime.now());

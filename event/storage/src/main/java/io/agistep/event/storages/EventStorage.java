@@ -17,7 +17,7 @@ public interface EventStorage {
     default long findLatestVersionOfAggregate(long id) {
         List<Event> byAggregate = findByAggregate(id);
 
-        return byAggregate.size() == 0 ? -1 : byAggregate.get(byAggregate.size()-1).getVersion();
+        return byAggregate.size() == 0 ? -1 : byAggregate.get(byAggregate.size()-1).getSeq();
     }
 
 }

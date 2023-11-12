@@ -26,7 +26,7 @@ public final class ConvertUtil {
                 EventDTO eventDTO = new EventDTO();
                 eventDTO.setId(e.getId());
                 eventDTO.setName(e.getName());
-                eventDTO.setVersion(e.getVersion());
+                eventDTO.setVersion(e.getSeq());
                 eventDTO.setAggregateId(e.getAggregateId());
                 eventDTO.setOccurredAt(e.getOccurredAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
@@ -64,7 +64,7 @@ public final class ConvertUtil {
                 return Events.builder()
                         .id(eventDTO.getId())
                         .name(eventDTO.getName())
-                        .version(eventDTO.getVersion())
+                        .seq(eventDTO.getVersion())
                         .aggregateId(eventDTO.getAggregateId())
                         .payload(payload)
                         .occurredAt(occurredAt).build();
