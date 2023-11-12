@@ -62,20 +62,26 @@ class TestEventLoggerTest {
         Object[] expected = {FIRST_PAYLOAD, SECOND_PAYLOAD};
 
         testEventSourcing(
+                Foo::new,
+
                 recently,
 
                 (aggregate) -> {
                     Events.apply(aggregate, FIRST_PAYLOAD);
-                    Events.apply(aggregate, SECOND_PAYLOAD);},
+                    Events.apply(aggregate, SECOND_PAYLOAD);
+                },
 
                 expected);
     }
+
     @Test
     void case2() {
         Event[] recently = eventsWith(FIRST_PAYLOAD).next(SECOND_PAYLOAD).build();
         Object[] expected = new Object[]{THIRD_PAYLOAD};
 
         testEventSourcing(
+                Foo::new,
+
                 recently,
 
                 (aggregate1) -> {
@@ -86,8 +92,8 @@ class TestEventLoggerTest {
 
     }
 
-    private void testEventSourcing(Event[] recently, Consumer<Object> aggregateProcessor, Object[] expected) {
-        Pair pair = getPair(recently, Foo::new);
+    private void testEventSourcing(Supplier<Object> initAggregate, Event[] recently, Consumer<Object> aggregateProcessor, Object[] expected) {
+        Pair pair = getPair(recently, initAggregate);
         aggregateProcessor.accept(pair.aggregate);
         abc(pair.aggregate, pair.latestSeq, expected); // created 와 done 이 잘 발생했는가?
     }
