@@ -1,17 +1,17 @@
 package io.agistep.event.test;
 
+import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
 
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static io.agistep.event.test.EventPredicates.*;
@@ -53,6 +53,8 @@ class TestEventLoggerTest {
         Events.apply(aggregate, created);
         Events.apply(aggregate, done);
 
+        def(aggregate, created, done);
+
         assertThat(sut.size()).isEqualTo(2);
 
         Event[] expected = eventsWith(created).next(done).build();
@@ -72,25 +74,77 @@ class TestEventLoggerTest {
     @Test
     void forTestWith2() {
 
-        Event[] events = EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
-                .next(SECOND_PAYLOAD)
-                .build();
         Foo aggregate = new Foo();
-        Events.reorganize(aggregate, events);
+        Events.reorganize(aggregate,
+                eventsWith(FIRST_PAYLOAD)
+                .next(SECOND_PAYLOAD)
+                .build());
 
         Events.apply(aggregate, THIRD_PAYLOAD);
 
-        Event[] expected = EventFixtureBuilder.eventsWith(aggregate.getId(), THIRD_PAYLOAD).build();
-
-        assertThat(expected[0].getAggregateId()).isEqualTo(aggregate.getId());
-
-        assertThat(expected[0].getSeq()).isEqualTo(2);
-        assertThat(expected[0].getName()).isEqualTo(THIRD_PAYLOAD.getClass().getName());
-        assertThat(expected[0].getPayload()).isEqualTo(THIRD_PAYLOAD);
-        assertThat(expected[0].getOccurredAt()).isEqualToIgnoringNanos(LocalDateTime.now());
+        abc(aggregate, THIRD_PAYLOAD);
 
     }
 
+
+    private void abc(Object aggregate, Object ... expectedPayload) {
+        final long aggregateId = IdUtils.idOf(aggregate);
+
+        Event[] expected = getExpected(aggregateId, expectedPayload);
+        Event[] actual = getActual();
+
+        assertThat(expected.length).isEqualTo(actual.length);
+
+        assertThat(expected[0].getAggregateId()).isEqualTo(actual[0].getAggregateId());
+
+        assertThat(actual[0]).is(EventPredicates.seqCondition(expected[0]));
+
+
+        assertThat(expected[0]).matches(sameName(actual[0]), "name");
+        assertThat(expected[0]).matches(samePayload(actual[0]), "payload");
+
+        assertThat(expected[0])
+                .describedAs("occurredAt")
+                .is(new Condition<>(equalsOccurredAt(actual[0]), "occurredAt: expected is %s but actual is %s  ", expected[0].getOccurredAt(), actual[0].getOccurredAt()));
+    }
+
+    private void def(Object aggregate, Object ... expectedPayload) {
+        final long aggregateId = IdUtils.idOf(aggregate);
+
+        Event[] expected = getExpected(aggregateId, expectedPayload);
+        Event[] actual = getActual();
+
+        assertThat(expected.length).isEqualTo(actual.length);
+
+        assertThat(expected[0].getAggregateId()).isEqualTo(actual[0].getAggregateId());
+
+        assertThat(actual[0]).is(EventPredicates.seqCondition(expected[0]));
+
+
+        assertThat(expected[0]).matches(sameName(actual[0]), "name");
+        assertThat(expected[0]).matches(samePayload(actual[0]), "payload");
+
+        assertThat(expected[0])
+                .describedAs("occurredAt")
+                .is(new Condition<>(equalsOccurredAt(actual[0]), "occurredAt: expected is %s but actual is %s  ", expected[0].getOccurredAt(), actual[0].getOccurredAt()));
+    }
+
+
+    private Event[] getActual() {
+        return this.sut.getAll();
+    }
+
+    private static Event[] getExpected(long aggregateId, Object[] expectedPayload) {
+        if(expectedPayload == null || expectedPayload.length == 0) {
+            return new Event[0];
+        }
+        EventFixtureBuilder eventsWith = eventsWith(aggregateId, expectedPayload[0]);
+
+        for (int i = 1; i < expectedPayload.length; ++i ){
+            eventsWith.next(expectedPayload[i]);
+        }
+        return eventsWith.build();
+    }
 
 
 }

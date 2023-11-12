@@ -27,4 +27,7 @@ public class TestEventLogger extends ListenerSupport {
         return this.log.size();
     }
 
+    public Event[] getAll() {
+        return this.log.toArray(new Event[0]);
+    }
 }
