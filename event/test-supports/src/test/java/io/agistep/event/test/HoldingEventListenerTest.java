@@ -30,7 +30,6 @@ class HoldingEventListenerTest {
 
     @AfterEach
     void tearDown() {
-        HoldingEventLogger.init().clear();
         Events.setListener(null); // TODO  불필요한 ... 현재 Listener 는 static 으로 유지 된다.
     }
 

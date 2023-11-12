@@ -119,6 +119,9 @@ public final class EventSourcingAssertions {
                 assertThat(actual[i]).is(payloadCondition(expected[i]));
                 assertThat(actual[i]).is(occurredAtCondition(expected[i]));
             }
+
+            HoldingEventLogger.init().clear();
+            Events.clearAll();
         }
 
         private Event[] getActual() {
