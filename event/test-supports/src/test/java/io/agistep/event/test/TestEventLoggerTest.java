@@ -7,13 +7,13 @@ import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Predicate;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static io.agistep.event.test.EventMatchConditions.*;
@@ -42,43 +42,76 @@ class TestEventLoggerTest {
     @DisplayName("Get Event by index")
     void get0() {
         assertThat(sut.size()).isEqualTo(0);
-        assertThatThrownBy(()->sut.get(0)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(()->sut.get(1000)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> sut.get(0)).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(() -> sut.get(1000)).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    static class Pair {
+        final Object aggregate;
+        final long latestSeq;
+
+        Pair(Object aggregate, long latestSeq) {
+            this.aggregate = aggregate;
+            this.latestSeq = latestSeq;
+        }
     }
 
     @Test
     void case1() {
-        Foo aggregate = new Foo();
-        FooCreated created = FIRST_PAYLOAD;
-        FooDone done = SECOND_PAYLOAD;
+        Event[] recently = new Event[0];
+        Object[] expected = {FIRST_PAYLOAD, SECOND_PAYLOAD};
 
-        final long seq = -1;
+        testEventSourcing(
+                recently,
 
-        Events.apply(aggregate, created);
-        Events.apply(aggregate, done);
+                (aggregate) -> {
+                    Events.apply(aggregate, FIRST_PAYLOAD);
+                    Events.apply(aggregate, SECOND_PAYLOAD);},
 
-        abc(aggregate, seq, created, done); // created 와 done 이 잘 발생했는가?
-
+                expected);
     }
-
     @Test
     void case2() {
-        Foo aggregate = new Foo();
-        Events.reorganize(aggregate,
-                eventsWith(FIRST_PAYLOAD)
-                .next(SECOND_PAYLOAD)
-                .build());
+        Event[] recently = eventsWith(FIRST_PAYLOAD).next(SECOND_PAYLOAD).build();
+        Object[] expected = new Object[]{THIRD_PAYLOAD};
 
-        final long seq = Events.getLatestSeqOf(aggregate);
+        testEventSourcing(
+                recently,
 
-        Events.apply(aggregate, THIRD_PAYLOAD); // THIRD_PAYLOAD 에 대한 이벤트가 잘 apply 되었는가?
+                (aggregate1) -> {
+                    Events.apply(aggregate1, THIRD_PAYLOAD);
+                },
 
-        abc(aggregate, seq, THIRD_PAYLOAD);
+                expected);
 
     }
 
+    private void testEventSourcing(Event[] recently, Consumer<Object> aggregateProcessor, Object[] expected) {
+        Pair pair = getPair(recently, Foo::new);
+        aggregateProcessor.accept(pair.aggregate);
+        abc(pair.aggregate, pair.latestSeq, expected); // created 와 done 이 잘 발생했는가?
+    }
 
-    private void abc(Object aggregate, long seq,  Object ... expectedPayload) {
+    private static Pair getPair(Event[] recently, Supplier<Object> initAggregate) {
+        Object aggregate = initAggregate.get();
+        Events.reorganize(aggregate, recently);
+        final long latestSeq = getLatestSeq(aggregate);
+
+        return new Pair(aggregate, latestSeq);
+    }
+
+    private static long getLatestSeq(Object aggregate) {
+        long seq;
+        try {
+            seq = Events.getLatestSeqOf(aggregate);
+        } catch (Exception e) {
+            seq = -1;
+        }
+        return seq;
+    }
+
+
+    private void abc(Object aggregate, long seq, Object... expectedPayload) {
         final long aggregateId = IdUtils.idOf(aggregate);
 
         Event[] expected = getExpected(aggregateId, seq, expectedPayload);
@@ -101,12 +134,12 @@ class TestEventLoggerTest {
     }
 
     private static Event[] getExpected(long aggregateId, long seq, Object[] expectedPayload) {
-        if(expectedPayload == null || expectedPayload.length == 0) {
+        if (expectedPayload == null || expectedPayload.length == 0) {
             return new Event[0];
         }
         EventFixtureBuilder eventsWith = eventsWith(aggregateId, expectedPayload[0]);
 
-        for (int i = 1; i < expectedPayload.length; ++i ){
+        for (int i = 1; i < expectedPayload.length; ++i) {
             eventsWith.next(expectedPayload[i]);
         }
         return eventsWith.build(seq);
