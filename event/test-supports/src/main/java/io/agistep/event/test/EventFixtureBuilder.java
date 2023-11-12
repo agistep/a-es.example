@@ -56,8 +56,8 @@ public final class EventFixtureBuilder {
 
     public Event[] build() {
         AtomicLong eventId = new AtomicLong(getRandom());
-        long latestVersion = Events.getLatestSeqOf(this.aggregateId);
-        AtomicLong seq = new AtomicLong(latestVersion ==-1 ? INITIAL_SEQ : latestVersion );
+        long latestSeq = Events.getLatestSeqOf(this.aggregateId);
+        AtomicLong seq = new AtomicLong(latestSeq ==-1 ? INITIAL_SEQ : latestSeq );
 
         return payloads.stream().map(p-> Events.builder()
                 .id(eventId.getAndIncrement())
