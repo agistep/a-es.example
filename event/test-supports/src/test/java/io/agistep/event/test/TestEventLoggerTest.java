@@ -7,14 +7,13 @@ import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
-import static io.agistep.event.test.EventPredicates.*;
+import static io.agistep.event.test.EventMatchConditions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -45,7 +44,7 @@ class TestEventLoggerTest {
     }
 
     @Test
-    void get1() {
+    void case1() {
         Foo aggregate = new Foo();
         FooCreated created = FIRST_PAYLOAD;
         FooDone done = SECOND_PAYLOAD;
@@ -53,34 +52,19 @@ class TestEventLoggerTest {
         Events.apply(aggregate, created);
         Events.apply(aggregate, done);
 
-        def(aggregate, created, done);
-
-        assertThat(sut.size()).isEqualTo(2);
-
-        Event[] expected = eventsWith(created).next(done).build();
-
-        Event actual1 = sut.get(0);
-        assertThat(actual1).matches(sameVersion(expected[0]));
-        assertThat(actual1).matches(sameName(expected[0]));
-        assertThat(actual1).matches(samePayload(expected[0]));
-
-        Event actual2 = sut.get(1);
-        assertThat(actual2).matches(sameVersion(expected[1]));
-        assertThat(actual2).matches(sameName(expected[1]));
-        assertThat(actual2).matches(samePayload(expected[1]));
+        def(aggregate, created, done); // created 와 done 이 잘 발생했는가?
 
     }
 
     @Test
-    void forTestWith2() {
-
+    void case2() {
         Foo aggregate = new Foo();
         Events.reorganize(aggregate,
                 eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build());
 
-        Events.apply(aggregate, THIRD_PAYLOAD);
+        Events.apply(aggregate, THIRD_PAYLOAD); // THIRD_PAYLOAD 에 대한 이벤트가 잘 apply 되었는가?
 
         abc(aggregate, THIRD_PAYLOAD);
 
@@ -93,19 +77,15 @@ class TestEventLoggerTest {
         Event[] expected = getExpected(aggregateId, expectedPayload);
         Event[] actual = getActual();
 
-        assertThat(expected.length).isEqualTo(actual.length);
+        assertThat(actual.length).isEqualTo(expected.length);
 
-        assertThat(expected[0].getAggregateId()).isEqualTo(actual[0].getAggregateId());
-
-        assertThat(actual[0]).is(EventPredicates.seqCondition(expected[0]));
-
-
-        assertThat(expected[0]).matches(sameName(actual[0]), "name");
-        assertThat(expected[0]).matches(samePayload(actual[0]), "payload");
-
-        assertThat(expected[0])
-                .describedAs("occurredAt")
-                .is(new Condition<>(equalsOccurredAt(actual[0]), "occurredAt: expected is %s but actual is %s  ", expected[0].getOccurredAt(), actual[0].getOccurredAt()));
+        for (int i = 0; i < expected.length; i++) {
+            assertThat(actual[i]).is(aggregateIdCondition(expected[i]));
+            assertThat(actual[i]).is(seqCondition(expected[i]));
+            assertThat(actual[i]).is(nameCondition(expected[i]));
+            assertThat(actual[i]).is(payloadCondition(expected[i]));
+            assertThat(actual[i]).is(occurredAtCondition(expected[i]));
+        }
     }
 
     private void def(Object aggregate, Object ... expectedPayload) {
@@ -114,19 +94,13 @@ class TestEventLoggerTest {
         Event[] expected = getExpected(aggregateId, expectedPayload);
         Event[] actual = getActual();
 
-        assertThat(expected.length).isEqualTo(actual.length);
-
-        assertThat(expected[0].getAggregateId()).isEqualTo(actual[0].getAggregateId());
-
-        assertThat(actual[0]).is(EventPredicates.seqCondition(expected[0]));
-
-
-        assertThat(expected[0]).matches(sameName(actual[0]), "name");
-        assertThat(expected[0]).matches(samePayload(actual[0]), "payload");
-
-        assertThat(expected[0])
-                .describedAs("occurredAt")
-                .is(new Condition<>(equalsOccurredAt(actual[0]), "occurredAt: expected is %s but actual is %s  ", expected[0].getOccurredAt(), actual[0].getOccurredAt()));
+        for (int i = 0; i < expected.length; i++) {
+            assertThat(actual[i]).is(aggregateIdCondition(expected[i]));
+            assertThat(actual[i]).is(seqCondition(expected[i]));
+            assertThat(actual[i]).is(nameCondition(expected[i]));
+            assertThat(actual[i]).is(payloadCondition(expected[i]));
+            assertThat(actual[i]).is(occurredAtCondition(expected[i]));
+        }
     }
 
 
