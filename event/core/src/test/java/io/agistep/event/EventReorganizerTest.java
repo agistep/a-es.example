@@ -1,5 +1,9 @@
 package io.agistep.event;
 
+import io.agistep.foo.Foo;
+import io.agistep.foo.FooCreated;
+import io.agistep.foo.FooDone;
+import io.agistep.foo.FooReOpened;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,13 +31,13 @@ class EventReorganizerTest {
 		Events.reorganize(aggregate, eventsWith(1L, created)
 				.next(done).build());
 
-		assertThat(aggregate.id).isEqualTo(1L);
-		assertThat(aggregate.done).isTrue();
+		assertThat(aggregate.getId()).isEqualTo(1L);
+		assertThat(aggregate.isDone()).isTrue();
 		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(1);
 
 		Events.apply(aggregate, reOpened);
 
-		assertThat(aggregate.done).isFalse();
+		assertThat(aggregate.isDone()).isFalse();
 		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(2);
 
 	}

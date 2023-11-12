@@ -1,6 +1,8 @@
 package io.agistep.event;
 
 
+import io.agistep.foo.Foo;
+import io.agistep.foo.FooCreated;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;

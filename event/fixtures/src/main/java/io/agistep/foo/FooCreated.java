@@ -1,4 +1,4 @@
-package io.agistep.event;
+package io.agistep.foo;
 
 public class FooCreated {
 

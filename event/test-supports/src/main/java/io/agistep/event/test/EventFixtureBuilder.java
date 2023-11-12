@@ -27,7 +27,7 @@ public final class EventFixtureBuilder {
     }
 
     private static long getRandom() {
-        return (long) (Math.random() % 10000);
+        return (long) (Math.random() * 10000);
     }
 
     public static EventFixtureBuilder eventsWith(long aggregateId, Object firstPayload) {
@@ -49,13 +49,16 @@ public final class EventFixtureBuilder {
     }
 
     private void addPayload(Object firstPayload) {
+        //TODO exception message
         Object payload = validate(firstPayload, is(not(nullValue())), IllegalArgumentException.class);
         this.payloads.add(payload);
     }
 
     public Event[] build() {
         AtomicLong eventId = new AtomicLong(getRandom());
-        AtomicLong seq = new AtomicLong(INITIAL_SEQ);
+        long latestSeq = Events.getLatestSeqOf(this.aggregateId);
+        AtomicLong seq = new AtomicLong(latestSeq ==-1 ? INITIAL_SEQ : latestSeq );
+
         return payloads.stream().map(p-> Events.builder()
                 .id(eventId.getAndIncrement())
                 .seq(seq.getAndIncrement())

@@ -1,7 +1,10 @@
-package io.agistep.event;
+package io.agistep.foo;
 
 
-class Foo {
+import io.agistep.event.Event;
+import io.agistep.event.EventHandler;
+
+public class Foo {
 
     Long id;
 
@@ -9,7 +12,7 @@ class Foo {
 
     public Foo() {}
 
-    @EventHandler(payload=FooCreated.class)
+    @EventHandler(payload= FooCreated.class)
     void onCreated(Event anEvent) {
         this.id = (Long) anEvent.getAggregateId();
     }
@@ -19,16 +22,16 @@ class Foo {
         this.done = true;
     }
 
-    @EventHandler(payload=FooReOpened.class)
+    @EventHandler(payload= FooReOpened.class)
     void onReOpened(Event anEvent) {
         this.done = false;
     }
 
-    Long getId() {
+    public Long getId() {
         return id;
     }
 
-    boolean isDone() {
+    public boolean isDone() {
         return done;
     }
 
