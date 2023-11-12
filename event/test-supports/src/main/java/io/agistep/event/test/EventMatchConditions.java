@@ -28,7 +28,7 @@ public final class EventMatchConditions {
         Function<Event, Object> extractor = Event::getAggregateId;
         String fieldName = "aggregateId";
         return new EventCondition(expected,
-                event -> extractor.apply(expected) == extractor.apply(event),
+                event -> extractor.apply(expected).equals(extractor.apply(event)),
                 fieldName, extractor);
     }
 

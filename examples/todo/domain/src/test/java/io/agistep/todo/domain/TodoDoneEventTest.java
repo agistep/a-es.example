@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.agistep.event.test.EventFixtureBuilder.anEventWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TodoDoneEventTest {
@@ -20,19 +21,7 @@ class TodoDoneEventTest {
 
 		sut = new Todo();
 		TodoCreated created = TodoCreated.newBuilder().setText("Some Text").build();
-		Event anEvent1 = Events.builder()
-				.id(1L)
-				.seq(0L)
-
-				.aggregateId(1L)
-
-				.name(created.getClass().getName())
-				.payload(created)
-				.occurredAt(LocalDateTime.now())
-				.build();
-
-		Events.reorganize(sut, new Event[]{anEvent1});
-		assertThat(Events.getLatestSeqOf(sut)).isEqualTo(Events.INITIAL_SEQ);
+		Events.reorganize(sut, new Event[]{anEventWith(created)});
 	}
 
 	@Test

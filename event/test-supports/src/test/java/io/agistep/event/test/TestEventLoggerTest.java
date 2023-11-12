@@ -7,10 +7,13 @@ import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Predicate;
 
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static io.agistep.event.test.EventMatchConditions.*;
@@ -49,10 +52,12 @@ class TestEventLoggerTest {
         FooCreated created = FIRST_PAYLOAD;
         FooDone done = SECOND_PAYLOAD;
 
+        final long seq = -1;
+
         Events.apply(aggregate, created);
         Events.apply(aggregate, done);
 
-        def(aggregate, created, done); // created 와 done 이 잘 발생했는가?
+        abc(aggregate, seq, created, done); // created 와 done 이 잘 발생했는가?
 
     }
 
@@ -64,22 +69,25 @@ class TestEventLoggerTest {
                 .next(SECOND_PAYLOAD)
                 .build());
 
+        final long seq = Events.getLatestSeqOf(aggregate);
+
         Events.apply(aggregate, THIRD_PAYLOAD); // THIRD_PAYLOAD 에 대한 이벤트가 잘 apply 되었는가?
 
-        abc(aggregate, THIRD_PAYLOAD);
+        abc(aggregate, seq, THIRD_PAYLOAD);
 
     }
 
 
-    private void abc(Object aggregate, Object ... expectedPayload) {
+    private void abc(Object aggregate, long seq,  Object ... expectedPayload) {
         final long aggregateId = IdUtils.idOf(aggregate);
 
-        Event[] expected = getExpected(aggregateId, expectedPayload);
+        Event[] expected = getExpected(aggregateId, seq, expectedPayload);
         Event[] actual = getActual();
 
         assertThat(actual.length).isEqualTo(expected.length);
 
         for (int i = 0; i < expected.length; i++) {
+            //assertThat(actual[i]).is(idCondition(expected[i]));
             assertThat(actual[i]).is(aggregateIdCondition(expected[i]));
             assertThat(actual[i]).is(seqCondition(expected[i]));
             assertThat(actual[i]).is(nameCondition(expected[i]));
@@ -87,28 +95,12 @@ class TestEventLoggerTest {
             assertThat(actual[i]).is(occurredAtCondition(expected[i]));
         }
     }
-
-    private void def(Object aggregate, Object ... expectedPayload) {
-        final long aggregateId = IdUtils.idOf(aggregate);
-
-        Event[] expected = getExpected(aggregateId, expectedPayload);
-        Event[] actual = getActual();
-
-        for (int i = 0; i < expected.length; i++) {
-            assertThat(actual[i]).is(aggregateIdCondition(expected[i]));
-            assertThat(actual[i]).is(seqCondition(expected[i]));
-            assertThat(actual[i]).is(nameCondition(expected[i]));
-            assertThat(actual[i]).is(payloadCondition(expected[i]));
-            assertThat(actual[i]).is(occurredAtCondition(expected[i]));
-        }
-    }
-
 
     private Event[] getActual() {
         return this.sut.getAll();
     }
 
-    private static Event[] getExpected(long aggregateId, Object[] expectedPayload) {
+    private static Event[] getExpected(long aggregateId, long seq, Object[] expectedPayload) {
         if(expectedPayload == null || expectedPayload.length == 0) {
             return new Event[0];
         }
@@ -117,7 +109,7 @@ class TestEventLoggerTest {
         for (int i = 1; i < expectedPayload.length; ++i ){
             eventsWith.next(expectedPayload[i]);
         }
-        return eventsWith.build();
+        return eventsWith.build(seq);
     }
 
 
