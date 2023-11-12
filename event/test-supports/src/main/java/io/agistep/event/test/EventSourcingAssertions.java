@@ -28,9 +28,22 @@ public final class EventSourcingAssertions {
             return given(new Event[0]);
         }
 
+        public DEF<AGG> given(Object first, Object ... payloads) {
+            // TODO first 가 null이면
+            EventFixtureBuilder eventsWith = eventsWith(first);
+
+            for (int i = 0; i < payloads.length; ++i) {
+                eventsWith.next(payloads[0]);
+            }
+
+            return new DEF<>(initAggregate, eventsWith.build());
+        }
+
         public DEF<AGG> given(Event ... recently) {
             return new DEF<>(initAggregate, recently);
         }
+
+
     }
 
     public static class DEF<AGG> {

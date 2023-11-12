@@ -56,7 +56,7 @@ class HoldingEventListenerTest {
     @Test
     void case2() {
         assertEventSourcing(Foo::new)
-                .given(eventsWith(FIRST_PAYLOAD).next(SECOND_PAYLOAD).build())
+                .given(FIRST_PAYLOAD, SECOND_PAYLOAD)
                 .when((aggregate) -> {
                     Events.apply(aggregate, THIRD_PAYLOAD);
                 })
