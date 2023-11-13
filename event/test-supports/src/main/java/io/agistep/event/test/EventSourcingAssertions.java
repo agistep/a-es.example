@@ -3,6 +3,7 @@ package io.agistep.event.test;
 import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
+import org.assertj.core.api.ObjectAssert;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -71,18 +72,19 @@ public final class EventSourcingAssertions {
             this.aggregateProcessor = aggregateProcessor;
         }
 
-        public void expected(Object ... payloads) {
-            testEventSourcing(
+        public ObjectAssert<AGG> expected(Object ... payloads) {
+            return assertThat(testEventSourcing(
                     def.initAggregate,
                     def.recently,
                     aggregateProcessor,
-                    payloads);
+                    payloads));
         }
 
-        private void testEventSourcing(Supplier<AGG> initAggregate, Event[] recently, Consumer<AGG> aggregateProcessor, Object[] expected) {
+        private AGG testEventSourcing(Supplier<AGG> initAggregate, Event[] recently, Consumer<AGG> aggregateProcessor, Object[] expected) {
             Pair<AGG> pair = getPair(recently, initAggregate);
             aggregateProcessor.accept(pair.aggregate);
-            abc(pair.aggregate, pair.latestSeq, expected); // created 와 done 이 잘 발생했는가?
+            abc(pair.aggregate, pair.latestSeq, expected);
+            return pair.aggregate;
         }
 
         private Pair<AGG> getPair(Event[] recently, Supplier<AGG> initAggregate) {
@@ -97,10 +99,14 @@ public final class EventSourcingAssertions {
             long seq;
             try {
                 seq = Events.getLatestSeqOf(aggregate);
+                if(Events.getHoldEvents(aggregate).isEmpty()) {
+                    return seq;
+                }else {
+                    return seq - Events.getHoldEvents(aggregate).size();
+                }
             } catch (Exception e) {
-                seq = -1;
+                return -1;
             }
-            return seq;
         }
 
         private void abc(Object aggregate, long seq, Object... expectedPayload) {

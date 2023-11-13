@@ -1,36 +1,36 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.Event;
 import io.agistep.event.Events;
+import io.agistep.event.test.HoldingEventListener;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.agistep.event.test.EventSourcingAssertions.assertEventSourcing;
 
 class TodoCreatedEventTest {
 
-	Todo sut;
+    @BeforeEach
+    void setUp() {
+        Events.setListener(new HoldingEventListener());
+    }
 
-	@BeforeEach
-	void setUp() {
-		Events.clearAll();
-	}
+    @AfterEach
+    void tearDown() {
+        Events.setListener(null);
+    }
 
-	@Test
-	void created() {
-		sut = new Todo("Some Text");
+    @Test
+    void created() {
+		assertEventSourcing(() -> new Todo("Some Text"))
+				.given()
 
-		List<Event> actual = Events.getHoldEvents(sut);
-		assertThat(actual).hasSize(1);
-		assertThat(Events.getLatestSeqOf(sut.getId())).isEqualTo(Events.INITIAL_SEQ);
-		assertThat(actual.get(0).getAggregateId()).isEqualTo(sut.getId());
-		assertThat(actual.get(0).getSeq()).isEqualTo(Events.INITIAL_SEQ);
-		assertThat(actual.get(0).getName()).isEqualTo(TodoCreated.class.getName());
-		assertThat(actual.get(0).getPayload()).isInstanceOf(TodoCreated.class);
-		assertThat(actual.get(0).getPayload()).extracting("text").isEqualTo("Some Text");
+				.when((aggregate) -> {
+				})
 
+				.expected(TodoCreated.newBuilder().setText("Some Text").build())
+
+				.extracting("text").isEqualTo("Some Text");
 
 	}
 

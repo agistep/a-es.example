@@ -52,7 +52,7 @@ public final class EventMatchConditions {
         Function<Event, Object> extractor = Event::getPayload;
         String fieldName = "payload";
         return new EventCondition(expected,
-                event -> extractor.apply(expected) == extractor.apply(event),
+                event -> extractor.apply(expected).equals(extractor.apply(event)), //TODO 항상 equals hashcode 를 작성해야하는 제약이 있다.
                 fieldName, extractor);
     }
 

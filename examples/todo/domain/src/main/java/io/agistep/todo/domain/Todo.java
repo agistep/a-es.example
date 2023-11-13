@@ -5,30 +5,9 @@ import io.agistep.event.EventHandler;
 import io.agistep.event.Events;
 import lombok.Getter;
 
-import java.util.List;
-
 
 @Getter
 public class Todo {
-
-
-	public static Todo reorganize(List<Event> events) {
-		if(events == null || events.isEmpty()) {
-			return null;
-		}
-		return reorganize(events.toArray(new Event[0]));
-	}
-
-	public static Todo reorganize(Event... events) {
-		Todo aggregate = new Todo();
-
-		if(events == null || events.length == 0) {
-			return null;
-		}
-		Events.reorganize(aggregate, events);
-		return aggregate;
-	}
-
 
 	private Long id;
 	private String text;
