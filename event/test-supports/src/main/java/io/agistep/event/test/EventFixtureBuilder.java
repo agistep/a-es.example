@@ -68,4 +68,18 @@ public final class EventFixtureBuilder {
                 .occurredAt(LocalDateTime.now())
                 .build()).toList().toArray(new Event[0]);
     }
+
+    public Event[] build(long beginSeq) {
+        AtomicLong eventId = new AtomicLong(getRandom());
+        AtomicLong seq = new AtomicLong(beginSeq == -1 ? INITIAL_SEQ : ++beginSeq);
+
+        return payloads.stream().map(p-> Events.builder()
+                .id(eventId.getAndIncrement())
+                .seq(seq.getAndIncrement())
+                .aggregateId(this.aggregateId)
+                .name(p.getClass().getName())
+                .payload(p)
+                .occurredAt(LocalDateTime.now())
+                .build()).toList().toArray(new Event[0]);
+    }
 }

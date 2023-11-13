@@ -3,15 +3,12 @@ package io.agistep.event.test;
 import io.agistep.event.Event;
 import io.agistep.event.ListenerSupport;
 
-import java.util.ArrayList;
-import java.util.List;
+public class HoldingEventListener extends ListenerSupport {
 
-public class TestEventLogger extends ListenerSupport {
+    private final HoldingEventLogger log;
 
-    private final List<Event> log;
-
-    TestEventLogger() {
-        this.log = new ArrayList<>();
+    public HoldingEventListener() {
+        this.log = HoldingEventLogger.init();
     }
 
     @Override
@@ -27,4 +24,7 @@ public class TestEventLogger extends ListenerSupport {
         return this.log.size();
     }
 
+    public Event[] getAll() {
+        return this.log.getAll();
+    }
 }

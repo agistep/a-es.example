@@ -27,21 +27,21 @@ class EventFixtureBuilderTest {
     @Test
     @DisplayName("Exception: payload must be not null")
     void forTestWith0() {
-        assertThatThrownBy(()-> eventsWith(NULL_PAYLOAD));
+        assertThatThrownBy(()-> EventFixtureBuilder.eventsWith(NULL_PAYLOAD));
     }
 
     @Test
     @DisplayName("Exception: payload must be not null")
     void forTestWith00() {
         assertThatThrownBy(()->
-                eventsWith(aggregate(1L), FIRST_PAYLOAD)
+                EventFixtureBuilder.eventsWith(aggregate(1L), FIRST_PAYLOAD)
                 .next(NULL_PAYLOAD));
     }
 
     @Test
-    void forTestWith1() {
+    void eventsWith() {
 
-        Event[] actual = eventsWith(FIRST_PAYLOAD)
+        Event[] actual = EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build();
 
@@ -60,15 +60,15 @@ class EventFixtureBuilderTest {
     }
 
     @Test
-    void forTestWith2() {
+    void eventsWith2() {
 
         Foo aggregate = new Foo();
-        Events.reorganize(aggregate, eventsWith(FIRST_PAYLOAD)
+        Events.reorganize(aggregate, EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build());
         Events.apply(aggregate, THIRD_PAYLOAD);
 
-        Event[] expected = eventsWith(aggregate.getId(), THIRD_PAYLOAD).build();
+        Event[] expected = EventFixtureBuilder.eventsWith(aggregate.getId(), THIRD_PAYLOAD).build();
 
         assertThat(expected[0].getAggregateId()).isEqualTo(aggregate.getId());
 
