@@ -1,14 +1,17 @@
 package io.agistep.aggregator;
 
 
+import io.agistep.identity.IdentifierProvider;
+import io.agistep.identity.spi.IdentifierProviderFactory;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 public final class IdUtils {
 
-	public static final Class<?>[] SUPPORTED_TYPES = { long.class, Long.class };
-
-	public static final String NAME_OF_ID_FIELD = "id";
+	private static final IdentifierProvider IDENTIFIER_PROVIDER = IdentifierProviderFactory.load().get();
+	private static final Class<?>[] SUPPORTED_TYPES = { long.class, Long.class };
+	private static final String NAME_OF_ID_FIELD = "id";
 
 	public static long idOf(Object aggregate) {
 
@@ -66,6 +69,7 @@ public final class IdUtils {
 	}
 
 	public static long gen() {
-		return 11111L; //TODO
+		return IDENTIFIER_PROVIDER.nextId();
 	}
 }
+
