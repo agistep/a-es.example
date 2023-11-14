@@ -38,6 +38,9 @@ dependencies {
 
     testImplementation project(":event:fixtures")
 
+    testImplementation "org.testcontainers:postgresql:1.19.1"
+    testImplementation 'org.postgresql:postgresql:42.6.0'
+
 }
 
 testing {

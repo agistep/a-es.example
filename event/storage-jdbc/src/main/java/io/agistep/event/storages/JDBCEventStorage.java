@@ -15,14 +15,23 @@ class JDBCEventStorage implements EventStorage {
     Connection conn = null;
 
     public JDBCEventStorage() {
-        String url = "jdbc:postgresql://localhost:5422/agistep";
-        String id = "agistep";
-        String pw = "agistep";
+        this("jdbc:postgresql://localhost:5422/agistep", "agistep", "agistep", "org.postgresql.Driver");
+    }
 
+    public JDBCEventStorage(String driverName, String url, String id, String pw) {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(driverName);
             conn = DriverManager.getConnection(url, id, pw);
 
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JDBCEventStorage(String driverName, String url) {
+        try {
+            Class.forName(driverName);
+            conn = DriverManager.getConnection(url);
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -37,13 +46,14 @@ class JDBCEventStorage implements EventStorage {
         Object payload = anEvent.getPayload();
         LocalDateTime occurredAt = anEvent.getOccurredAt();
 
-
         try {
-            PreparedStatement prep = conn.prepareStatement("INSERT INTO events VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement prep = conn.prepareStatement("INSERT INTO events" +
+                    "(id, seq, name, aggregateId, payload, occurredAt)" +
+                    "VALUES (?, ?, ?, ?, ?, ?)");
             prep.setLong(1, id);
-            prep.setLong(2, aggregateId);
+            prep.setLong(2, seq);
             prep.setString(3, name);
-            prep.setLong(4, seq);
+            prep.setLong(4, aggregateId);
 
             ObjectMapper o = new ObjectMapper();
             PGobject jsonObject = new PGobject();
@@ -64,7 +74,7 @@ class JDBCEventStorage implements EventStorage {
     public List<Event> findByAggregate(long id) {
         List<Event> events = new ArrayList<>();
         try {
-            PreparedStatement prep = conn.prepareStatement("SELECT * FROM events WHERE aggregate_id = ?");
+            PreparedStatement prep = conn.prepareStatement("SELECT * FROM events WHERE aggregateId = ?");
             prep.setLong(1, id);
             ResultSet rs = prep.executeQuery();
 
