@@ -16,7 +16,7 @@ abstract class UnsupportedEventStorage implements EventStorage {
     }
 
     @Override
-    public long findLatestVersionOfAggregate(long id) {
+    public long findLatestSeqOfAggregate(long id) {
         throw new UnsupportedOperationException();
     }
 }

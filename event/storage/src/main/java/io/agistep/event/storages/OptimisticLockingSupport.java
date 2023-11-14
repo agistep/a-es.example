@@ -13,7 +13,7 @@ abstract class OptimisticLockingSupport implements EventStorage {
     }
 
     protected boolean possible(long aggregateId, long version) {
-        long ltv = findLatestVersionOfAggregate(aggregateId);
+        long ltv = findLatestSeqOfAggregate(aggregateId);
         return ltv >= version;
     }
 

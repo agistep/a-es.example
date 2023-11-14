@@ -74,19 +74,20 @@ class JDBCEventStorage implements EventStorage {
     public List<Event> findByAggregate(long id) {
         List<Event> events = new ArrayList<>();
         try {
-            PreparedStatement prep = conn.prepareStatement("SELECT * FROM events WHERE aggregateId = ?");
+            String SELECT_QUERY = "SELECT id, seq, name, aggregateId, payload, occurredAt FROM events WHERE aggregateId = ?";
+            PreparedStatement prep = conn.prepareStatement(SELECT_QUERY);
             prep.setLong(1, id);
             ResultSet rs = prep.executeQuery();
 
             while (rs.next()) {
-                Timestamp timestamp = rs.getTimestamp(6);
+                Timestamp timestamp = rs.getTimestamp("occurredAt");
 
                 Event anEvent = Events.builder()
-                        .id(rs.getLong(1))
-                        .aggregateId(rs.getLong(2))
-                        .name(rs.getString(3))
-                        .seq(rs.getLong(4))
-                        .payload(rs.getString(5))
+                        .id(rs.getLong("id"))
+                        .aggregateId(rs.getLong("aggregateId"))
+                        .name(rs.getString("name"))
+                        .seq(rs.getLong("seq"))
+                        .payload(rs.getString("payload"))
                         .occurredAt(timestamp.toLocalDateTime()).build();
                 events.add(anEvent);
             }

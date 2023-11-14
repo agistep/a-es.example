@@ -2,12 +2,13 @@ package io.agistep.event.storages;
 
 import io.agistep.event.Event;
 import io.agistep.event.Events;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorageTest {
 
@@ -21,7 +22,7 @@ class JDBCEventStorageTest {
     }
 
     @Test
-    void saveTest() {
+    void saveAndFind() {
         String anyPayload = "{'a': 1, 'b':2}";
 
         Event e = Events.builder()
@@ -34,7 +35,18 @@ class JDBCEventStorageTest {
 
         eventStorage.save(e);
 
+        long latestSeq = eventStorage.findLatestSeqOfAggregate(e.getAggregateId());
+
+        assertThat(latestSeq).isEqualTo(e.getSeq());
+
         List<Event> byAggregate = eventStorage.findByAggregate(11L);
-        Assertions.assertThat(byAggregate).hasSize(1);
+        assertThat(byAggregate).hasSize(1);
+        assertThat(byAggregate.get(0).getId()).isEqualTo(e.getId());
+        assertThat(byAggregate.get(0).getSeq()).isEqualTo(e.getSeq());
+        assertThat(byAggregate.get(0).getName()).isEqualTo(e.getName());
+        assertThat(byAggregate.get(0).getOccurredAt()).isEqualTo(e.getOccurredAt());
+
+        // BROKEN!!!
+        assertThat(byAggregate.get(0).getPayload()).isEqualTo(e.getPayload());
     }
 }
