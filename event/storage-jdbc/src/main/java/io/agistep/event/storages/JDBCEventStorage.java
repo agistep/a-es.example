@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-class JDBCEventStorage implements EventStorage {
+class JDBCEventStorage extends OptimisticLockingSupport {
     static final String INSERT_DML = "INSERT INTO events" +
             "(id, seq, name, aggregateId, payload, occurredAt)" +
             "VALUES (?, ?, ?, ?, ?, ?)";
@@ -43,7 +43,7 @@ class JDBCEventStorage implements EventStorage {
     }
 
     @Override
-    public void save(Event anEvent) {
+    public void lockedSave(Event anEvent) {
         long id = anEvent.getId();
         long aggregateId = anEvent.getAggregateId();
         String name = anEvent.getName();
