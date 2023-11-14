@@ -58,17 +58,10 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
 
-            ObjectMapper o = new ObjectMapper();
-            PGobject jsonObject = new PGobject();
-            jsonObject.setType("json");
-            jsonObject.setValue(o.writeValueAsString(payload));
-
-            prep.setObject(5, jsonObject);
+            prep.setObject(5, payload.toString());
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -84,12 +77,15 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             while (rs.next()) {
                 Timestamp timestamp = rs.getTimestamp("occurredAt");
 
+                Object payload = rs.getObject("payload");
+
                 Event anEvent = Events.builder()
                         .id(rs.getLong("id"))
                         .aggregateId(rs.getLong("aggregateId"))
                         .name(rs.getString("name"))
                         .seq(rs.getLong("seq"))
-                        .payload(rs.getString("payload"))
+                        .payload(payload) // TODO 어떻께?
+
                         .occurredAt(timestamp.toLocalDateTime()).build();
                 events.add(anEvent);
             }
