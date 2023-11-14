@@ -12,6 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 class JDBCEventStorage implements EventStorage {
+    static final String INSERT_DML = "INSERT INTO events" +
+            "(id, seq, name, aggregateId, payload, occurredAt)" +
+            "VALUES (?, ?, ?, ?, ?, ?)";
+    static final String SELECT_QUERY = "SELECT id, seq, name, aggregateId, payload, occurredAt FROM events WHERE aggregateId = ?";
+
     Connection conn = null;
 
     public JDBCEventStorage() {
@@ -47,9 +52,7 @@ class JDBCEventStorage implements EventStorage {
         LocalDateTime occurredAt = anEvent.getOccurredAt();
 
         try {
-            PreparedStatement prep = conn.prepareStatement("INSERT INTO events" +
-                    "(id, seq, name, aggregateId, payload, occurredAt)" +
-                    "VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement prep = conn.prepareStatement(INSERT_DML);
             prep.setLong(1, id);
             prep.setLong(2, seq);
             prep.setString(3, name);
@@ -74,7 +77,6 @@ class JDBCEventStorage implements EventStorage {
     public List<Event> findByAggregate(long id) {
         List<Event> events = new ArrayList<>();
         try {
-            String SELECT_QUERY = "SELECT id, seq, name, aggregateId, payload, occurredAt FROM events WHERE aggregateId = ?";
             PreparedStatement prep = conn.prepareStatement(SELECT_QUERY);
             prep.setLong(1, id);
             ResultSet rs = prep.executeQuery();
