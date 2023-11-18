@@ -3,7 +3,7 @@ package io.agistep.event.sed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-class JsonSerializer implements Serializer {
+class JsonObjectDeserializer implements Deserializer {
     @Override
     public boolean isSupport(Object payload) {
         String p;
@@ -15,6 +15,7 @@ class JsonSerializer implements Serializer {
         return isJSONValid(p);
     }
 
+
     private static boolean isJSONValid(String jsonString) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -25,8 +26,9 @@ class JsonSerializer implements Serializer {
         }
     }
 
+
     @Override
-    public byte[] serialize(Object payload) {
-        return String.valueOf(payload).getBytes();
+    public Object deserialize(byte[] byteArray) {
+        return new String(byteArray);
     }
 }

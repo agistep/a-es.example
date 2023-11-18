@@ -12,6 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorage_Protobuf_Test {
 
+    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";
+
     JDBCEventStorage eventStorage;
 
     @BeforeEach
@@ -29,14 +31,14 @@ class JDBCEventStorage_Protobuf_Test {
         Event e = Events.builder()
                 .id(12L)
                 .aggregateId(12L)
-                .name("io.agistep.event.storages.ProtoPayload")
+                .name(ANY_EVENT_NAME)
                 .payload(build)
                 .seq(1L)
                 .occurredAt(LocalDateTime.now()).build();
 
         eventStorage.save(e);
 
-        List<Event> byAggregate = eventStorage.findByAggregateAndPayloadType(12L);
+        List<Event> byAggregate = eventStorage.findByAggregate(12L);
 
         assertThat(byAggregate.get(0)).isEqualTo(e);
     }

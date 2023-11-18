@@ -12,6 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorage_JSON_Test {
 
+    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";;
+
     JDBCEventStorage eventStorage;
 
     @BeforeEach
@@ -30,7 +32,7 @@ class JDBCEventStorage_JSON_Test {
         Event e = Events.builder()
                 .id(1L)
                 .aggregateId(11L)
-                .name("foo")
+                .name(ANY_EVENT_NAME)
                 .payload(anyJsonPayload)
                 .seq(1L)
                 .occurredAt(LocalDateTime.now()).build();

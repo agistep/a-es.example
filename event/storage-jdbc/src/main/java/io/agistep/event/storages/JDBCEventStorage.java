@@ -55,8 +55,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setLong(2, seq);
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
-
-            prep.setObject(5, ConvertUtil.convertPayload(payload));
+            prep.setObject(5, serializePayload(payload));
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();
         } catch (SQLException e) {
@@ -75,14 +74,15 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             while (rs.next()) {
                 Timestamp timestamp = rs.getTimestamp("occurredAt");
 
-                Object payload = rs.getObject("payload");
+                String name = rs.getString("name");
+                Object payload1 = deSerializePayload(rs.getObject("payload"), name);
 
                 Event anEvent = Events.builder()
                         .id(rs.getLong("id"))
                         .aggregateId(rs.getLong("aggregateId"))
-                        .name(rs.getString("name"))
+                        .name(name)
                         .seq(rs.getLong("seq"))
-                        .payload(payload)
+                        .payload(payload1)
                         .occurredAt(timestamp.toLocalDateTime()).build();
                 events.add(anEvent);
             }
@@ -92,28 +92,11 @@ class JDBCEventStorage extends OptimisticLockingSupport {
         return events;
     }
 
-    public List<Event> findByAggregateAndPayloadType(long id) {
-        List<Event> events = new ArrayList<>();
-        try {
-            PreparedStatement prep = conn.prepareStatement(SELECT_QUERY);
-            prep.setLong(1, id);
-            ResultSet rs = prep.executeQuery();
+    private static String serializePayload(Object payload) {
+        return ConvertUtil.serializePayload(payload);
+    }
 
-            while (rs.next()) {
-                Timestamp timestamp = rs.getTimestamp("occurredAt");
-                String payloads = rs.getString("payload");
-                Event anEvent = Events.builder()
-                        .id(rs.getLong("id"))
-                        .aggregateId(rs.getLong("aggregateId"))
-                        .name(rs.getString("name"))
-                        .seq(rs.getLong("seq"))
-                        .payload(ConvertUtil.convertPayload(payloads, rs.getString("name"))) // TODO 어떻께?
-                        .occurredAt(timestamp.toLocalDateTime()).build();
-                events.add(anEvent);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return events;
+    private Object deSerializePayload(Object payload, String name) {
+        return ConvertUtil.deSerializePayload(payload, name);
     }
 }

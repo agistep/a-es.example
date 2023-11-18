@@ -3,7 +3,6 @@ package io.agistep.event.sed;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.protobuf.Message;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
 
@@ -21,16 +20,15 @@ public final class ConvertUtil {
         return JsonToEvent.convert(str);
     }
 
-    public static String convertPayload(Object o) {
+    public static String serializePayload(Object o) {
         return PayloadSerialization.convert(o);
     }
 
-    public static Message convertPayload(String o, String name) {
-        return PayloadToMessage.convert(o, name);
+    public static Object deSerializePayload(Object o, String name) {
+        return PayloadDeSerialization.convert(o, name);
     }
 
     static final class PayloadSerialization {
-        //TODO create Object Payload??
 
         public static String convert(Object e) {
             List<Serializer> serializers = List.of(
@@ -45,17 +43,27 @@ public final class ConvertUtil {
         }
     }
 
-    static final class PayloadToMessage {
+    static final class PayloadDeSerialization {
 
-        public static Message convert(String serialized, String name) {
+        public static Object convert(Object serialized, String name) {
+
             Class<?> clazz;
             try {
                 clazz = Class.forName(name);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            ProtocolBufferDeserializer protocolBufferDeserializer = new ProtocolBufferDeserializer(clazz);
-            return (Message) protocolBufferDeserializer.deserialize(serialized.getBytes(StandardCharsets.UTF_8));
+            List<Deserializer> deSerializers = List.of(
+                    new JsonObjectDeserializer(),
+                    new ProtocolBufferDeserializer(clazz)
+                    );
+
+            Deserializer deserializer = deSerializers.stream()
+                    .filter(s -> s.isSupport(serialized))
+                    .findFirst()
+                    .orElseThrow(UnsupportedOperationException::new);
+
+            return deserializer.deserialize(String.valueOf(serialized).getBytes(StandardCharsets.UTF_8));
         }
     }
 
