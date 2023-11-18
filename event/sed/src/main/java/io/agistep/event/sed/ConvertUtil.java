@@ -26,10 +26,11 @@ public final class ConvertUtil {
     }
 
     public static Message convertPayload(String o, String name) {
-        return PayloadDeSerialization.convert(o, name);
+        return PayloadToMessage.convert(o, name);
     }
 
     static final class PayloadSerialization {
+        //TODO create Object Payload??
 
         public static String convert(Object e) {
             List<Serializer> serializers = List.of(
@@ -44,7 +45,7 @@ public final class ConvertUtil {
         }
     }
 
-    static final class PayloadDeSerialization {
+    static final class PayloadToMessage {
 
         public static Message convert(String serialized, String name) {
             Class<?> clazz;
