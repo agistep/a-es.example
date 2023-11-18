@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JDBCEventStorageTest {
+class JDBCEventStorage_JSON_Test {
 
     JDBCEventStorage eventStorage;
 
@@ -20,16 +20,18 @@ class JDBCEventStorageTest {
         String driverName = "org.testcontainers.jdbc.ContainerDatabaseDriver";
         eventStorage = new JDBCEventStorage(driverName, url);
     }
-
     @Test
     void saveAndFind() {
-        String anyPayload = "{'a': 1, 'b':2}";
+        String anyJsonPayload = "{"
+                + "\"name\": \"John\","
+                + "\"age\": 30"
+                + "}";
 
         Event e = Events.builder()
                 .id(1L)
                 .aggregateId(11L)
                 .name("foo")
-                .payload(anyPayload)
+                .payload(anyJsonPayload)
                 .seq(1L)
                 .occurredAt(LocalDateTime.now()).build();
 
@@ -46,7 +48,7 @@ class JDBCEventStorageTest {
         assertThat(byAggregate.get(0).getName()).isEqualTo(e.getName());
         assertThat(byAggregate.get(0).getOccurredAt()).isEqualTo(e.getOccurredAt());
 
-        // BROKEN!!!
-        assertThat(byAggregate.get(0).getPayload()).isEqualTo(e.getPayload());
+        assertThat(byAggregate.get(0).getPayload()).isEqualTo(anyJsonPayload);
     }
+
 }

@@ -39,13 +39,17 @@ class JDBCEventStorage_Optimistic_Lock_Test {
 
     @NotNull
     private static Event eventBySeq(long seq0) {
-        Event e = Events.builder()
-                .id(1L)
-                .aggregateId(11L)
+        String anyJsonPayload = "{"
+                + "\"name\": \"John\","
+                + "\"age\": 30"
+                + "}";
+
+        return Events.builder()
+                .id(13L)
+                .aggregateId(5L)
                 .name("foo")
-                .payload("{'a': 1, 'b':2}")
+                .payload(anyJsonPayload)
                 .seq(seq0)
                 .occurredAt(LocalDateTime.now()).build();
-        return e;
     }
 }

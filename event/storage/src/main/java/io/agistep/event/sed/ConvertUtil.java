@@ -3,9 +3,11 @@ package io.agistep.event.sed;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.protobuf.Message;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,6 +19,43 @@ public final class ConvertUtil {
 
     public static Event convert(String str) {
         return JsonToEvent.convert(str);
+    }
+
+    public static String convertPayload(Object o) {
+        return PayloadSerialization.convert(o);
+    }
+
+    public static Message convertPayload(String o, String name) {
+        return PayloadDeSerialization.convert(o, name);
+    }
+
+    static final class PayloadSerialization {
+
+        public static String convert(Object e) {
+            List<Serializer> serializers = List.of(
+                    new JsonSerializer(),
+                    new ProtocolBufferSerializer());
+
+            Serializer serializer = serializers.stream()
+                    .filter(s -> s.isSupport(e))
+                    .findFirst()
+                    .orElseThrow(UnsupportedOperationException::new);
+            return new String(serializer.serialize(e));
+        }
+    }
+
+    static final class PayloadDeSerialization {
+
+        public static Message convert(String serialized, String name) {
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(name);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            ProtocolBufferDeserializer protocolBufferDeserializer = new ProtocolBufferDeserializer(clazz);
+            return (Message) protocolBufferDeserializer.deserialize(serialized.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     static final class EventToJson {
@@ -48,7 +87,6 @@ public final class ConvertUtil {
                 throw new RuntimeException(ex);
             }
         }
-
     }
 
     static final class JsonToEvent {

@@ -5,7 +5,7 @@ import io.agistep.event.Event;
 abstract class OptimisticLockingSupport implements EventStorage {
     @Override
     final public void save(Event anEvent) {
-        if(this.possible(anEvent.getAggregateId(), anEvent.getSeq())){
+        if (this.possible(anEvent.getAggregateId(), anEvent.getSeq())) {
             throw new OptimisticLockedException();
         }
 

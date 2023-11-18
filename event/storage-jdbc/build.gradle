@@ -10,6 +10,8 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
+    id "com.google.protobuf" version "0.9.3" // for-EVENT-payload
+
 }
 
 repositories {
@@ -32,6 +34,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.5'
     implementation 'org.postgresql:postgresql:42.5.1'
 
+    testImplementation 'com.google.protobuf:protobuf-java:3.23.0'
+
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
@@ -40,6 +44,9 @@ dependencies {
 
     testImplementation "org.testcontainers:postgresql:1.19.1"
     testImplementation 'org.postgresql:postgresql:42.6.0'
+
+
+
 
 }
 
@@ -50,5 +57,12 @@ testing {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('5.8.2')
         }
+    }
+}
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.23.0'
     }
 }

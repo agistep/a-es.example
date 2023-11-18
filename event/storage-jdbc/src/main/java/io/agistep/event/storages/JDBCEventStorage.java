@@ -1,10 +1,8 @@
 package io.agistep.event.storages;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
-import org.postgresql.util.PGobject;
+import io.agistep.event.sed.ConvertUtil;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -17,9 +15,9 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             "VALUES (?, ?, ?, ?, ?, ?)";
     static final String SELECT_QUERY = "SELECT id, seq, name, aggregateId, payload, occurredAt FROM events WHERE aggregateId = ?";
 
-    Connection conn = null;
+    Connection conn;
 
-    public JDBCEventStorage() {
+    JDBCEventStorage() {
         this("jdbc:postgresql://localhost:5422/agistep", "agistep", "agistep", "org.postgresql.Driver");
     }
 
@@ -58,7 +56,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
 
-            prep.setObject(5, payload.toString());
+            prep.setObject(5, ConvertUtil.convertPayload(payload));
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();
         } catch (SQLException e) {
@@ -84,8 +82,32 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                         .aggregateId(rs.getLong("aggregateId"))
                         .name(rs.getString("name"))
                         .seq(rs.getLong("seq"))
-                        .payload(payload) // TODO 어떻께?
+                        .payload(payload)
+                        .occurredAt(timestamp.toLocalDateTime()).build();
+                events.add(anEvent);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return events;
+    }
 
+    public List<Event> findByAggregateAndPayloadType(long id) {
+        List<Event> events = new ArrayList<>();
+        try {
+            PreparedStatement prep = conn.prepareStatement(SELECT_QUERY);
+            prep.setLong(1, id);
+            ResultSet rs = prep.executeQuery();
+
+            while (rs.next()) {
+                Timestamp timestamp = rs.getTimestamp("occurredAt");
+                String payloads = rs.getString("payload");
+                Event anEvent = Events.builder()
+                        .id(rs.getLong("id"))
+                        .aggregateId(rs.getLong("aggregateId"))
+                        .name(rs.getString("name"))
+                        .seq(rs.getLong("seq"))
+                        .payload(ConvertUtil.convertPayload(payloads, rs.getString("name"))) // TODO 어떻께?
                         .occurredAt(timestamp.toLocalDateTime()).build();
                 events.add(anEvent);
             }
