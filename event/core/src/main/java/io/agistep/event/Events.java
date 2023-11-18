@@ -36,7 +36,7 @@ public final class Events {
     }
 
     public static long getLatestSeqOf(Long aggregateId) {
-        return ThreadLocalEventSeqHolder.instance().getVersion(aggregateId);
+        return ThreadLocalEventSeqHolder.instance().getSeq(aggregateId);
     }
 
     public static void reorganize(Object aggregate, Event anEvent) {

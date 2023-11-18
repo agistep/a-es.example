@@ -26,7 +26,7 @@ public final class ConvertUtil {
                 EventDTO eventDTO = new EventDTO();
                 eventDTO.setId(e.getId());
                 eventDTO.setName(e.getName());
-                eventDTO.setVersion(e.getSeq());
+                eventDTO.setSeq(e.getSeq());
                 eventDTO.setAggregateId(e.getAggregateId());
                 eventDTO.setOccurredAt(e.getOccurredAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
@@ -64,7 +64,7 @@ public final class ConvertUtil {
                 return Events.builder()
                         .id(eventDTO.getId())
                         .name(eventDTO.getName())
-                        .seq(eventDTO.getVersion())
+                        .seq(eventDTO.getSeq())
                         .aggregateId(eventDTO.getAggregateId())
                         .payload(payload)
                         .occurredAt(occurredAt).build();
@@ -78,7 +78,7 @@ public final class ConvertUtil {
     public static class EventDTO {
 
         long id;
-        long version;
+        long seq;
         String name;
         long aggregateId;
         String payload;
@@ -93,12 +93,12 @@ public final class ConvertUtil {
             this.id = id;
         }
 
-        public long getVersion() {
-            return version;
+        public long getSeq() {
+            return seq;
         }
 
-        public void setVersion(long version) {
-            this.version = version;
+        public void setSeq(long seq) {
+            this.seq = seq;
         }
 
         public String getName() {

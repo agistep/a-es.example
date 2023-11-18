@@ -20,7 +20,7 @@ import java.util.List;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 class CSVFileEventStorage extends OptimisticLockingSupport {
-    final static String[] HEADERS = {"id", "version", "name", "aggregateId", "payload", "occurredAt"};
+    final static String[] HEADERS = {"id", "seq", "name", "aggregateId", "payload", "occurredAt"};
     public static final int COMMA_ASCII = 44;
 
     Path path;
@@ -96,7 +96,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public long findLatestVersionOfAggregate(long id) {
+    public long findLatestSeqOfAggregate(long id) {
         return 0;
     }
 
@@ -104,7 +104,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
         return Events.builder()
                 .id(Long.parseLong(record.get("id")))
                 .name(record.get("name"))
-                .seq(Long.parseLong(record.get("version")))
+                .seq(Long.parseLong(record.get("seq")))
                 .aggregateId(Long.parseLong(record.get("aggregateId")))
                 .payload(deserialize(record))
                 .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();

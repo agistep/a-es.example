@@ -12,9 +12,9 @@ abstract class OptimisticLockingSupport implements EventStorage {
         lockedSave(anEvent);
     }
 
-    protected boolean possible(long aggregateId, long version) {
-        long ltv = findLatestVersionOfAggregate(aggregateId);
-        return ltv >= version;
+    protected boolean possible(long aggregateId, long seq) {
+        long ltv = findLatestSeqOfAggregate(aggregateId);
+        return ltv >= seq;
     }
 
     public abstract void lockedSave(Event anEvent);
