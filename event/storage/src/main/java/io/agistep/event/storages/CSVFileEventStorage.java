@@ -96,7 +96,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public long findLatestVersionOfAggregate(long id) {
+    public long findLatestSeqOfAggregate(long id) {
         return 0;
     }
 

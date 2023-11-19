@@ -10,6 +10,7 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
+
 }
 
 repositories {
@@ -22,6 +23,7 @@ java {
 }
 dependencies {
     api project(":event:core")
+    api project(":event:sed")
 
     implementation 'org.valid4j:valid4j:0.5.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -30,7 +32,6 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.12'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.5'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.5'
-
     testImplementation 'org.assertj:assertj-core:3.24.2'
     testImplementation 'org.mockito:mockito-core:5.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'

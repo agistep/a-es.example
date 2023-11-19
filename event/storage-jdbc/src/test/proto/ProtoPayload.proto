@@ -1,0 +1,11 @@
+syntax = "proto3";
+package io.agistep.event.storages;
+
+option java_multiple_files = true;
+option java_package = "io.agistep.event.storages";
+option java_outer_classname = "ProtoPayloadProto";
+
+
+message ProtoPayload {
+  string body = 1;
+}
