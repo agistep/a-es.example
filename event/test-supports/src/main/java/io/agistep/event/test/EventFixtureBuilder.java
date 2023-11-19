@@ -1,5 +1,6 @@
 package io.agistep.event.test;
 
+import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
 import io.agistep.event.Events;
 
@@ -15,7 +16,7 @@ import static org.valid4j.Validation.validate;
 public final class EventFixtureBuilder {
 
     public static Event anEventWith(Object firstPayload) {
-        return anEventWith(getRandom(), firstPayload);
+        return anEventWith(getId(), firstPayload);
     }
 
     public static Event anEventWith(long aggregateId, Object firstPayload) {
@@ -23,11 +24,11 @@ public final class EventFixtureBuilder {
     }
 
     public static EventFixtureBuilder eventsWith(Object firstPayload) {
-        return new EventFixtureBuilder(getRandom(), firstPayload);
+        return new EventFixtureBuilder(getId(), firstPayload);
     }
 
-    private static long getRandom() {
-        return (long) (Math.random() * 10000);
+    private static long getId() {
+        return IdUtils.gen();
     }
 
     public static EventFixtureBuilder eventsWith(long aggregateId, Object firstPayload) {
@@ -55,7 +56,7 @@ public final class EventFixtureBuilder {
     }
 
     public Event[] build() {
-        AtomicLong eventId = new AtomicLong(getRandom());
+        AtomicLong eventId = new AtomicLong(getId());
         long latestSeq = Events.getLatestSeqOf(this.aggregateId);
         AtomicLong seq = new AtomicLong(latestSeq ==-1 ? INITIAL_SEQ : latestSeq );
 
@@ -70,7 +71,7 @@ public final class EventFixtureBuilder {
     }
 
     public Event[] build(long beginSeq) {
-        AtomicLong eventId = new AtomicLong(getRandom());
+        AtomicLong eventId = new AtomicLong(getId());
         AtomicLong seq = new AtomicLong(beginSeq == -1 ? INITIAL_SEQ : ++beginSeq);
 
         return payloads.stream().map(p-> Events.builder()
