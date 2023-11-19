@@ -10,12 +10,12 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Assertive.require;
 
-public final class Events {
+public final class EventSource {
     public static final long INITIAL_SEQ = 0;
     public static HoldListener holdListener;
     public static ReorganizeListener reorganizeListener;
 
-    private Events() {
+    private EventSource() {
         /* This is Utility */
     }
 
@@ -45,7 +45,7 @@ public final class Events {
 
     public static void reorganize(Object aggregate, Event[] events) {
         Arrays.stream(events)
-                .forEach(e -> Events.reorganize(aggregate, e));
+                .forEach(e -> EventSource.reorganize(aggregate, e));
     }
 
     public static void clearAll() {
@@ -62,11 +62,11 @@ public final class Events {
     }
 
     public static void setListener(HoldListener holdListener) {
-        Events.holdListener = holdListener;
+        EventSource.holdListener = holdListener;
     }
 
     public static void setListener(ReorganizeListener reorganizeListener) {
-        Events.reorganizeListener = reorganizeListener;
+        EventSource.reorganizeListener = reorganizeListener;
     }
 
 

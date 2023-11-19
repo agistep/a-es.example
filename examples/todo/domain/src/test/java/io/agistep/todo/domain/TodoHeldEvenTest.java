@@ -1,6 +1,6 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.event.test.HoldingEventListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +15,12 @@ class TodoHeldEvenTest {
 
     @BeforeEach
     void setUp() {
-        Events.setListener(new HoldingEventListener());
+        EventSource.setListener(new HoldingEventListener());
     }
 
     @AfterEach
     void tearDown() {
-        Events.setListener(null);
+        EventSource.setListener(null);
     }
 
     @Test

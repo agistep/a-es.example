@@ -23,13 +23,13 @@ final class EventApplier {
 
         if (IdUtils.notAssignedIdOf(aggregate)) {
             aggregateId = IdUtils.gen();
-            nextSeq = Events.INITIAL_SEQ;
+            nextSeq = EventSource.INITIAL_SEQ;
         } else {
             aggregateId = IdUtils.idOf(aggregate);
             nextSeq = nextSeq(aggregateId);
         }
 
-        return Events.builder()
+        return EventSource.builder()
                 .id(eventId)
                 .aggregateId(aggregateId)
                 .seq(nextSeq)
@@ -41,15 +41,15 @@ final class EventApplier {
     }
 
     private static void hold(Event anEvent) {
-        Optional.ofNullable(Events.holdListener).ifPresent(listen->listen.beforeHold(anEvent));
+        Optional.ofNullable(EventSource.holdListener).ifPresent(listen->listen.beforeHold(anEvent));
         ThreadLocalEventHolder.instance().hold(anEvent);
-        Optional.ofNullable(Events.holdListener).ifPresent(listen->listen.afterHold(anEvent));
+        Optional.ofNullable(EventSource.holdListener).ifPresent(listen->listen.afterHold(anEvent));
     }
 
     private static void reorganize(Object aggregate, Event anEvent) {
-        Optional.ofNullable(Events.reorganizeListener).ifPresent (listen-> listen.beforeReorganize(aggregate, anEvent));
+        Optional.ofNullable(EventSource.reorganizeListener).ifPresent (listen-> listen.beforeReorganize(aggregate, anEvent));
         EventReorganizer.reorganize(aggregate, anEvent);
-        Optional.ofNullable(Events.reorganizeListener).ifPresent (listen-> listen.afterReorganize(aggregate, anEvent));
+        Optional.ofNullable(EventSource.reorganizeListener).ifPresent (listen-> listen.afterReorganize(aggregate, anEvent));
     }
 
     private static long nextSeq(Object aggregateId) {

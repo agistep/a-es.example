@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,7 +61,7 @@ public final class ConvertUtil {
                 ProtocolBufferDeserializer deserialize = new ProtocolBufferDeserializer(clazz);
                 Object payload = deserialize.deserialize(eventDTO.getPayload().getBytes());
                 LocalDateTime occurredAt = LocalDateTime.parse(eventDTO.getOccurredAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                return Events.builder()
+                return EventSource.builder()
                         .id(eventDTO.getId())
                         .name(eventDTO.getName())
                         .seq(eventDTO.getSeq())

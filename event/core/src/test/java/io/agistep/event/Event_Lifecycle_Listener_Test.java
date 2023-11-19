@@ -20,11 +20,11 @@ class Event_Lifecycle_Listener_Test {
     void name() {
         HoldListener holdListener = mock(HoldListener.class);
         ReorganizeListener reorganizeListener = mock(ReorganizeListener.class);
-        Events.setListener(holdListener);
-        Events.setListener(reorganizeListener);
+        EventSource.setListener(holdListener);
+        EventSource.setListener(reorganizeListener);
 
         Foo aggregate = new Foo();
-        Events.apply(aggregate, CREATED);
+        EventSource.apply(aggregate, CREATED);
 
         InOrder inOrder = inOrder(holdListener, reorganizeListener);
 

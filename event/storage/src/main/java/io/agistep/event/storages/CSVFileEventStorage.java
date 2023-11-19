@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.event.sed.Deserializer;
 import io.agistep.event.sed.ProtocolBufferDeserializer;
 import io.agistep.event.sed.ProtocolBufferSerializer;
@@ -101,7 +101,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     private static Event getEvent(CSVRecord record) {
-        return Events.builder()
+        return EventSource.builder()
                 .id(Long.parseLong(record.get("id")))
                 .name(record.get("name"))
                 .seq(Long.parseLong(record.get("seq")))

@@ -15,7 +15,7 @@ class EventReorganizerTest {
 
 	@BeforeEach
 	void setUp() {
-		Events.clearAll();
+		EventSource.clearAll();
 	}
 
 	@Test
@@ -28,17 +28,17 @@ class EventReorganizerTest {
 		Object reOpened = new FooReOpened();
 
 
-		Events.reorganize(aggregate, eventsWith(1L, created)
+		EventSource.reorganize(aggregate, eventsWith(1L, created)
 				.next(done).build());
 
 		assertThat(aggregate.getId()).isEqualTo(1L);
 		assertThat(aggregate.isDone()).isTrue();
-		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(1);
+		assertThat(EventSource.getLatestSeqOf(aggregate)).isEqualTo(1);
 
-		Events.apply(aggregate, reOpened);
+		EventSource.apply(aggregate, reOpened);
 
 		assertThat(aggregate.isDone()).isFalse();
-		assertThat(Events.getLatestSeqOf(aggregate)).isEqualTo(2);
+		assertThat(EventSource.getLatestSeqOf(aggregate)).isEqualTo(2);
 
 	}
 }

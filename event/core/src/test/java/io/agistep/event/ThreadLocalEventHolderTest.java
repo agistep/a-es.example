@@ -31,10 +31,10 @@ class ThreadLocalEventHolderTest {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.hold(Events.builder()
+        sut.hold(EventSource.builder()
                         .id(1L)
                 .name(payload.getClass().getName())
-                .seq(Events.INITIAL_SEQ)
+                .seq(EventSource.INITIAL_SEQ)
                 .aggregateId(aggregateId)
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())
@@ -52,7 +52,7 @@ class ThreadLocalEventHolderTest {
     @Test
     void clear() {
         Foo aggregate = new Foo();
-        Events.reorganize(aggregate, anEventWith(new FooCreated()));
+        EventSource.reorganize(aggregate, anEventWith(new FooCreated()));
 
         sut.clear(aggregate);
 

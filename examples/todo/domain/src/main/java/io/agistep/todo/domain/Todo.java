@@ -2,7 +2,7 @@ package io.agistep.todo.domain;
 
 import io.agistep.event.Event;
 import io.agistep.event.EventHandler;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import lombok.Getter;
 
 
@@ -23,7 +23,7 @@ public class Todo {
 		TodoCreated created = TodoCreated.newBuilder()
 				.setText(text)
 				.build();
-		Events.apply(this, created);
+		EventSource.apply(this, created);
 	}
 
 	@EventHandler(payload = TodoCreated.class)
@@ -38,7 +38,7 @@ public class Todo {
 			return;
 		}
 		Object payload = TodoDone.newBuilder().build();
-		Events.apply(this, payload);
+		EventSource.apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoDone.class)
@@ -48,7 +48,7 @@ public class Todo {
 
 	public void updateText(String text) {
 		Object payload = TodoTextUpdated.newBuilder().setUpdatedText(text).build();
-		Events.apply(this, payload);
+		EventSource.apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
@@ -61,7 +61,7 @@ public class Todo {
 			return;
 		}
 		Object payload = TodoHeld.newBuilder().build();
-		Events.apply(this, payload);
+		EventSource.apply(this, payload);
 	}
 
 	@EventHandler(payload = TodoHeld.class)

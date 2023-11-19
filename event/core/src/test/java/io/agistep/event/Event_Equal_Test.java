@@ -12,7 +12,7 @@ class Event_Equal_Test {
 
     @Test
     void equals() {
-        Event anEvent = Events.builder()
+        Event anEvent = EventSource.builder()
                 .id(1L)
                 .seq(0L)
 
@@ -23,7 +23,7 @@ class Event_Equal_Test {
                 .occurredAt(LocalDateTime.of(2023,12,12,0,0))
                 .build();
 
-        Event anEvent2 = Events.builder()
+        Event anEvent2 = EventSource.builder()
                 .id(1L)
                 .seq(0L)
 

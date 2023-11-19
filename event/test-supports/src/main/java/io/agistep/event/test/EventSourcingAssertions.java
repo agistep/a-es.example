@@ -2,7 +2,7 @@ package io.agistep.event.test;
 
 import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.assertj.core.api.ObjectAssert;
 
 import java.util.function.Consumer;
@@ -89,7 +89,7 @@ public final class EventSourcingAssertions {
 
         private Pair<AGG> getPair(Event[] recently, Supplier<AGG> initAggregate) {
             AGG aggregate = initAggregate.get();
-            Events.reorganize(aggregate, recently);
+            EventSource.reorganize(aggregate, recently);
             final long latestSeq = getLatestSeq(aggregate);
 
             return new Pair<>(aggregate, latestSeq);
@@ -98,11 +98,11 @@ public final class EventSourcingAssertions {
         private static long getLatestSeq(Object aggregate) {
             long seq;
             try {
-                seq = Events.getLatestSeqOf(aggregate);
-                if(Events.getHoldEvents(aggregate).isEmpty()) {
+                seq = EventSource.getLatestSeqOf(aggregate);
+                if(EventSource.getHoldEvents(aggregate).isEmpty()) {
                     return seq;
                 }else {
-                    return seq - Events.getHoldEvents(aggregate).size();
+                    return seq - EventSource.getHoldEvents(aggregate).size();
                 }
             } catch (Exception e) {
                 return -1;
@@ -127,7 +127,7 @@ public final class EventSourcingAssertions {
             }
 
             HoldingEventLogger.init().clear();
-            Events.clearAll();
+            EventSource.clearAll();
         }
 
         private Event[] getActual() {
