@@ -24,10 +24,12 @@ class HandlerAdapter {
 	public void handle(Object aggregate, Event anEvent) {
 		String eventName = anEvent.getName();
 
-		Pair<EventHandler, Method> aa = handlerMethods.stream().filter(hm -> hm.getKey().payload().getName().equals(eventName)).findFirst().get();
+		Pair<EventHandler, Method> handlerMethodPair = handlerMethods.stream()
+				.filter(hm -> hm.getKey().payload().getName().equals(eventName))
+				.findFirst().get();
 
 		try {
-			Method method = aa.getValue();
+			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);
 			method.invoke(aggregate, anEvent);
 		} catch (InvocationTargetException | IllegalAccessException e) {

@@ -34,13 +34,13 @@ final class EventReorganizer {
 	private static HandlerAdapter initHandler(Object aggregate) {
 		final String aggregateName = aggregate.getClass().getName();
 		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
-		List<Pair<EventHandler, Method>> aa = eventHandlerMethods.stream().map(m -> {
+		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
 			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
 
 			return Pair.of(annotation, m);
 		}).collect(toList());
 
-		return new HandlerAdapter(aggregateName, aa);
+		return new HandlerAdapter(aggregateName, handlerMethodPairs);
 	}
 
 	final static Map<String, HandlerAdapter> handlers = new HashMap<>();
