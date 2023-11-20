@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ class JDBCEventStorage_Protobuf_Test {
 
         ProtoPayload build = ProtoPayload.newBuilder().setBody("foo-body").build();
 
-        Event e = Events.builder()
+        Event e = EventSource.builder()
                 .id(12L)
                 .aggregateId(12L)
                 .name(ANY_EVENT_NAME)

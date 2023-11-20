@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.event.sed.ConvertUtil;
 
 import java.sql.*;
@@ -77,7 +77,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                 String name = rs.getString("name");
                 Object payload1 = deSerializePayload(rs.getObject("payload"), name);
 
-                Event anEvent = Events.builder()
+                Event anEvent = EventSource.builder()
                         .id(rs.getLong("id"))
                         .aggregateId(rs.getLong("aggregateId"))
                         .name(name)

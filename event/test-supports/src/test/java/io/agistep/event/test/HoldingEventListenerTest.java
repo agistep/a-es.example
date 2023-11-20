@@ -1,6 +1,6 @@
 package io.agistep.event.test;
 
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
@@ -25,12 +25,12 @@ class HoldingEventListenerTest {
     @BeforeEach
     void setUp() {
         sut = new HoldingEventListener(); // TODO 상태를 가지고 있다..
-        Events.setListener(sut);
+        EventSource.setListener(sut);
     }
 
     @AfterEach
     void tearDown() {
-        Events.setListener(null); // TODO  불필요한 ... 현재 Listener 는 static 으로 유지 된다.
+        EventSource.setListener(null); // TODO  불필요한 ... 현재 Listener 는 static 으로 유지 된다.
     }
 
     @Test
@@ -46,8 +46,8 @@ class HoldingEventListenerTest {
         assertEventSourcing(Foo::new)
                 .given()
                 .when((aggregate) -> {
-                    Events.apply(aggregate, FIRST_PAYLOAD);
-                    Events.apply(aggregate, SECOND_PAYLOAD);
+                    EventSource.apply(aggregate, FIRST_PAYLOAD);
+                    EventSource.apply(aggregate, SECOND_PAYLOAD);
                 })
                 .expected(FIRST_PAYLOAD, SECOND_PAYLOAD);
     }
@@ -57,7 +57,7 @@ class HoldingEventListenerTest {
         assertEventSourcing(Foo::new)
                 .given(FIRST_PAYLOAD, SECOND_PAYLOAD)
                 .when((aggregate) -> {
-                    Events.apply(aggregate, THIRD_PAYLOAD);
+                    EventSource.apply(aggregate, THIRD_PAYLOAD);
                 })
                 .expected(THIRD_PAYLOAD);
     }

@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ class JDBCEventStorage_JSON_Test {
                 + "\"age\": 30"
                 + "}";
 
-        Event e = Events.builder()
+        Event e = EventSource.builder()
                 .id(1L)
                 .aggregateId(11L)
                 .name(ANY_EVENT_NAME)

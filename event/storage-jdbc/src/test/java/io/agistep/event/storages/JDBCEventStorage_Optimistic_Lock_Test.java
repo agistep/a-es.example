@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +45,7 @@ class JDBCEventStorage_Optimistic_Lock_Test {
                 + "\"age\": 30"
                 + "}";
 
-        return Events.builder()
+        return EventSource.builder()
                 .id(13L)
                 .aggregateId(5L)
                 .name(ANY_EVENT_NAME)

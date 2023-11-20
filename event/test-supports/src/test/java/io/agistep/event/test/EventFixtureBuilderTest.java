@@ -1,7 +1,7 @@
 package io.agistep.event.test;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static io.agistep.event.Events.INITIAL_SEQ;
+import static io.agistep.event.EventSource.INITIAL_SEQ;
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -63,10 +63,10 @@ class EventFixtureBuilderTest {
     void eventsWith2() {
 
         Foo aggregate = new Foo();
-        Events.reorganize(aggregate, EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
+        EventSource.reorganize(aggregate, EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build());
-        Events.apply(aggregate, THIRD_PAYLOAD);
+        EventSource.apply(aggregate, THIRD_PAYLOAD);
 
         Event[] expected = EventFixtureBuilder.eventsWith(aggregate.getId(), THIRD_PAYLOAD).build();
 

@@ -2,14 +2,14 @@ package io.agistep.event.test;
 
 import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static io.agistep.event.Events.INITIAL_SEQ;
+import static io.agistep.event.EventSource.INITIAL_SEQ;
 import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Validation.validate;
 
@@ -57,10 +57,10 @@ public final class EventFixtureBuilder {
 
     public Event[] build() {
         AtomicLong eventId = new AtomicLong(getId());
-        long latestSeq = Events.getLatestSeqOf(this.aggregateId);
+        long latestSeq = EventSource.getLatestSeqOf(this.aggregateId);
         AtomicLong seq = new AtomicLong(latestSeq ==-1 ? INITIAL_SEQ : latestSeq );
 
-        return payloads.stream().map(p-> Events.builder()
+        return payloads.stream().map(p-> EventSource.builder()
                 .id(eventId.getAndIncrement())
                 .seq(seq.getAndIncrement())
                 .aggregateId(this.aggregateId)
@@ -74,7 +74,7 @@ public final class EventFixtureBuilder {
         AtomicLong eventId = new AtomicLong(getId());
         AtomicLong seq = new AtomicLong(beginSeq == -1 ? INITIAL_SEQ : ++beginSeq);
 
-        return payloads.stream().map(p-> Events.builder()
+        return payloads.stream().map(p-> EventSource.builder()
                 .id(eventId.getAndIncrement())
                 .seq(seq.getAndIncrement())
                 .aggregateId(this.aggregateId)

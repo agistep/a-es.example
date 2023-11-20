@@ -30,11 +30,11 @@ class ThreadLocalEventSeqHolder {
 		changes.remove();
 	}
 
-	long nextVersion(Long aggregateId) {
-		return getVersion(aggregateId)+1;
+	long nextSeq(Long aggregateId) {
+		return getSeq(aggregateId)+1;
 	}
 
-	long getVersion(Long aggregateId) {
+	long getSeq(Long aggregateId) {
 		return changes.get().getOrDefault(aggregateId, -1L);
 	}
 }

@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import io.agistep.event.sed.Deserializer;
 import io.agistep.event.sed.ProtocolBufferDeserializer;
 import io.agistep.event.sed.ProtocolBufferSerializer;
@@ -20,7 +20,7 @@ import java.util.List;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 class CSVFileEventStorage extends OptimisticLockingSupport {
-    final static String[] HEADERS = {"id", "version", "name", "aggregateId", "payload", "occurredAt"};
+    final static String[] HEADERS = {"id", "seq", "name", "aggregateId", "payload", "occurredAt"};
     public static final int COMMA_ASCII = 44;
 
     Path path;
@@ -101,10 +101,10 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     private static Event getEvent(CSVRecord record) {
-        return Events.builder()
+        return EventSource.builder()
                 .id(Long.parseLong(record.get("id")))
                 .name(record.get("name"))
-                .seq(Long.parseLong(record.get("version")))
+                .seq(Long.parseLong(record.get("seq")))
                 .aggregateId(Long.parseLong(record.get("aggregateId")))
                 .payload(deserialize(record))
                 .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();

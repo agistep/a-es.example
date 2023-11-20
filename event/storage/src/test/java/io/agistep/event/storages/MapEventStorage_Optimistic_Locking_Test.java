@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ class MapEventStorage_Optimistic_Locking_Test {
 
     MapEventStorage sut;
 
-    Event anEvent1 = Events.builder()
+    Event anEvent1 = EventSource.builder()
             .id(1L)
             .seq(0L)
 
@@ -23,7 +23,7 @@ class MapEventStorage_Optimistic_Locking_Test {
             .payload("Hello ~~~")
             .build();
 
-    Event anEvent2 = Events.builder()
+    Event anEvent2 = EventSource.builder()
             .id(1L)
             .seq(1L)
 
@@ -33,7 +33,7 @@ class MapEventStorage_Optimistic_Locking_Test {
             .payload("Hello ~~~")
             .build();
 
-    Event anEvent3 = Events.builder()
+    Event anEvent3 = EventSource.builder()
             .id(1L)
             .seq(1L)
 

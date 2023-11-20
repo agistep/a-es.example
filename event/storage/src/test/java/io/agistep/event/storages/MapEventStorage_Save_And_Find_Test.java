@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.Events;
+import io.agistep.event.EventSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class MapEventStorage_Save_And_Find_Test {
 
     MapEventStorage sut;
 
-    Event anEvent = Events.builder()
+    Event anEvent = EventSource.builder()
             .id(1L)
             .seq(0L)
 

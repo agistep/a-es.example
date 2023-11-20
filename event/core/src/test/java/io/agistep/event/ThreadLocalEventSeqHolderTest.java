@@ -9,22 +9,22 @@ class ThreadLocalEventSeqHolderTest {
 
     @BeforeEach
     void setUp() {
-        Events.clearAll();
+        EventSource.clearAll();
     }
 
     @Test
     void name() {
-        assertThat(Events.getLatestSeqOf(1L)).isEqualTo(-1);
+        assertThat(EventSource.getLatestSeqOf(1L)).isEqualTo(-1);
 
         ThreadLocalEventSeqHolder.instance().setSeq(1L,0);
-        assertThat(Events.getLatestSeqOf(1L)).isEqualTo(0);
+        assertThat(EventSource.getLatestSeqOf(1L)).isEqualTo(0);
 
         ThreadLocalEventSeqHolder.instance().setSeq(1L,1);
-        assertThat(Events.getLatestSeqOf(1L)).isEqualTo(1);
+        assertThat(EventSource.getLatestSeqOf(1L)).isEqualTo(1);
 
-        Events.clearAll();
+        EventSource.clearAll();
 
-        assertThat(Events.getLatestSeqOf(1L)).isEqualTo(-1);
+        assertThat(EventSource.getLatestSeqOf(1L)).isEqualTo(-1);
 
     }
 }
