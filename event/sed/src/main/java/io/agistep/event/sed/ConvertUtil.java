@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -17,6 +18,53 @@ public final class ConvertUtil {
 
     public static Event convert(String str) {
         return JsonToEvent.convert(str);
+    }
+
+    public static String serializePayload(Object o) {
+        return PayloadSerialization.convert(o);
+    }
+
+    public static Object deSerializePayload(Object o, String name) {
+        return PayloadDeSerialization.convert(o, name);
+    }
+
+    static final class PayloadSerialization {
+
+        public static String convert(Object e) {
+            List<Serializer> serializers = List.of(
+                    new JsonSerializer(),
+                    new ProtocolBufferSerializer());
+
+            Serializer serializer = serializers.stream()
+                    .filter(s -> s.isSupport(e))
+                    .findFirst()
+                    .orElseThrow(UnsupportedOperationException::new);
+            return new String(serializer.serialize(e));
+        }
+    }
+
+    static final class PayloadDeSerialization {
+
+        public static Object convert(Object serialized, String name) {
+
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(name);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            List<Deserializer> deSerializers = List.of(
+                    new JsonObjectDeserializer(),
+                    new ProtocolBufferDeserializer(clazz)
+                    );
+
+            Deserializer deserializer = deSerializers.stream()
+                    .filter(s -> s.isSupport(serialized))
+                    .findFirst()
+                    .orElseThrow(UnsupportedOperationException::new);
+
+            return deserializer.deserialize(String.valueOf(serialized).getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     static final class EventToJson {
@@ -48,7 +96,6 @@ public final class ConvertUtil {
                 throw new RuntimeException(ex);
             }
         }
-
     }
 
     static final class JsonToEvent {
