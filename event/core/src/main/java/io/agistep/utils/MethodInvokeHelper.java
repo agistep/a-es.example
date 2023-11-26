@@ -8,7 +8,7 @@ import java.lang.reflect.Parameter;
 
 import static org.valid4j.Validation.validate;
 
-public class MethodHelper {
+public class MethodInvokeHelper {
 
     public static Object invoke(Object aggregate, Event anEvent, Method method) throws IllegalAccessException, InvocationTargetException {
         Parameter[] parameters = method.getParameters();

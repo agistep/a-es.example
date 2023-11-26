@@ -1,6 +1,6 @@
 package io.agistep.event;
 
-import io.agistep.utils.MethodHelper;
+import io.agistep.utils.MethodInvokeHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +46,7 @@ class HandlerAdapter {
 			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);
 
-			MethodHelper.invoke(aggregate, anEvent, method);
+			MethodInvokeHelper.invoke(aggregate, anEvent, method);
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
