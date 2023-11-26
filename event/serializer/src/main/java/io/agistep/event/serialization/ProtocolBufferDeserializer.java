@@ -1,6 +1,7 @@
-package io.agistep.event.serializer;
+package io.agistep.event.serialization;
 
 import com.google.protobuf.ByteString;
+import io.agistep.event.Deserializer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

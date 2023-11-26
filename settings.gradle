@@ -16,6 +16,7 @@ include('event:core')
 include('event:serializer')
 include('event:storage')
 include('event:storage-jdbc')
+include('event:storage-csv')
 
 include('event:test-supports')
 

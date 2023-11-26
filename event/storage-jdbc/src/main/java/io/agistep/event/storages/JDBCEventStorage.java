@@ -3,7 +3,7 @@ package io.agistep.event.storages;
 import com.zaxxer.hikari.HikariDataSource;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
-import io.agistep.event.serializer.ConvertUtil;
+import io.agistep.event.ConvertUtil;
 
 import java.sql.*;
 import java.time.LocalDateTime;

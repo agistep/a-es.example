@@ -1,6 +1,7 @@
-package io.agistep.event.serializer;
+package io.agistep.event.serialization;
 
 import com.google.protobuf.Message;
+import io.agistep.event.Serializer;
 
 public class ProtocolBufferSerializer implements Serializer {
     @Override

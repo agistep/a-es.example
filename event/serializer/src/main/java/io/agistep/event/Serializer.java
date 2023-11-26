@@ -1,4 +1,4 @@
-package io.agistep.event.serializer;
+package io.agistep.event;
 
 public interface Serializer {
     boolean isSupport(Object payload);
