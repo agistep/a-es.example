@@ -1,4 +1,4 @@
-package io.agistep.event.sed;
+package io.agistep.event.serializer;
 
 import org.junit.jupiter.api.Test;
 

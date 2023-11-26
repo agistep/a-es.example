@@ -2,10 +2,10 @@ package io.agistep.event.storages;
 
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
-import io.agistep.event.sed.Deserializer;
-import io.agistep.event.sed.ProtocolBufferDeserializer;
-import io.agistep.event.sed.ProtocolBufferSerializer;
-import io.agistep.event.sed.Serializer;
+import io.agistep.event.serializer.Deserializer;
+import io.agistep.event.serializer.ProtocolBufferDeserializer;
+import io.agistep.event.serializer.ProtocolBufferSerializer;
+import io.agistep.event.serializer.Serializer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;

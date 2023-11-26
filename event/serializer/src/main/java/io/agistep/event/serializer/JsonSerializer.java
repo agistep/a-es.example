@@ -1,4 +1,4 @@
-package io.agistep.event.sed;
+package io.agistep.event.serializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

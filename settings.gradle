@@ -13,7 +13,7 @@ include('event:identity')
 
 include('event:fixtures')
 include('event:core')
-include('event:sed')
+include('event:serializer')
 include('event:storage')
 include('event:storage-jdbc')
 

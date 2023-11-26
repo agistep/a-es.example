@@ -6,7 +6,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 import io.agistep.event.Event;
-import io.agistep.event.sed.ConvertUtil;
+import io.agistep.event.serializer.ConvertUtil;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
