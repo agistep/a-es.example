@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.utils.MethodHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,14 +25,18 @@ class HandlerAdapter {
 	public void handle(Object aggregate, Event anEvent) {
 		String eventName = anEvent.getName();
 
-		Pair<EventHandler, Method> aa = handlerMethods.stream().filter(hm -> hm.getKey().payload().getName().equals(eventName)).findFirst().get();
+		Pair<EventHandler, Method> handlerMethodPair = handlerMethods.stream()
+				.filter(hm -> hm.getKey().payload().getName().equals(eventName))
+				.findFirst().get();
 
 		try {
-			Method method = aa.getValue();
+			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);
-			method.invoke(aggregate, anEvent);
+
+			MethodHelper.invoke(aggregate, anEvent, method);
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
 }

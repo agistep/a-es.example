@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.test.EventSourcingAssertions.assertEventSourcing;
 
-class TodoHeldEvenTest {
-
-
-    Todo sut;
+class TodoHeldEventTest {
 
     @BeforeEach
     void setUp() {

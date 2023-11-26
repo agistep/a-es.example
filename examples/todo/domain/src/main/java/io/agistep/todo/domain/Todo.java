@@ -27,9 +27,9 @@ public class Todo {
 	}
 
 	@EventHandler(payload = TodoCreated.class)
-	void onCreated(Event anEvent) {
-		this.id = (Long) anEvent.getAggregateId();
-		this.text = ((TodoCreated) anEvent.getPayload()).getText();
+	void onCreated(TodoCreated created, Long aggregateId) {
+		this.id = aggregateId;
+		this.text = created.getText();
 		this.done = false;
 	}
 
@@ -42,7 +42,7 @@ public class Todo {
 	}
 
 	@EventHandler(payload = TodoDone.class)
-	void onDone(Event anEvent) {
+	void onDone(TodoDone done) {
 		this.done = true;
 	}
 
@@ -52,8 +52,8 @@ public class Todo {
 	}
 
 	@EventHandler(payload = TodoTextUpdated.class)
-	void onTextUpdated(Event anEvent) {
-		this.text = ((TodoTextUpdated) anEvent.getPayload()).getUpdatedText();
+	void onTextUpdated(TodoTextUpdated payload) {
+		this.text = payload.getUpdatedText();
 	}
 
 	public void hold() {
@@ -68,6 +68,5 @@ public class Todo {
 	void onHeld(Event anEvent) {
 		this.hold = true;
 	}
-
 
 }

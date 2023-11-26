@@ -14,7 +14,7 @@ public class Foo {
 
     @EventHandler(payload= FooCreated.class)
     void onCreated(Event anEvent) {
-        this.id = (Long) anEvent.getAggregateId();
+        this.id = anEvent.getAggregateId();
     }
 
     @EventHandler(payload=FooDone.class)
