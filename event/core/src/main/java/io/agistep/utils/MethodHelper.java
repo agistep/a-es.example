@@ -6,24 +6,30 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+import static org.valid4j.Validation.validate;
+
 public class MethodHelper {
 
-    public static void invoke(Object aggregate, Event anEvent, Method method) throws IllegalAccessException, InvocationTargetException {
+    public static Object invoke(Object aggregate, Event anEvent, Method method) throws IllegalAccessException, InvocationTargetException {
         Parameter[] parameters = method.getParameters();
+        validate(parameters != null && parameters.length > 0,
+                new IllegalArgumentException(String.format("Method %s has no parameters", method.getName())));
 
-        if (parameters == null || parameters.length == 0) {
-            return;
-        }
+        if (parameters.length == 1) {
+            Class<?> firstParameterType = parameters[0].getType();
 
-        if (parameters.length > 1) {
-            Class<?> secondParameterType = parameters[1].getType();
-
-            if (Long.class.isAssignableFrom(secondParameterType)) {
-                method.invoke(aggregate, anEvent.getPayload(), anEvent.getAggregateId());
-                return;
+            if (Event.class.isAssignableFrom(firstParameterType)) {
+                return method.invoke(aggregate, anEvent);
+            } else {
+                return method.invoke(aggregate, anEvent.getPayload());
             }
         }
 
-        method.invoke(aggregate, anEvent);
+        Class<?> secondParameterType = parameters[1].getType();
+        if (Long.class.isAssignableFrom(secondParameterType)) {
+            return method.invoke(aggregate, anEvent.getPayload(), anEvent.getAggregateId());
+        }
+
+        throw new IllegalArgumentException(String.format("Method %s has invalid parameters", method.getName()));
     }
 }

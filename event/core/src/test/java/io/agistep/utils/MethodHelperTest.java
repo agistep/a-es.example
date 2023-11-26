@@ -15,40 +15,20 @@ import static org.mockito.Mockito.*;
 class MethodHelperTest {
 
     @Test
-    @DisplayName("invoke method with parameter of Event")
-    void invoke0() throws Exception {
-        FooAggregate aggregate = spy(new FooAggregate());
+    @DisplayName("Exception: invoke method with no parameters")
+    void invoke0() throws NoSuchMethodException {
+        Object aggregate = new FooAggregate();
         Event event = mock(Event.class);
-        Method method = FooAggregate.class.getMethod("methodWithOneEventParam", Event.class);
+        Method method = FooAggregate.class.getMethod("methodWithNoParams");
 
-        MethodHelper.invoke(aggregate, event, method);
-
-        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(aggregate).methodWithOneEventParam(eventCaptor.capture());
-
-        assertSame(event, eventCaptor.getValue());
-    }
-
-    @Test
-    @DisplayName("invoke method with parameters of payload and aggregate id")
-    void invoke1() throws Exception {
-        FooAggregate aggregate = spy(new FooAggregate());
-
-        Event event = mock(Event.class);
-        when(event.getAggregateId()).thenReturn(1L);
-        FooCreated payload = new FooCreated();
-        when(event.getPayload()).thenReturn(payload);
-
-        Method method = FooAggregate.class.getMethod("methodWithTwoParams", Object.class, Long.class);
-
-        MethodHelper.invoke(aggregate, event, method);
-
-        verify(aggregate).methodWithTwoParams(payload, 1L);
+        assertThrows(IllegalArgumentException.class, () -> {
+            MethodHelper.invoke(aggregate, event, method);
+        });
     }
 
     @Test
     @DisplayName("invoke method with invalid parameters")
-    void invoke2() throws NoSuchMethodException {
+    void invoke1() throws NoSuchMethodException {
         Object aggregate = new FooAggregate();
         Event event = mock(Event.class);
         Method method = FooAggregate.class.getMethod("methodWithInvalidParams", String.class, String.class);
@@ -58,8 +38,72 @@ class MethodHelperTest {
         });
     }
 
+    @Test
+    @DisplayName("invoke method with parameter of Event")
+    void invoke2() throws Exception {
+        // given
+        FooAggregate aggregate = spy(new FooAggregate());
+        Event event = mock(Event.class);
+        Method method = FooAggregate.class.getMethod("methodWithOneEventParam", Event.class);
+
+        // when
+        MethodHelper.invoke(aggregate, event, method);
+
+        // then
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(aggregate).methodWithOneEventParam(eventCaptor.capture());
+
+        assertSame(event, eventCaptor.getValue());
+    }
+
+    @Test
+    @DisplayName("invoke method with parameter of payload")
+    void invoke3() throws Exception {
+        // given
+        FooAggregate aggregate = spy(new FooAggregate());
+
+        Event event = mock(Event.class);
+        FooCreated payload = new FooCreated();
+        when(event.getPayload()).thenReturn(payload);
+
+        Method method = FooAggregate.class.getMethod("methodWithOnePayloadParam", Object.class);
+
+        // when
+        MethodHelper.invoke(aggregate, event, method);
+
+        // then
+        ArgumentCaptor<FooCreated> payloadCaptor = ArgumentCaptor.forClass(FooCreated.class);
+        verify(aggregate).methodWithOnePayloadParam(payloadCaptor.capture());
+
+        assertSame(payload, payloadCaptor.getValue());
+    }
+
+    @Test
+    @DisplayName("invoke method with parameters of payload and aggregate id")
+    void invoke4() throws Exception {
+        // given
+        FooAggregate aggregate = spy(new FooAggregate());
+
+        Event event = mock(Event.class);
+        when(event.getAggregateId()).thenReturn(1L);
+        FooCreated payload = new FooCreated();
+        when(event.getPayload()).thenReturn(payload);
+
+        Method method = FooAggregate.class.getMethod("methodWithTwoParams", Object.class, Long.class);
+
+        // when
+        MethodHelper.invoke(aggregate, event, method);
+
+        // then
+        verify(aggregate).methodWithTwoParams(payload, 1L);
+    }
+
     static class FooAggregate {
+        public void methodWithNoParams() {}
+
         public void methodWithOneEventParam(Event event) {}
+
+        public void methodWithOnePayloadParam(Object payload) {}
 
         public void methodWithTwoParams(Object payload, Long aggregateId) {}
 
