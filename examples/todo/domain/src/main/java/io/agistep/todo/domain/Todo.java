@@ -27,9 +27,9 @@ public class Todo {
 	}
 
 	@EventHandler(payload = TodoCreated.class)
-	void onCreated(Event anEvent) {
-		this.id = anEvent.getAggregateId();
-		this.text = ((TodoCreated) anEvent.getPayload()).getText();
+	void onCreated(TodoCreated created, Long aggregateId) {
+		this.id = aggregateId;
+		this.text = created.getText();
 		this.done = false;
 	}
 
