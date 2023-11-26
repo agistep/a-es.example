@@ -1,5 +1,6 @@
 package io.agistep.event.storages;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 import io.agistep.event.sed.ConvertUtil;
@@ -23,10 +24,15 @@ class JDBCEventStorage extends OptimisticLockingSupport {
 
     public JDBCEventStorage(String driverName, String url, String id, String pw) {
         try {
-            Class.forName(driverName);
-            conn = DriverManager.getConnection(url, id, pw);
 
+            Class.forName(driverName);
+            HikariDataSource ds = new HikariDataSource();
+            ds.setJdbcUrl(url);
+            ds.setUsername(id);
+            ds.setPassword(pw);
+            conn = ds.getConnection();
         } catch (ClassNotFoundException | SQLException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -34,7 +40,9 @@ class JDBCEventStorage extends OptimisticLockingSupport {
     public JDBCEventStorage(String driverName, String url) {
         try {
             Class.forName(driverName);
-            conn = DriverManager.getConnection(url);
+            HikariDataSource ds = new HikariDataSource();
+            ds.setJdbcUrl(url);
+            conn = ds.getConnection();
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
