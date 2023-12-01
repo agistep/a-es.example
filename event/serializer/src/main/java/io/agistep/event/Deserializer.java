@@ -1,4 +1,4 @@
-package io.agistep.event.sed;
+package io.agistep.event;
 
 public interface Deserializer {
     boolean isSupport(Object payload);

@@ -1,10 +1,12 @@
-package io.agistep.event.sed;
+package io.agistep.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.serialization.JsonObjectDeserializer;
+import io.agistep.event.serialization.JsonSerializer;
+import io.agistep.event.serialization.ProtocolBufferDeserializer;
+import io.agistep.event.serialization.ProtocolBufferSerializer;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

@@ -1,9 +1,10 @@
-package io.agistep.event.sed;
+package io.agistep.event.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.agistep.event.Serializer;
 
-class JsonSerializer implements Serializer {
+public class JsonSerializer implements Serializer {
     @Override
     public boolean isSupport(Object payload) {
         String p;
