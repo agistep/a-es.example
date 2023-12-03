@@ -5,6 +5,7 @@ import io.agistep.event.storages.MapEventStorage;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NoOpSerializerTest {
 
@@ -15,11 +16,8 @@ class NoOpSerializerTest {
         sut = new MapEventStorage();
         Serializer serializer = sut.getSerializer();
         assertThat(serializer).isInstanceOf(NoOpSerializer.class);
-        //NoOp 은 무엇인가? 기존의 것을 그대로 넘기는 것은 무엇을 의미하는가?
-        // 아무것도 하지 않는다. Serialization 을 하지 않는다.
-        // 저장/불러오기를 어떻게 테스트하지??
 
-
+        assertThatThrownBy(() -> serializer.serialize("Hello")).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test

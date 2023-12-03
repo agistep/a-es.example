@@ -3,6 +3,7 @@ package io.agistep.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.protobuf.Message;
 import io.agistep.event.serialization.JsonObjectDeserializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
@@ -14,11 +15,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public final class ConvertUtil {
-    public static String convert(Event e) {
+    public static String simpleEventConvert(Event e) {
         return EventToJson.convert(e);
     }
 
-    public static Event convert(String str) {
+    public static Event simpleEventConvert(String str) {
         return JsonToEvent.convert(str);
     }
 
@@ -58,7 +59,7 @@ public final class ConvertUtil {
             List<Deserializer> deSerializers = List.of(
                     new JsonObjectDeserializer(),
                     new ProtocolBufferDeserializer(clazz)
-                    );
+            );
 
             Deserializer deserializer = deSerializers.stream()
                     .filter(s -> s.isSupport(serialized))
@@ -72,6 +73,9 @@ public final class ConvertUtil {
     static final class EventToJson {
 
         public static String convert(Event e) {
+            ObjectMapper om = new ObjectMapper();
+            om.registerModule(new JavaTimeModule());
+
             try {
                 EventDTO eventDTO = new EventDTO();
                 eventDTO.setId(e.getId());
@@ -81,18 +85,13 @@ public final class ConvertUtil {
                 eventDTO.setOccurredAt(e.getOccurredAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
                 Object payload = e.getPayload();
-                List<Serializer> serializers = List.of(
-                        new JsonSerializer(),
-                        new ProtocolBufferSerializer());
-                Serializer serializer = serializers.stream()
-                        .filter(s -> s.isSupport(payload))
-                        .findFirst()
-                        .orElseThrow(UnsupportedOperationException::new);
-                eventDTO.setPayload(new String(serializer.serialize(payload)));
 
-
-                ObjectMapper om = new ObjectMapper();
-                om.registerModule(new JavaTimeModule());
+                ProtocolBufferSerializer serializer = new ProtocolBufferSerializer();
+                if (serializer.isSupport(payload)) {
+                    eventDTO.setPayload(new String(serializer.serialize(payload)));
+                } else {
+                    eventDTO.setPayload(String.valueOf(payload));
+                }
                 return om.writeValueAsString(eventDTO);
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
@@ -106,9 +105,16 @@ public final class ConvertUtil {
             ObjectMapper om = new ObjectMapper();
             try {
                 EventDTO eventDTO = om.readValue(str, EventDTO.class);
+
                 Class<?> clazz = Class.forName(eventDTO.getName());
                 ProtocolBufferDeserializer deserialize = new ProtocolBufferDeserializer(clazz);
-                Object payload = deserialize.deserialize(eventDTO.getPayload().getBytes());
+                Object payload;
+                if (deserialize.isSupport(eventDTO.getPayload())) {
+                    payload = deserialize.deserialize(eventDTO.getPayload().getBytes());
+                } else {
+                    payload = eventDTO.getPayload();
+                }
+
                 LocalDateTime occurredAt = LocalDateTime.parse(eventDTO.getOccurredAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                 return EventSource.builder()
                         .id(eventDTO.getId())

@@ -63,6 +63,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setLong(2, seq);
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
+            //TODO 여기에 Serilizer 가 추가되어야 한다.
             prep.setObject(5, serializePayload(payload));
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();

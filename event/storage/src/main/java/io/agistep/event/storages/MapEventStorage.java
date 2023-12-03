@@ -1,5 +1,6 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.ConvertUtil;
 import io.agistep.event.Event;
 import io.agistep.event.Serializer;
 import io.agistep.event.serialization.NoOpSerializer;
@@ -8,14 +9,14 @@ import java.util.*;
 
 public class MapEventStorage extends OptimisticLockingSupport {
 
-    Map<Long, List<Event>> events;
+    Map<Long, List<String>> events;
     private final Serializer serializer;
 
     public MapEventStorage() {
         this(new HashMap<>(), new NoOpSerializer());
     }
 
-    public MapEventStorage(Map<Long, List<Event>> events, Serializer serializer) {
+    public MapEventStorage(Map<Long, List<String>> events, Serializer serializer) {
         this.events = events;
         this.serializer = serializer;
     }
@@ -24,19 +25,29 @@ public class MapEventStorage extends OptimisticLockingSupport {
     public void lockedSave(Event anEvent) {
         this.events.putIfAbsent(anEvent.getAggregateId(), new ArrayList<>());
         if (serializer instanceof NoOpSerializer) {
-            this.events.get(anEvent.getAggregateId()).add(anEvent);
+            String convert = ConvertUtil.simpleEventConvert(anEvent);
+            this.events.get(anEvent.getAggregateId()).add(convert);
+            return;
         }
-        this.events.get(anEvent.getAggregateId()).add(anEvent);
+
+        if (serializer.isSupport(anEvent.getPayload())) {
+            byte[] serialize = serializer.serialize(anEvent);
+            String converted = Converter.convert(serialize);
+            this.events.get(anEvent.getAggregateId()).add(converted);
+            return;
+        }
+
+        throw new RuntimeException("지원하지 않는 Serializer 입니다. ");
     }
 
     @Override
     public List<Event> findByAggregate(long id) {
-        return Collections.unmodifiableList(this.events.getOrDefault(id, List.of()));
+        return this.events.getOrDefault(id, List.of()).stream()
+                .map(ConvertUtil::simpleEventConvert)
+                .toList();
     }
 
-
     public Serializer getSerializer() {
-        Serializer noOpSerializer = new NoOpSerializer();
-        return noOpSerializer;
+        return serializer;
     }
 }

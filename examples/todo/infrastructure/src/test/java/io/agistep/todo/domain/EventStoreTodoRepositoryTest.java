@@ -23,7 +23,7 @@ class EventStoreTodoRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		Map<Long, List<Event>> map = new HashMap<>();
+		Map<Long, List<String>> map = new HashMap<>();
 		sut = new EventStoreTodoRepository(new MapEventStorage(map, new NoOpSerializer()));
 	}
 

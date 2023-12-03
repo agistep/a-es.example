@@ -1,8 +1,8 @@
 package io.agistep.event.serialization;
 
-import io.agistep.event.Serializer;
+import io.agistep.event.Deserializer;
 
-public class NoOpSerializer implements Serializer {
+public class NoOpDeSerializer implements Deserializer {
 
     @Override
     public boolean isSupport(Object payload) {
@@ -10,7 +10,7 @@ public class NoOpSerializer implements Serializer {
     }
 
     @Override
-    public byte[] serialize(Object payload) {
+    public Object deserialize(byte[] byteArray) {
         throw new UnsupportedOperationException();
     }
 }

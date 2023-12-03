@@ -44,4 +44,7 @@ class MapEventStorage_Serializer_Test {
         sut.save(anEvent);
         verifyNoInteractions(spy);
     }
+
+    // 어색한 부분이 있다. map 에 저장하려니 byte[] 라는 것이 맞지 않다.
+    // convert 라는게 있어야 하는거 아닐까??
 }

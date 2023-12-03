@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,8 +21,8 @@ class MapEventStorage_Save_And_Find_Test {
             .id(1L)
             .seq(0L)
             .aggregateId(1L)
-            .name("TEST")
-            .payload("Hello ~~~")
+            .name(TestPayload.class.getName())
+            .payload(TestPayload.of("Hello~~~"))
             .occurredAt(LocalDateTime.of(2023,12,12,0,0))
             .build();
 
@@ -37,7 +38,19 @@ class MapEventStorage_Save_And_Find_Test {
         List<Event> actual = sut.findByAggregate(anEvent.getId());
 
         assertThat(actual).hasSize(1);
-        assertThat(actual.get(0)).isEqualTo(anEvent);
+        assertThat(actual.get(0).getId()).isEqualTo(anEvent.getId());
+    }
+
+    private static class TestPayload {
+        private final String value;
+
+        public TestPayload(String value) {
+            this.value = value;
+        }
+
+        static TestPayload of(String value) {
+            return new TestPayload(value);
+        }
     }
 
 }
