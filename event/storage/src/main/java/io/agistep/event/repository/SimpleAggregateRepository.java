@@ -15,6 +15,7 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
     public SimpleAggregateRepository(AggregateInitializer<AGG> initializer, EventStorage storage) {
         this.storage = storage;
         this.initializer = initializer;
+        // TODO Seriazliation 선택하게끔??
     }
 
     @Override

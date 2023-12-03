@@ -19,9 +19,7 @@ class MapEventStorage_Save_And_Find_Test {
     Event anEvent = EventSource.builder()
             .id(1L)
             .seq(0L)
-
             .aggregateId(1L)
-
             .name("TEST")
             .payload("Hello ~~~")
             .occurredAt(LocalDateTime.of(2023,12,12,0,0))
