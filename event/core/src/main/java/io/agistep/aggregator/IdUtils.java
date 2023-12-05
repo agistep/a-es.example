@@ -23,7 +23,7 @@ public final class IdUtils {
 
 			Object id = field.get(aggregate);
 			if(field.getType().isPrimitive() &&  Long.valueOf(0).equals(id)) {
-				throw new IllegalAggregateIdException(format("Primitive Type lnt and long must not have 0(zero). :%s", aggregate.getClass().getName()));
+				throw new IllegalAggregateIdException(format("Primitive Type Int and long must not have 0(zero). :%s", aggregate.getClass().getName()));
 			}
 
 			if(!field.getType().isPrimitive() && id == null)  {
@@ -47,7 +47,7 @@ public final class IdUtils {
 
 		if(isNotSupport(field)) {
 			throw new IllegalAggregateIdException(
-					format("An ID field is applied should be one of the following types: " +
+					format("An ID field applied should be one of the following types: " +
 					"long, Long. :%s", aggregate.getClass().getName()),null);
 		}
 
@@ -77,4 +77,3 @@ public final class IdUtils {
 		return IDENTIFIER_PROVIDER.nextId();
 	}
 }
-

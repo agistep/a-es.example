@@ -36,12 +36,12 @@ class IdUtilsTest {
         assertThatThrownBy(()->idOf(G))
                 .isInstanceOf(IllegalAggregateIdException.class)
                 .hasMessage(
-                        "An ID field is applied should be one of the following types: " +
+                        "An ID field applied should be one of the following types: " +
                         "long, Long. :%s", G.getClass().getName());
 
         assertThatThrownBy(()->idOf(H))
                 .isInstanceOf(IllegalAggregateIdException.class)
-                .hasMessage("Primitive Type lnt and long must not have 0(zero). :%s", H.getClass().getName());
+                .hasMessage("Primitive Type Int and long must not have 0(zero). :%s", H.getClass().getName());
 
         assertThatThrownBy(()->idOf(I))
                 .isInstanceOf(IllegalAggregateIdException.class)
