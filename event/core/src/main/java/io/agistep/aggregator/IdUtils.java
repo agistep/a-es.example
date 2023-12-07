@@ -7,6 +7,8 @@ import io.agistep.identity.spi.IdentifierProviderFactory;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import static java.lang.String.format;
+
 public final class IdUtils {
 
 	private static final IdentifierProvider IDENTIFIER_PROVIDER = IdentifierProviderFactory.load().get();
@@ -21,11 +23,11 @@ public final class IdUtils {
 
 			Object id = field.get(aggregate);
 			if(field.getType().isPrimitive() &&  Long.valueOf(0).equals(id)) {
-				throw new IllegalAggregateIdException("Primitive Type lnt and long must not have 0(zero).");
+				throw new IllegalAggregateIdException(format("Primitive Type Int and long must not have 0(zero). :%s", aggregate.getClass().getName()));
 			}
 
 			if(!field.getType().isPrimitive() && id == null)  {
-				throw new IllegalAggregateIdException("An Id must not be null.");
+				throw new IllegalAggregateIdException(format("An Id must not be null. :%s", aggregate.getClass().getName()));
 			}
 
 			return (Long) id;
@@ -39,11 +41,14 @@ public final class IdUtils {
 		try {
 			field = aggregate.getClass().getDeclaredField(NAME_OF_ID_FIELD);
 		} catch (NoSuchFieldException e) {
-			throw new IllegalAggregateIdException("Aggregate Must Have 'id' field.",e);
+			throw new IllegalAggregateIdException(
+					format("Aggregate Must Have 'id' field. :%s", aggregate.getClass().getName()),e);
 		}
 
 		if(isNotSupport(field)) {
-			throw new IllegalAggregateIdException("An ID field is applied should be one of the following types: int, long, Long, Integer, String",null);
+			throw new IllegalAggregateIdException(
+					format("An ID field applied should be one of the following types: " +
+					"long, Long. :%s", aggregate.getClass().getName()),null);
 		}
 
 		field.setAccessible(true);
@@ -72,4 +77,3 @@ public final class IdUtils {
 		return IDENTIFIER_PROVIDER.nextId();
 	}
 }
-

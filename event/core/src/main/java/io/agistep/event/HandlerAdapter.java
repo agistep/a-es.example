@@ -6,6 +6,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import static java.lang.String.format;
 
 
 class HandlerAdapter {
@@ -13,7 +16,15 @@ class HandlerAdapter {
 	private final String aggregateName;
 	private final List<Pair<EventHandler, Method>> handlerMethods;
 
-	public HandlerAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
+	HandlerAdapter(Object aggregate, List<Pair<EventHandler, Method>> handlerMethods) {
+		this(aggregate.getClass(), handlerMethods);
+	}
+
+	HandlerAdapter(Class<?> aggregateClass, List<Pair<EventHandler, Method>> handlerMethods) {
+		this(aggregateClass.getName(), handlerMethods);
+	}
+
+	private HandlerAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
 		this.aggregateName = aggregateName;
 		this.handlerMethods = handlerMethods;
 	}
@@ -27,7 +38,9 @@ class HandlerAdapter {
 
 		Pair<EventHandler, Method> handlerMethodPair = handlerMethods.stream()
 				.filter(hm -> hm.getKey().payload().getName().equals(eventName))
-				.findFirst().get();
+				.findFirst()
+				.orElseThrow(()->
+						new NoSuchElementException(format("No Handler for %s Present in %s.", eventName, aggregate.getClass().getName())));
 
 		try {
 			Method method = handlerMethodPair.getValue();

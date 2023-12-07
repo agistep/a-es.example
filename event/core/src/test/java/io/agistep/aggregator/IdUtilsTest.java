@@ -31,19 +31,21 @@ class IdUtilsTest {
     void idOf0() {
         assertThatThrownBy(()->idOf(F))
                 .isInstanceOf(IllegalAggregateIdException.class)
-                .hasMessage("Aggregate Must Have 'id' field.");
+                .hasMessage("Aggregate Must Have 'id' field. :%s", F.getClass().getName());
 
         assertThatThrownBy(()->idOf(G))
                 .isInstanceOf(IllegalAggregateIdException.class)
-                .hasMessage("An ID field is applied should be one of the following types: int, long, Long, Integer, String");
+                .hasMessage(
+                        "An ID field applied should be one of the following types: " +
+                        "long, Long. :%s", G.getClass().getName());
 
         assertThatThrownBy(()->idOf(H))
                 .isInstanceOf(IllegalAggregateIdException.class)
-                .hasMessage("Primitive Type lnt and long must not have 0(zero).");
+                .hasMessage("Primitive Type Int and long must not have 0(zero). :%s", H.getClass().getName());
 
         assertThatThrownBy(()->idOf(I))
                 .isInstanceOf(IllegalAggregateIdException.class)
-                .hasMessage("An Id must not be null.");
+                .hasMessage("An Id must not be null. :%s", I.getClass().getName());
     }
 
     @Test
