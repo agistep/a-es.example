@@ -85,8 +85,7 @@ public final class EventSource {
                 this.occurredAt(LocalDateTime.now());
             }
 
-            //TODO 제거해야 하는 부분 required validation
-            String n = name == null ? payload.getClass().getName() : name;
+            String n = payload.getClass().getName();
             return new ObjectPayloadEnvelop(
                     require(id, is(not(nullValue()))),
                     n,
@@ -98,11 +97,6 @@ public final class EventSource {
 
         public EventBuilder id(long id) {
             this.id = id;
-            return this;
-        }
-
-        public EventBuilder name(String name) {
-            this.name = name;
             return this;
         }
 

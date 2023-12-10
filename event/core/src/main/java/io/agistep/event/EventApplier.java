@@ -33,8 +33,6 @@ final class EventApplier {
                 .id(eventId)
                 .aggregateId(aggregateId)
                 .seq(nextSeq)
-                //TODO payload 가 string 같은 놈이라면 ???
-                .name(payload.getClass().getName())
                 .payload(payload)
                 .occurredAt(LocalDateTime.now())
                 .build();

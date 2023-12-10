@@ -1,8 +1,5 @@
 package io.agistep.event.storages;
 
-import com.google.protobuf.AbstractMessage;
-import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.Message;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +18,6 @@ class MapEventStorage_Optimistic_Locking_Test {
             .seq(0L)
 
             .aggregateId(1L)
-
-            .name(TestPayload.class.getName())
             .payload(TestPayload.of("Hello~~~"))
             .build();
 
@@ -32,7 +27,6 @@ class MapEventStorage_Optimistic_Locking_Test {
 
             .aggregateId(1L)
 
-            .name(TestPayload.class.getName())
             .payload(TestPayload.of("Hello~~~"))
             .build();
 
@@ -40,7 +34,6 @@ class MapEventStorage_Optimistic_Locking_Test {
             .id(1L)
             .seq(1L)
             .aggregateId(1L)
-            .name(TestPayload.class.getName())
             .payload(TestPayload.of("Hello~~~"))
             .build();
 

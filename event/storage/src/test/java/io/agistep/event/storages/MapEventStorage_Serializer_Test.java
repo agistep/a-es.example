@@ -1,7 +1,5 @@
 package io.agistep.event.storages;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 import io.agistep.event.serialization.JsonSerializer;
@@ -20,31 +18,17 @@ import static org.mockito.Mockito.verifyNoInteractions;
 class MapEventStorage_Serializer_Test {
 
     MapEventStorage sut;
-    String a = "Hello Payload";
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    Event anEvent = EventSource.builder()
-            .id(1L)
-            .seq(0L)
-            .aggregateId(1L)
-            .name("TEST")
-            .payload(a)
-            .occurredAt(LocalDateTime.of(2023, 12, 12, 0, 0))
-            .build();
 
     private record JsonPayloadTest(String value) {
     }
 
     @Test
-    void JsonSerializer_test() throws JsonProcessingException {
-
-        String abc  = objectMapper.writeValueAsString(new JsonPayloadTest("value"));
+    void JsonSerializer_test() {
         Event anEvent = EventSource.builder()
                 .id(1L)
                 .seq(0L)
                 .aggregateId(1L)
-                .name(JsonPayloadTest.class.getName())
-                .payload(abc)
+                .payload(new JsonPayloadTest("value"))
                 .occurredAt(LocalDateTime.of(2023, 12, 12, 0, 0))
                 .build();
 
@@ -57,14 +41,12 @@ class MapEventStorage_Serializer_Test {
     }
 
     @Test
-    void JsonDeSerializer_test() throws JsonProcessingException {
-        String abc  = objectMapper.writeValueAsString(new JsonPayloadTest("value"));
+    void JsonDeSerializer_test() {
         Event anEvent = EventSource.builder()
                 .id(1L)
                 .seq(0L)
                 .aggregateId(1L)
-                .name(JsonPayloadTest.class.getName())
-                .payload(abc)
+                .payload(new JsonPayloadTest("value"))
                 .occurredAt(LocalDateTime.of(2023, 12, 12, 0, 0))
                 .build();
 

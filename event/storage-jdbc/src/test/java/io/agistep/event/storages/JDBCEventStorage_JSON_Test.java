@@ -31,7 +31,6 @@ class JDBCEventStorage_JSON_Test {
         Event e = EventSource.builder()
                 .id(1L)
                 .aggregateId(11L)
-                .name(john.getClass().getName())
                 .payload(john)
                 .seq(1L)
                 .occurredAt(LocalDateTime.now())

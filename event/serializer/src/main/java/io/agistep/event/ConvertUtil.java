@@ -9,10 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public final class ConvertUtil {
-    public static Object deSerializePayload(Object o, String name) {
-        return PayloadDeSerialization.convert(o, name);
-    }
-
     static final class PayloadSerialization {
 
         public static String convert(Object e) {

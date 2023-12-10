@@ -21,7 +21,6 @@ class MapEventStorage_Save_And_Find_Test {
             .id(1L)
             .seq(0L)
             .aggregateId(1L)
-            .name(TestPayload.class.getName())
             .payload(TestPayload.of("Hello~~~"))
             .occurredAt(LocalDateTime.of(2023,12,12,0,0))
             .build();

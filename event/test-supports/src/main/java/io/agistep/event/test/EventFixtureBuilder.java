@@ -64,7 +64,6 @@ public final class EventFixtureBuilder {
                 .id(eventId.getAndIncrement())
                 .seq(seq.getAndIncrement())
                 .aggregateId(this.aggregateId)
-                .name(p.getClass().getName())
                 .payload(p)
                 .occurredAt(LocalDateTime.now())
                 .build()).toList().toArray(new Event[0]);
@@ -78,7 +77,6 @@ public final class EventFixtureBuilder {
                 .id(eventId.getAndIncrement())
                 .seq(seq.getAndIncrement())
                 .aggregateId(this.aggregateId)
-                .name(p.getClass().getName())
                 .payload(p)
                 .occurredAt(LocalDateTime.now())
                 .build()).toList().toArray(new Event[0]);

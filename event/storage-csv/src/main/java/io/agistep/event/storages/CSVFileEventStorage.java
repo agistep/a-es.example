@@ -101,13 +101,15 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     private static Event getEvent(CSVRecord record) {
+        Object deserialize = deserialize(record);
+
         return EventSource.builder()
                 .id(Long.parseLong(record.get("id")))
-                .name(record.get("name"))
                 .seq(Long.parseLong(record.get("seq")))
                 .aggregateId(Long.parseLong(record.get("aggregateId")))
-                .payload(deserialize(record))
-                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();
+                .payload(deserialize)
+                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .build();
     }
 
     private static Object deserialize(CSVRecord record) {

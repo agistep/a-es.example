@@ -120,7 +120,6 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                 Event anEvent = EventSource.builder()
                         .id(rs.getLong("id"))
                         .aggregateId(rs.getLong("aggregateId"))
-                        .name(name)
                         .seq(rs.getLong("seq"))
                         .payload(deserialize)
                         .occurredAt(timestamp.toLocalDateTime()).build();
@@ -146,10 +145,6 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                 new JsonObjectDeserializer(name),
                 new ProtocolBufferDeserializer(name)
         };
-    }
-
-    private Object deSerializePayload(Object payload, String name) {
-        return ConvertUtil.deSerializePayload(payload, name);
     }
 
     void setSerializer(JsonSerializer serializer) {
