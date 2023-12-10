@@ -1,6 +1,8 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
+import io.agistep.event.Serializer;
 
 import java.util.List;
 
@@ -34,4 +36,7 @@ public interface EventStorage {
         return byAggregate.size() - 1;
     }
 
+    Serializer[] supportedSerializer();
+
+    Deserializer[] supportedDeSerializer();
 }

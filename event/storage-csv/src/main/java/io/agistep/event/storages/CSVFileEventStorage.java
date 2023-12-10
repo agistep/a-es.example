@@ -150,4 +150,14 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
         }
         return reader;
     }
+
+    @Override
+    public Serializer[] supportedSerializer() {
+        return new Serializer[0];
+    }
+
+    @Override
+    public Deserializer[] supportedDeSerializer() {
+        return new Deserializer[0];
+    }
 }

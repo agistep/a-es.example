@@ -12,15 +12,6 @@ class NoOpSerializerTest {
     MapEventStorage sut;
 
     @Test
-    void name() {
-        sut = new MapEventStorage();
-        Serializer serializer = sut.getSerializer();
-        assertThat(serializer).isInstanceOf(NoOpSerializer.class);
-
-        assertThatThrownBy(() -> serializer.serialize("Hello")).isInstanceOf(UnsupportedOperationException.class);
-    }
-
-    @Test
     void name2() {
         // TODO 다른 시리얼라이져 넣기
         // Object > Json > byte[]

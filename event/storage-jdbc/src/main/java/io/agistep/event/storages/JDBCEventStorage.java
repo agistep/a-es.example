@@ -1,9 +1,11 @@
 package io.agistep.event.storages;
 
 import com.zaxxer.hikari.HikariDataSource;
-import io.agistep.event.Event;
-import io.agistep.event.EventSource;
-import io.agistep.event.ConvertUtil;
+import io.agistep.event.*;
+import io.agistep.event.serialization.JsonObjectDeserializer;
+import io.agistep.event.serialization.JsonSerializer;
+import io.agistep.event.serialization.ProtocolBufferDeserializer;
+import io.agistep.event.serialization.ProtocolBufferSerializer;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -99,6 +101,18 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             throw new RuntimeException(e);
         }
         return events;
+    }
+
+    @Override
+    public Serializer[] supportedSerializer() {
+        return new Serializer[] {new JsonSerializer(), new ProtocolBufferSerializer()};
+    }
+
+    @Override
+    public Deserializer[] supportedDeSerializer() {
+        return new Deserializer[] {new JsonObjectDeserializer(),
+                //TODO 어떻게 처리해볼까?
+                new ProtocolBufferDeserializer(String.class)};
     }
 
     private static String serializePayload(Object payload) {

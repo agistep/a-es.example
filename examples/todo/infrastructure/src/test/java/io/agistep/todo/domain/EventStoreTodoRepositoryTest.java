@@ -1,5 +1,6 @@
 package io.agistep.todo.domain;
 
+import io.agistep.event.Event;
 import io.agistep.event.serialization.NoOpSerializer;
 import io.agistep.event.storages.MapEventStorage;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,8 @@ class EventStoreTodoRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		Map<Long, List<MapEventStorage.MapEvent>> map = new HashMap<>();
-		sut = new EventStoreTodoRepository(new MapEventStorage(map, new NoOpSerializer()));
+		Map<Long, List<Event>> map = new HashMap<>();
+		sut = new EventStoreTodoRepository(new MapEventStorage(map));
 	}
 
 	@Test
