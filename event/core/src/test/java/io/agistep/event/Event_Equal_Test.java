@@ -9,17 +9,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SuppressWarnings("ClassNamingConvention")
 class Event_Equal_Test {
 
+    private record JsonPayloadTest(String value) { }
 
     @Test
     void equals() {
         Event anEvent = EventSource.builder()
                 .id(1L)
                 .seq(0L)
-
                 .aggregateId(1L)
-
-                .name("TEST")
-                .payload("Hello ~~~")
+                .payload(new JsonPayloadTest("Test anEvent"))
                 .occurredAt(LocalDateTime.of(2023,12,12,0,0))
                 .build();
 
@@ -28,9 +26,7 @@ class Event_Equal_Test {
                 .seq(0L)
 
                 .aggregateId(1L)
-
-                .name("TEST")
-                .payload("Hello ~~~")
+                .payload(new JsonPayloadTest("Test anEvent"))
                 .occurredAt(LocalDateTime.of(2023,12,12,0,0))
                 .build();
 

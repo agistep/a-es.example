@@ -7,10 +7,13 @@ import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 class JDBCEventStorage extends OptimisticLockingSupport {
     static final String INSERT_DML = "INSERT INTO events" +
@@ -19,6 +22,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
     static final String SELECT_QUERY = "SELECT id, seq, name, aggregateId, payload, occurredAt FROM events WHERE aggregateId = ?";
 
     Connection conn;
+    Serializer serializer;
 
     JDBCEventStorage() {
         this("jdbc:postgresql://localhost:5422/agistep", "agistep", "agistep", "org.postgresql.Driver");
@@ -59,6 +63,17 @@ class JDBCEventStorage extends OptimisticLockingSupport {
         Object payload = anEvent.getPayload();
         LocalDateTime occurredAt = anEvent.getOccurredAt();
 
+        String s;
+        if (Objects.isNull(serializer)) {
+            Serializer serializer = Arrays.stream(supportedSerializer())
+                    .filter(ser -> ser.isSupport(payload))
+                    .findFirst()
+                    .orElseThrow(UnsupportedOperationException::new);
+            s = new String(serializer.serialize(payload));
+        } else {
+            s = new String(serializer.serialize(payload));
+        }
+
         try {
             PreparedStatement prep = conn.prepareStatement(INSERT_DML);
             prep.setLong(1, id);
@@ -66,7 +81,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
             //TODO 여기에 Serilizer 가 추가되어야 한다.
-            prep.setObject(5, serializePayload(payload));
+            prep.setObject(5, s);
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();
         } catch (SQLException e) {
@@ -86,14 +101,28 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                 Timestamp timestamp = rs.getTimestamp("occurredAt");
 
                 String name = rs.getString("name");
-                Object payload1 = deSerializePayload(rs.getObject("payload"), name);
+                Class<?> clazz;
+                try {
+                    clazz = Class.forName(name);
 
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                Object payload = rs.getObject("payload");
+                Deserializer[] deserializers = supportedDeSerializer(clazz);
+
+                Deserializer deserializer = Arrays.stream(deserializers)
+                        .filter(ser -> ser.isSupport(payload))
+                        .findFirst()
+                        .orElseThrow(UnsupportedOperationException::new);
+
+                Object deserialize = deserializer.deserialize(String.valueOf(payload).getBytes(StandardCharsets.UTF_8));
                 Event anEvent = EventSource.builder()
                         .id(rs.getLong("id"))
                         .aggregateId(rs.getLong("aggregateId"))
                         .name(name)
                         .seq(rs.getLong("seq"))
-                        .payload(payload1)
+                        .payload(deserialize)
                         .occurredAt(timestamp.toLocalDateTime()).build();
                 events.add(anEvent);
             }
@@ -105,21 +134,25 @@ class JDBCEventStorage extends OptimisticLockingSupport {
 
     @Override
     public Serializer[] supportedSerializer() {
-        return new Serializer[] {new JsonSerializer(), new ProtocolBufferSerializer()};
+        return new Serializer[]{
+                new JsonSerializer(),
+                new ProtocolBufferSerializer()
+        };
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer() {
-        return new Deserializer[] {new JsonObjectDeserializer(),
-                //TODO 어떻게 처리해볼까?
-                new ProtocolBufferDeserializer(String.class)};
-    }
-
-    private static String serializePayload(Object payload) {
-        return ConvertUtil.serializePayload(payload);
+    public Deserializer[] supportedDeSerializer(Class<?> name) {
+        return new Deserializer[]{
+                new JsonObjectDeserializer(name),
+                new ProtocolBufferDeserializer(name)
+        };
     }
 
     private Object deSerializePayload(Object payload, String name) {
         return ConvertUtil.deSerializePayload(payload, name);
+    }
+
+    void setSerializer(JsonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

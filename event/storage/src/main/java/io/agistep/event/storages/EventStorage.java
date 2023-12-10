@@ -29,7 +29,7 @@ public interface EventStorage {
     }
 
     private static boolean eventNotExist(List<Event> byAggregate) {
-        return byAggregate.size() == 0;
+        return byAggregate.isEmpty();
     }
 
     private static int lastIndex(List<Event> byAggregate) {
@@ -38,5 +38,5 @@ public interface EventStorage {
 
     Serializer[] supportedSerializer();
 
-    Deserializer[] supportedDeSerializer();
+    Deserializer[] supportedDeSerializer(Class<?> name);
 }

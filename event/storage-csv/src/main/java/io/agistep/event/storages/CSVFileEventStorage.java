@@ -1,11 +1,11 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
-import io.agistep.event.Deserializer;
+import io.agistep.event.Serializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
-import io.agistep.event.Serializer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -153,11 +153,15 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
 
     @Override
     public Serializer[] supportedSerializer() {
-        return new Serializer[0];
+        return new Serializer[]{
+                new ProtocolBufferSerializer()
+        };
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer() {
-        return new Deserializer[0];
+    public Deserializer[] supportedDeSerializer(Class<?> name) {
+        return new Deserializer[]{
+                new ProtocolBufferDeserializer(name)
+        };
     }
 }

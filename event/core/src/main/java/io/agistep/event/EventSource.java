@@ -85,10 +85,11 @@ public final class EventSource {
                 this.occurredAt(LocalDateTime.now());
             }
 
-            //TODO required validation
+            //TODO 제거해야 하는 부분 required validation
+            String n = name == null ? payload.getClass().getName() : name;
             return new ObjectPayloadEnvelop(
                     require(id, is(not(nullValue()))),
-                    name,
+                    n,
                     seq,
                     aggregateId,
                     payload,

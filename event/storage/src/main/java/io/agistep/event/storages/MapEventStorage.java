@@ -2,10 +2,8 @@ package io.agistep.event.storages;
 
 import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
 import io.agistep.event.Serializer;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +38,7 @@ public class MapEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer() {
+    public Deserializer[] supportedDeSerializer(Class<?> name) {
         throw new UnsupportedOperationException("MapEventStorage not supported DeSerializer");
     }
 }

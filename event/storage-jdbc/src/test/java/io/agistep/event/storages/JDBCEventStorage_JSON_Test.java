@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorage_JSON_Test {
 
-    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";;
-
     JDBCEventStorage eventStorage;
 
     @BeforeEach
@@ -22,20 +20,22 @@ class JDBCEventStorage_JSON_Test {
         String driverName = "org.testcontainers.jdbc.ContainerDatabaseDriver";
         eventStorage = new JDBCEventStorage(driverName, url);
     }
+
+    private record Person(String name, int age) {}
+
     @Test
     void saveAndFind() {
-        String anyJsonPayload = "{"
-                + "\"name\": \"John\","
-                + "\"age\": 30"
-                + "}";
+
+        Person john = new Person("John", 30);
 
         Event e = EventSource.builder()
                 .id(1L)
                 .aggregateId(11L)
-                .name(ANY_EVENT_NAME)
-                .payload(anyJsonPayload)
+                .name(john.getClass().getName())
+                .payload(john)
                 .seq(1L)
-                .occurredAt(LocalDateTime.now()).build();
+                .occurredAt(LocalDateTime.now())
+                .build();
 
         eventStorage.save(e);
 
@@ -50,7 +50,7 @@ class JDBCEventStorage_JSON_Test {
         assertThat(byAggregate.get(0).getName()).isEqualTo(e.getName());
         assertThat(byAggregate.get(0).getOccurredAt()).isEqualTo(e.getOccurredAt());
 
-        assertThat(byAggregate.get(0).getPayload()).isEqualTo(anyJsonPayload);
+        assertThat(byAggregate.get(0).getPayload()).isEqualTo(john);
     }
 
 }

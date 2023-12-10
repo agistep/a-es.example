@@ -1,26 +1,21 @@
 package io.agistep.event.serialization;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agistep.event.Serializer;
 
+import static org.valid4j.Validation.validate;
+
 public class JsonSerializer implements Serializer {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public boolean isSupport(Object payload) {
-        String p;
-        if (payload instanceof String) {
-            p = String.valueOf(payload);
-        } else {
-            return false;
-        }
-        return isJSONValid(p);
-    }
-
-    private static boolean isJSONValid(String jsonString) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(jsonString);
-            return jsonNode.isObject();
+            objectMapper = new ObjectMapper();
+            String s = objectMapper.writeValueAsString(payload);
+            return !s.isEmpty();
         } catch (Exception e) {
             return false;
         }
@@ -28,6 +23,23 @@ public class JsonSerializer implements Serializer {
 
     @Override
     public byte[] serialize(Object payload) {
-        return String.valueOf(payload).getBytes();
+        validate(payload != null, new IllegalArgumentException("payload가 Null 이 될 수는 없습니다."));
+
+        try {
+            String s = objectMapper.writeValueAsString(payload);
+            return s.getBytes();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && this.getClass() == obj.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
     }
 }
