@@ -43,7 +43,7 @@ public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> 
         }
 
         AGG aggregate = initializer.initAgg();
-        EventSource.reorganize(aggregate, events.toArray(new Event[0]));
+        EventSource.replay(aggregate, events.toArray(new Event[0]));
         return Optional.of(aggregate);
     }
 

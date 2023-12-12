@@ -19,17 +19,17 @@ class Event_Lifecycle_Listener_Test {
     @Test
     void name() {
         HoldListener holdListener = mock(HoldListener.class);
-        ReorganizeListener reorganizeListener = mock(ReorganizeListener.class);
+        ReplayListener replayListener = mock(ReplayListener.class);
         EventSource.setListener(holdListener);
-        EventSource.setListener(reorganizeListener);
+        EventSource.setListener(replayListener);
 
         Foo aggregate = new Foo();
         EventSource.apply(aggregate, CREATED);
 
-        InOrder inOrder = inOrder(holdListener, reorganizeListener);
+        InOrder inOrder = inOrder(holdListener, replayListener);
 
-        inOrder.verify(reorganizeListener).beforeReorganize(eq(aggregate), argThat(classNameEqualTo(CREATED)));
-        inOrder.verify(reorganizeListener).afterReorganize(eq(aggregate), argThat(classNameEqualTo(CREATED)));
+        inOrder.verify(replayListener).beforeReplay(eq(aggregate), argThat(classNameEqualTo(CREATED)));
+        inOrder.verify(replayListener).afterReplay(eq(aggregate), argThat(classNameEqualTo(CREATED)));
         inOrder.verify(holdListener).beforeHold(argThat(classNameEqualTo(CREATED)));
         inOrder.verify(holdListener).afterHold(argThat(classNameEqualTo(CREATED)));
 

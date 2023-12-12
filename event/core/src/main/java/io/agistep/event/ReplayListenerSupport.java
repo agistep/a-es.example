@@ -1,16 +1,6 @@
 package io.agistep.event;
 
-public abstract class ListenerSupport implements Listener {
-    @Override
-    public void beforeHold(Event anEvent) {
-
-    }
-
-    @Override
-    public void afterHold(Event anEvent) {
-
-    }
-
+public abstract class ReplayListenerSupport implements ReplayListener {
     @Override
     public void beforeReplay(Object aggregate, Event event) {
 

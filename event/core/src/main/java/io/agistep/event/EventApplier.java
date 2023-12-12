@@ -11,8 +11,8 @@ final class EventApplier {
 
         final Event anEvent = make(aggregate, payload);
 
-        //TODO reorganize 실패하면 hold 를 푼다.
-        reorganize(aggregate, anEvent);
+        //TODO replay 실패하면 hold 를 푼다.
+        replay(aggregate, anEvent);
         hold(anEvent);
     }
 
@@ -44,24 +44,24 @@ final class EventApplier {
         Optional.ofNullable(EventSource.holdListener).ifPresent(listen->listen.afterHold(anEvent));
     }
 
-    private static void reorganize(Object aggregate, Event anEvent) {
-        Optional.ofNullable(EventSource.reorganizeListener).ifPresent (listen-> listen.beforeReorganize(aggregate, anEvent));
-        EventReorganizer.reorganize(aggregate, anEvent);
-        Optional.ofNullable(EventSource.reorganizeListener).ifPresent (listen-> listen.afterReorganize(aggregate, anEvent));
+    private static void replay(Object aggregate, Event anEvent) {
+        Optional.ofNullable(EventSource.replayListener).ifPresent (listen-> listen.beforeReplay(aggregate, anEvent));
+        EventReplayer.replay(aggregate, anEvent);
+        Optional.ofNullable(EventSource.replayListener).ifPresent (listen-> listen.afterReplay(aggregate, anEvent));
     }
 
     private static long nextSeq(Object aggregateId) {
         return ThreadLocalEventSeqHolder.instance().nextSeq((Long) aggregateId);
     }
 
-    final static ReorganizeListener DUMMY = new ReorganizeListener() {
+    final static ReplayListener DUMMY = new ReplayListener() {
         @Override
-        public void beforeReorganize(Object aggregate, Event event) {
+        public void beforeReplay(Object aggregate, Event event) {
 
         }
 
         @Override
-        public void afterReorganize(Object aggregate, Event event) {
+        public void afterReplay(Object aggregate, Event event) {
 
         }
     };
