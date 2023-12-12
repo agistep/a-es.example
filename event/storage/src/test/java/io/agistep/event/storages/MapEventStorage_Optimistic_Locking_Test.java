@@ -18,9 +18,7 @@ class MapEventStorage_Optimistic_Locking_Test {
             .seq(0L)
 
             .aggregateId(1L)
-
-            .name("TEST")
-            .payload("Hello ~~~")
+            .payload(TestPayload.of("Hello~~~"))
             .build();
 
     Event anEvent2 = EventSource.builder()
@@ -29,19 +27,16 @@ class MapEventStorage_Optimistic_Locking_Test {
 
             .aggregateId(1L)
 
-            .name("TEST")
-            .payload("Hello ~~~")
+            .payload(TestPayload.of("Hello~~~"))
             .build();
 
     Event anEvent3 = EventSource.builder()
             .id(1L)
             .seq(1L)
-
             .aggregateId(1L)
-
-            .name("TEST")
-            .payload("Hello ~~~")
+            .payload(TestPayload.of("Hello~~~"))
             .build();
+
 
     @BeforeEach
     void setUp() {
@@ -54,7 +49,19 @@ class MapEventStorage_Optimistic_Locking_Test {
         sut.save(anEvent1);
         sut.save(anEvent2);
 
-        assertThatThrownBy(()-> sut.save(anEvent3)).isInstanceOf(OptimisticLockedException.class);
+        assertThatThrownBy(() -> sut.save(anEvent3)).isInstanceOf(OptimisticLockedException.class);
+    }
+
+    private static class TestPayload {
+        private final String value;
+
+        public TestPayload(String value) {
+            this.value = value;
+        }
+
+        static TestPayload of(String value) {
+            return new TestPayload(value);
+        }
     }
 
 }

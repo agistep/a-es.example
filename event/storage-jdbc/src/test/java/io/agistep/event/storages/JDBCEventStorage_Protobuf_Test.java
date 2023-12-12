@@ -31,7 +31,6 @@ class JDBCEventStorage_Protobuf_Test {
         Event e = EventSource.builder()
                 .id(12L)
                 .aggregateId(12L)
-                .name(ANY_EVENT_NAME)
                 .payload(build)
                 .seq(1L)
                 .occurredAt(LocalDateTime.now()).build();

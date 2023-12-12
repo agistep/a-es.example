@@ -85,10 +85,10 @@ public final class EventSource {
                 this.occurredAt(LocalDateTime.now());
             }
 
-            //TODO required validation
+            String n = payload.getClass().getName();
             return new ObjectPayloadEnvelop(
                     require(id, is(not(nullValue()))),
-                    name,
+                    n,
                     seq,
                     aggregateId,
                     payload,
@@ -97,11 +97,6 @@ public final class EventSource {
 
         public EventBuilder id(long id) {
             this.id = id;
-            return this;
-        }
-
-        public EventBuilder name(String name) {
-            this.name = name;
             return this;
         }
 

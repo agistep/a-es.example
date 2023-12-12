@@ -14,4 +14,14 @@ public class ProtocolBufferSerializer implements Serializer {
         Message message = (Message) payload;
         return message.toByteArray();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && this.getClass() == obj.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
+    }
 }

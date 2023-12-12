@@ -9,13 +9,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings("ClassNamingConvention")
 class JDBCEventStorage_Optimistic_Lock_Test {
 
-    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";;
+    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";
 
     JDBCEventStorage eventStorage;
 
@@ -40,16 +39,14 @@ class JDBCEventStorage_Optimistic_Lock_Test {
 
     @NotNull
     private static Event eventBySeq(long seq0) {
-        String anyJsonPayload = "{"
-                + "\"name\": \"John\","
-                + "\"age\": 30"
-                + "}";
 
+        record Person(String name, int age) {}
+
+        Person john = new Person("John", 30);
         return EventSource.builder()
                 .id(13L)
                 .aggregateId(5L)
-                .name(ANY_EVENT_NAME)
-                .payload(anyJsonPayload)
+                .payload(john)
                 .seq(seq0)
                 .occurredAt(LocalDateTime.now()).build();
     }

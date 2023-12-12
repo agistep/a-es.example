@@ -1,10 +1,10 @@
 package io.agistep.todo.domain;
 
 import io.agistep.event.Event;
+import io.agistep.event.serialization.NoOpSerializer;
 import io.agistep.event.storages.MapEventStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 
 @MockitoSettings
 class EventStoreTodoRepositoryTest {

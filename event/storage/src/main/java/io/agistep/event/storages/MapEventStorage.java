@@ -1,8 +1,13 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
+import io.agistep.event.Serializer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MapEventStorage extends OptimisticLockingSupport {
 
@@ -24,8 +29,16 @@ public class MapEventStorage extends OptimisticLockingSupport {
 
     @Override
     public List<Event> findByAggregate(long id) {
-        return Collections.unmodifiableList(this.events.getOrDefault(id, List.of()));
+        return this.events.getOrDefault(id, new ArrayList<>());
     }
 
+    @Override
+    public Serializer[] supportedSerializer() {
+        throw new UnsupportedOperationException("MapEventStorage not supported Serializer");
+    }
 
+    @Override
+    public Deserializer[] supportedDeSerializer(Class<?> name) {
+        throw new UnsupportedOperationException("MapEventStorage not supported DeSerializer");
+    }
 }

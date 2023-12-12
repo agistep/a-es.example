@@ -1,35 +1,14 @@
 package io.agistep.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.agistep.event.serialization.JsonObjectDeserializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public final class ConvertUtil {
-    public static String convert(Event e) {
-        return EventToJson.convert(e);
-    }
-
-    public static Event convert(String str) {
-        return JsonToEvent.convert(str);
-    }
-
-    public static String serializePayload(Object o) {
-        return PayloadSerialization.convert(o);
-    }
-
-    public static Object deSerializePayload(Object o, String name) {
-        return PayloadDeSerialization.convert(o, name);
-    }
-
     static final class PayloadSerialization {
 
         public static String convert(Object e) {
@@ -56,9 +35,9 @@ public final class ConvertUtil {
                 throw new RuntimeException(e);
             }
             List<Deserializer> deSerializers = List.of(
-                    new JsonObjectDeserializer(),
+                    new JsonObjectDeserializer(clazz),
                     new ProtocolBufferDeserializer(clazz)
-                    );
+            );
 
             Deserializer deserializer = deSerializers.stream()
                     .filter(s -> s.isSupport(serialized))
@@ -67,61 +46,6 @@ public final class ConvertUtil {
 
             return deserializer.deserialize(String.valueOf(serialized).getBytes(StandardCharsets.UTF_8));
         }
-    }
-
-    static final class EventToJson {
-
-        public static String convert(Event e) {
-            try {
-                EventDTO eventDTO = new EventDTO();
-                eventDTO.setId(e.getId());
-                eventDTO.setName(e.getName());
-                eventDTO.setSeq(e.getSeq());
-                eventDTO.setAggregateId(e.getAggregateId());
-                eventDTO.setOccurredAt(e.getOccurredAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-
-                Object payload = e.getPayload();
-                List<Serializer> serializers = List.of(
-                        new JsonSerializer(),
-                        new ProtocolBufferSerializer());
-                Serializer serializer = serializers.stream()
-                        .filter(s -> s.isSupport(payload))
-                        .findFirst()
-                        .orElseThrow(UnsupportedOperationException::new);
-                eventDTO.setPayload(new String(serializer.serialize(payload)));
-
-
-                ObjectMapper om = new ObjectMapper();
-                om.registerModule(new JavaTimeModule());
-                return om.writeValueAsString(eventDTO);
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-    static final class JsonToEvent {
-
-        public static Event convert(String str) {
-            ObjectMapper om = new ObjectMapper();
-            try {
-                EventDTO eventDTO = om.readValue(str, EventDTO.class);
-                Class<?> clazz = Class.forName(eventDTO.getName());
-                ProtocolBufferDeserializer deserialize = new ProtocolBufferDeserializer(clazz);
-                Object payload = deserialize.deserialize(eventDTO.getPayload().getBytes());
-                LocalDateTime occurredAt = LocalDateTime.parse(eventDTO.getOccurredAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                return EventSource.builder()
-                        .id(eventDTO.getId())
-                        .name(eventDTO.getName())
-                        .seq(eventDTO.getSeq())
-                        .aggregateId(eventDTO.getAggregateId())
-                        .payload(payload)
-                        .occurredAt(occurredAt).build();
-            } catch (JsonProcessingException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
     }
 
     public static class EventDTO {

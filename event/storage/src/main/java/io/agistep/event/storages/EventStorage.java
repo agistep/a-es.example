@@ -1,6 +1,8 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
+import io.agistep.event.Serializer;
 
 import java.util.List;
 
@@ -27,11 +29,14 @@ public interface EventStorage {
     }
 
     private static boolean eventNotExist(List<Event> byAggregate) {
-        return byAggregate.size() == 0;
+        return byAggregate.isEmpty();
     }
 
     private static int lastIndex(List<Event> byAggregate) {
         return byAggregate.size() - 1;
     }
 
+    Serializer[] supportedSerializer();
+
+    Deserializer[] supportedDeSerializer(Class<?> name);
 }

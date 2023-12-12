@@ -1,11 +1,11 @@
 package io.agistep.event.storages;
 
+import io.agistep.event.Deserializer;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
-import io.agistep.event.Deserializer;
+import io.agistep.event.Serializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
-import io.agistep.event.Serializer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -101,13 +101,15 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     private static Event getEvent(CSVRecord record) {
+        Object deserialize = deserialize(record);
+
         return EventSource.builder()
                 .id(Long.parseLong(record.get("id")))
-                .name(record.get("name"))
                 .seq(Long.parseLong(record.get("seq")))
                 .aggregateId(Long.parseLong(record.get("aggregateId")))
-                .payload(deserialize(record))
-                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).build();
+                .payload(deserialize)
+                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .build();
     }
 
     private static Object deserialize(CSVRecord record) {
@@ -149,5 +151,19 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
             throw new RuntimeException(e);
         }
         return reader;
+    }
+
+    @Override
+    public Serializer[] supportedSerializer() {
+        return new Serializer[]{
+                new ProtocolBufferSerializer()
+        };
+    }
+
+    @Override
+    public Deserializer[] supportedDeSerializer(Class<?> name) {
+        return new Deserializer[]{
+                new ProtocolBufferDeserializer(name)
+        };
     }
 }

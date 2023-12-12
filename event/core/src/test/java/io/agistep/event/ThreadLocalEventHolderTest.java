@@ -33,7 +33,6 @@ class ThreadLocalEventHolderTest {
         Object payload = new FooEventPayload();
         sut.hold(EventSource.builder()
                         .id(1L)
-                .name(payload.getClass().getName())
                 .seq(EventSource.INITIAL_SEQ)
                 .aggregateId(aggregateId)
                 .payload(payload)
