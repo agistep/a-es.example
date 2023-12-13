@@ -51,7 +51,7 @@ class ThreadLocalEventHolderTest {
     @Test
     void clear() {
         Foo aggregate = new Foo();
-        EventSource.reorganize(aggregate, anEventWith(new FooCreated()));
+        EventSource.replay(aggregate, anEventWith(new FooCreated()));
 
         sut.clear(aggregate);
 

@@ -13,7 +13,7 @@ import static org.valid4j.Assertive.require;
 public final class EventSource {
     public static final long INITIAL_SEQ = 0;
     public static HoldListener holdListener;
-    public static ReorganizeListener reorganizeListener;
+    public static ReplayListener replayListener;
 
     private EventSource() {
         /* This is Utility */
@@ -39,13 +39,13 @@ public final class EventSource {
         return ThreadLocalEventSeqHolder.instance().getSeq(aggregateId);
     }
 
-    public static void reorganize(Object aggregate, Event anEvent) {
-        EventReorganizer.reorganize(aggregate, anEvent);
+    public static void replay(Object aggregate, Event anEvent) {
+        EventReplayer.replay(aggregate, anEvent);
     }
 
-    public static void reorganize(Object aggregate, Event[] events) {
+    public static void replay(Object aggregate, Event[] events) {
         Arrays.stream(events)
-                .forEach(e -> EventSource.reorganize(aggregate, e));
+                .forEach(e -> EventSource.replay(aggregate, e));
     }
 
     public static void clearAll() {
@@ -58,15 +58,15 @@ public final class EventSource {
 
     public static void setListener(Listener listener) {
         setListener((HoldListener)listener);
-        setListener((ReorganizeListener)listener);
+        setListener((ReplayListener)listener);
     }
 
     public static void setListener(HoldListener holdListener) {
         EventSource.holdListener = holdListener;
     }
 
-    public static void setListener(ReorganizeListener reorganizeListener) {
-        EventSource.reorganizeListener = reorganizeListener;
+    public static void setListener(ReplayListener replayListener) {
+        EventSource.replayListener = replayListener;
     }
 
 

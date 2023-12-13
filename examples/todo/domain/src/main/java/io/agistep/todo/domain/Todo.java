@@ -14,7 +14,7 @@ public class Todo {
 	private boolean done;
 	private boolean hold;
 
-	//post construct at reorganize
+	//post construct at replay
 	public Todo() {
 	}
 

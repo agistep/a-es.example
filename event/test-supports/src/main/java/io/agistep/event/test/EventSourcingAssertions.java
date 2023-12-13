@@ -89,7 +89,7 @@ public final class EventSourcingAssertions {
 
         private Pair<AGG> getPair(Event[] recently, Supplier<AGG> initAggregate) {
             AGG aggregate = initAggregate.get();
-            EventSource.reorganize(aggregate, recently);
+            EventSource.replay(aggregate, recently);
             final long latestSeq = getLatestSeq(aggregate);
 
             return new Pair<>(aggregate, latestSeq);

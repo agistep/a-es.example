@@ -63,7 +63,7 @@ class EventFixtureBuilderTest {
     void eventsWith2() {
 
         Foo aggregate = new Foo();
-        EventSource.reorganize(aggregate, EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
+        EventSource.replay(aggregate, EventFixtureBuilder.eventsWith(FIRST_PAYLOAD)
                 .next(SECOND_PAYLOAD)
                 .build());
         EventSource.apply(aggregate, THIRD_PAYLOAD);

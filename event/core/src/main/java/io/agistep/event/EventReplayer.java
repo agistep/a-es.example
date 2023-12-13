@@ -10,9 +10,9 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-final class EventReorganizer {
+final class EventReplayer {
 
-	static void reorganize(Object aggregate, Event anEvent) {
+	static void replay(Object aggregate, Event anEvent) {
 		//TODO null empty
 		HandlerAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventReorganizerTest {
+class EventReplayerTest {
 
 
 	@BeforeEach
@@ -19,7 +19,7 @@ class EventReorganizerTest {
 	}
 
 	@Test
-	void reorganize() {
+	void replay() {
 
 		Foo aggregate = new Foo();
 
@@ -28,7 +28,7 @@ class EventReorganizerTest {
 		Object reOpened = new FooReOpened();
 
 
-		EventSource.reorganize(aggregate, eventsWith(1L, created)
+		EventSource.replay(aggregate, eventsWith(1L, created)
 				.next(done).build());
 
 		assertThat(aggregate.getId()).isEqualTo(1L);
