@@ -1,6 +1,8 @@
 package io.agistep.event;
 
-import io.agistep.foo.FooCreated;
+import io.agistep.foo.Foo;
+import io.agistep.foo.FooDone;
+import io.agistep.foo.FooReOpened;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,15 +19,14 @@ class EventHandlerLoaderTest {
 
     @Test
     void initAllEventHandlers() {
-        HandlerAdapter handlerAdapter = sut.retrieveHandler(FooCreated.class.getName());
-        assertThat(handlerAdapter.getAggregateName()).isEqualTo(FooTestAgg.class.getName());
+        HandlerAdapter handlerAdapter = sut.retrieveHandler(FooReOpened.class.getName());
+        assertThat(handlerAdapter.getAggregateName()).isEqualTo(Foo.class.getName());
     }
 
-    static class FooTestAgg {
-        @EventHandler(payload = FooCreated.class)
-        void handle(FooCreated event) {
-            // dummy method
-        }
+    @Test
+    void initAllEventHandlers2() {
+        HandlerAdapter handlerAdapter = sut.retrieveHandler(FooDone.class.getName());
+        assertThat(handlerAdapter.getAggregateName()).isEqualTo(Foo.class.getName());
     }
 
 }

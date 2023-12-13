@@ -11,9 +11,9 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-class ScanClassProvider {
+public final class ScanClassProvider {
 
-    public static Set<Class<?>> scanAndGetAllClasses(String packageName) {
+    public static Set<Class<?>> scanAllClassesIn(String packageName) {
         Set<Class<?>> classes = new HashSet<>();
 
         try (ScanResult scanResult = new ClassGraph()
