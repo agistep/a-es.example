@@ -36,10 +36,10 @@ class ThreadLocalEventSeqHolderTest {
     @DisplayName("remove the sequence of an aggregateId when aggregate is cleared")
     void clear() {
         Foo aggregate1 = new Foo();
-        EventSource.reorganize(aggregate1, anEventWith(new FooCreated()));
+        EventSource.replay(aggregate1, anEventWith(new FooCreated()));
 
         Foo aggregate2 = new Foo();
-        EventSource.reorganize(aggregate2, anEventWith(new FooCreated()));
+        EventSource.replay(aggregate2, anEventWith(new FooCreated()));
 
         var sut = ThreadLocalEventSeqHolder.instance();
         sut.clear(aggregate1);
