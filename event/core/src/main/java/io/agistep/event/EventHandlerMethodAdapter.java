@@ -13,25 +13,25 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 
-class HandlerAdapter {
+class EventHandlerMethodAdapter {
 
 	private final String aggregateName;
 	private final List<Pair<EventHandler, Method>> handlerMethods;
 
-	HandlerAdapter(Object aggregate, List<Pair<EventHandler, Method>> handlerMethods) {
+	EventHandlerMethodAdapter(Object aggregate, List<Pair<EventHandler, Method>> handlerMethods) {
 		this(aggregate.getClass(), handlerMethods);
 	}
 
-	HandlerAdapter(Class<?> aggregateClass, List<Pair<EventHandler, Method>> handlerMethods) {
+	EventHandlerMethodAdapter(Class<?> aggregateClass, List<Pair<EventHandler, Method>> handlerMethods) {
 		this(aggregateClass.getName(), handlerMethods);
 	}
 
-	private HandlerAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
+	private EventHandlerMethodAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
 		this.aggregateName = aggregateName;
 		this.handlerMethods = handlerMethods;
 	}
 
-	public static HandlerAdapter init(Class<?> aggregateClass) {
+	public static EventHandlerMethodAdapter init(Class<?> aggregateClass) {
 		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregateClass, EventHandler.class);
 		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
 			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
@@ -39,7 +39,15 @@ class HandlerAdapter {
 			return Pair.of(annotation, m);
 		}).collect(toList());
 
-		return new HandlerAdapter(aggregateClass, handlerMethodPairs);
+		return new EventHandlerMethodAdapter(aggregateClass, handlerMethodPairs);
+	}
+
+
+	public static EventHandlerMethodAdapter init(Method method) {
+			EventHandler annotation = AnnotationHelper.getAnnotation(method, EventHandler.class);
+
+		Pair<EventHandler, Method> eventHandlerMethodPair = Pair.of(annotation, method);
+		return new EventHandlerMethodAdapter(method.getDeclaringClass(), List.of(eventHandlerMethodPair));
 	}
 
 	String getAggregateName() {
@@ -65,4 +73,11 @@ class HandlerAdapter {
 		}
 	}
 
+	Pair<EventHandler, Method> getPair(int index) {
+		return this.handlerMethods.get(index);
+	}
+
+	String getPayloadName() {
+		return this.getPair(0).getKey().payload().getName();
+	}
 }

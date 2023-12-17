@@ -1,30 +1,21 @@
 package io.agistep.event;
 
-import io.agistep.utils.BasePackageLoader;
-import io.agistep.utils.ScanClassProvider;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class EventHandlerLoader {
-    private static final Map<String, HandlerAdapter> handlers = new HashMap<>();
 
-    static {
-        Set<Class<?>> scanned = ScanClassProvider.scanAllClassesIn(BasePackageLoader.load());
+    private final EventHandlerMethodScanner eventHandlerScanner;
+    private final EventHandlerAdapterMaker eventHandlerAdapterMaker;
 
-        scanned.stream()
-                .flatMap(cls -> Arrays.stream(cls.getDeclaredMethods()))
-                .filter(method -> method.isAnnotationPresent(EventHandler.class))
-                .forEach(method -> {
-                    var handler = method.getAnnotation(EventHandler.class);
-                    var handlerName = handler.payload().getName();
-                    handlers.put(handlerName, HandlerAdapter.init(method.getDeclaringClass()));
-                });
+    public EventHandlerLoader(EventHandlerMethodScanner eventHandlerScanner, EventHandlerAdapterMaker eventHandlerAdapterMaker) {
+        this.eventHandlerScanner = eventHandlerScanner;
+        this.eventHandlerAdapterMaker = eventHandlerAdapterMaker;
     }
 
-    HandlerAdapter retrieveHandler(String name) {
-        return handlers.get(name);
+    List<EventHandlerMethodAdapter> load(String basePackage) {
+        List<Method> methods = eventHandlerScanner.scan(basePackage);
+        return methods.stream().map(method -> eventHandlerAdapterMaker.make(method))
+                .toList();
     }
 }

@@ -11,18 +11,19 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 
 final class EventReplayer {
+	static final Map<String, EventHandlerMethodAdapter> handlers = new HashMap<>();
 
 	static void replay(Object aggregate, Event anEvent) {
 		//TODO null empty
-		HandlerAdapter handler = findHandler(aggregate);
+		EventHandlerMethodAdapter handler = findHandler(aggregate);
 		handler.handle(aggregate, anEvent);
 
 		updateSeq(anEvent.getAggregateId(), anEvent.getSeq());
 	}
 
-	private static HandlerAdapter findHandler(Object aggregate) {
+	private static EventHandlerMethodAdapter findHandler(Object aggregate) {
 		final String aggregateName = aggregate.getClass().getName();
-		HandlerAdapter handler = retrieveHandler(aggregateName);
+		EventHandlerMethodAdapter handler = retrieveHandler(aggregateName);
 		if(handler != null) {
 			return handler;
 		}
@@ -31,7 +32,7 @@ final class EventReplayer {
 
 	}
 
-	private static HandlerAdapter initHandler(Object aggregate) {
+	private static EventHandlerMethodAdapter initHandler(Object aggregate) {
 		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
 		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
 			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
@@ -39,16 +40,15 @@ final class EventReplayer {
 			return Pair.of(annotation, m);
 		}).collect(toList());
 
-		return new HandlerAdapter(aggregate, handlerMethodPairs);
+		return new EventHandlerMethodAdapter(aggregate, handlerMethodPairs);
 	}
 
-	final static Map<String, HandlerAdapter> handlers = new HashMap<>();
 
-	private static HandlerAdapter retrieveHandler(String aggregateName) {
+	private static EventHandlerMethodAdapter retrieveHandler(String aggregateName) {
 		return handlers.get(aggregateName);
 	}
 
-	private static HandlerAdapter caching(HandlerAdapter handler) {
+	private static EventHandlerMethodAdapter caching(EventHandlerMethodAdapter handler) {
 		handlers.put(handler.getAggregateName(), handler);
 		return handler;
 	}

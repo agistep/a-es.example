@@ -16,14 +16,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("ClassNamingConvention")
-class HandlerAdapter_Exception_Test {
+class EventHandlerMethodAdapter_Exception_Test {
     private static final List<Pair<EventHandler, Method>> HANDLER_METHODS_IS_NOT_EXIST = emptyList();
 
     @Test
     @DisplayName("No Handler for %s Present in %s.")
     void name() {
         Foo foo = new Foo();
-        HandlerAdapter sut = new HandlerAdapter(new Foo(), HANDLER_METHODS_IS_NOT_EXIST);
+        EventHandlerMethodAdapter sut = new EventHandlerMethodAdapter(new Foo(), HANDLER_METHODS_IS_NOT_EXIST);
 
         Event event = mock();
         String eventName = FooCreated.class.getName();
