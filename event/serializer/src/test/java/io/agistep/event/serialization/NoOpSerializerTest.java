@@ -1,15 +1,10 @@
 package io.agistep.event.serialization;
 
-import io.agistep.event.Serializer;
-import io.agistep.event.storages.MapEventStorage;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NoOpSerializerTest {
 
-    MapEventStorage sut;
+    NoOpSerializer sut;
 
     @Test
     void name2() {
