@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-class MethodHelperTest {
+class MethodInvokeHelperTest {
 
     @Test
     @DisplayName("Exception: invoke method with no parameters")
@@ -22,19 +22,19 @@ class MethodHelperTest {
         Method method = FooAggregate.class.getMethod("methodWithNoParams");
 
         assertThrows(IllegalArgumentException.class, () -> {
-            MethodHelper.invoke(aggregate, event, method);
+            MethodInvokeHelper.invoke(aggregate, event, method);
         });
     }
 
     @Test
-    @DisplayName("invoke method with invalid parameters")
+    @DisplayName("Exception: invoke method with invalid parameters")
     void invoke1() throws NoSuchMethodException {
         Object aggregate = new FooAggregate();
         Event event = mock(Event.class);
         Method method = FooAggregate.class.getMethod("methodWithInvalidParams", String.class, String.class);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            MethodHelper.invoke(aggregate, event, method);
+            MethodInvokeHelper.invoke(aggregate, event, method);
         });
     }
 
@@ -47,7 +47,7 @@ class MethodHelperTest {
         Method method = FooAggregate.class.getMethod("methodWithOneEventParam", Event.class);
 
         // when
-        MethodHelper.invoke(aggregate, event, method);
+        MethodInvokeHelper.invoke(aggregate, event, method);
 
         // then
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -69,7 +69,7 @@ class MethodHelperTest {
         Method method = FooAggregate.class.getMethod("methodWithOnePayloadParam", Object.class);
 
         // when
-        MethodHelper.invoke(aggregate, event, method);
+        MethodInvokeHelper.invoke(aggregate, event, method);
 
         // then
         ArgumentCaptor<FooCreated> payloadCaptor = ArgumentCaptor.forClass(FooCreated.class);
@@ -92,7 +92,7 @@ class MethodHelperTest {
         Method method = FooAggregate.class.getMethod("methodWithTwoParams", Object.class, Long.class);
 
         // when
-        MethodHelper.invoke(aggregate, event, method);
+        MethodInvokeHelper.invoke(aggregate, event, method);
 
         // then
         verify(aggregate).methodWithTwoParams(payload, 1L);

@@ -1,6 +1,7 @@
 package io.agistep.event;
 
-import io.agistep.utils.MethodHelper;
+import io.agistep.utils.AnnotationHelper;
+import io.agistep.utils.MethodInvokeHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 
 class HandlerAdapter {
@@ -29,6 +31,17 @@ class HandlerAdapter {
 		this.handlerMethods = handlerMethods;
 	}
 
+	public static HandlerAdapter init(Class<?> aggregateClass) {
+		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregateClass, EventHandler.class);
+		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
+			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
+
+			return Pair.of(annotation, m);
+		}).collect(toList());
+
+		return new HandlerAdapter(aggregateClass, handlerMethodPairs);
+	}
+
 	String getAggregateName() {
 		return aggregateName;
 	}
@@ -46,7 +59,7 @@ class HandlerAdapter {
 			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);
 
-			MethodHelper.invoke(aggregate, anEvent, method);
+			MethodInvokeHelper.invoke(aggregate, anEvent, method);
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
