@@ -1,7 +1,6 @@
 package io.agistep.todo.domain;
 
 import io.agistep.event.Event;
-import io.agistep.event.serialization.NoOpSerializer;
 import io.agistep.event.storages.MapEventStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

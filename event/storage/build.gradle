@@ -24,7 +24,6 @@ java {
 dependencies {
     api project(":event:core")
     api project(":event:serializer")
-    api project(":event:serializer-xx")
 
     implementation 'org.valid4j:valid4j:0.5.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
