@@ -7,11 +7,11 @@ import io.agistep.event.Deserializer;
 
 import static org.valid4j.Validation.validate;
 
-public class JsonObjectDeserializer implements Deserializer {
+public class JsonDeserializer implements Deserializer {
 
     private final Class<?> aClass;
 
-    public JsonObjectDeserializer(Class<?> aClass) {
+    public JsonDeserializer(Class<?> aClass) {
         validate(aClass != null, new IllegalArgumentException("null cannot deserialize"));
         validate(!aClass.isPrimitive(), new IllegalArgumentException("Primitive Type cannot deserialize"));
 

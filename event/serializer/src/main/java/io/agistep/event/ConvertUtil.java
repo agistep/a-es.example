@@ -1,6 +1,6 @@
 package io.agistep.event;
 
-import io.agistep.event.serialization.JsonObjectDeserializer;
+import io.agistep.event.serialization.JsonDeserializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
@@ -35,7 +35,7 @@ public final class ConvertUtil {
                 throw new RuntimeException(e);
             }
             List<Deserializer> deSerializers = List.of(
-                    new JsonObjectDeserializer(clazz),
+                    new JsonDeserializer(clazz),
                     new ProtocolBufferDeserializer(clazz)
             );
 

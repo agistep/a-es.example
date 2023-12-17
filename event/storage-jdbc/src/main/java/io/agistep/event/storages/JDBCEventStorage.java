@@ -2,7 +2,7 @@ package io.agistep.event.storages;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.agistep.event.*;
-import io.agistep.event.serialization.JsonObjectDeserializer;
+import io.agistep.event.serialization.JsonDeserializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
@@ -142,7 +142,7 @@ class JDBCEventStorage extends OptimisticLockingSupport {
     @Override
     public Deserializer[] supportedDeSerializer(Class<?> name) {
         return new Deserializer[]{
-                new JsonObjectDeserializer(name),
+                new JsonDeserializer(name),
                 new ProtocolBufferDeserializer(name)
         };
     }

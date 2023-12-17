@@ -13,4 +13,14 @@ public class NoOpSerializer implements Serializer {
     public byte[] serialize(Object payload) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && this.getClass() == obj.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
+    }
 }

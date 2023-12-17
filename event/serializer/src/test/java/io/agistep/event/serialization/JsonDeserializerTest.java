@@ -9,20 +9,20 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class JsonObjectDeserializerTest {
+class JsonDeserializerTest {
 
     @Test
     void primitiveType_Deserializer() {
-        assertThatThrownBy(() -> new JsonObjectDeserializer(null));
+        assertThatThrownBy(() -> new JsonDeserializer(null));
     }
 
     @Test
     void string_Deserializer() {
-        JsonObjectDeserializer sut;
+        JsonDeserializer sut;
 
         String abc = "{\"name\":\"hello World\"}";
 
-        sut = new JsonObjectDeserializer(Map.class);
+        sut = new JsonDeserializer(Map.class);
 
         Map deserialize = (Map) sut.deserialize(abc.getBytes());
         assertThat(deserialize.get("name")).isEqualTo("hello World");
@@ -35,7 +35,7 @@ class JsonObjectDeserializerTest {
         Foo foo = new Foo("foo", 30);
 
         byte[] bytes = new ObjectMapper().writeValueAsBytes(foo);
-        JsonObjectDeserializer deserializer = new JsonObjectDeserializer(Foo.class);
+        JsonDeserializer deserializer = new JsonDeserializer(Foo.class);
 
         Object deserialize = deserializer.deserialize(bytes);
         assertThat(foo).isEqualTo(deserialize);
