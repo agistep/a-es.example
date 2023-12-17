@@ -3,13 +3,21 @@ package io.agistep.event;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EventHandlerLoaderTest {
 
-    private EventHandlerLoader sut = new EventHandlerLoader();
+    private EventHandlerLoader sut;
+
+    @BeforeEach
+    void setUp() {
+        System.setProperty("basePackage", "io.agistep");
+
+        sut = new EventHandlerLoader();
+    }
 
     @Test
     void retrieveNullIfNoEventHandler() {

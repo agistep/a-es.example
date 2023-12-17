@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.utils.BasePackageLoader;
 import io.agistep.utils.ScanClassProvider;
 
 import java.util.Arrays;
@@ -8,25 +9,19 @@ import java.util.Map;
 import java.util.Set;
 
 public class EventHandlerLoader {
-    private static Map<String, HandlerAdapter> handlers = new HashMap<>();
+    private static final Map<String, HandlerAdapter> handlers = new HashMap<>();
 
     static {
-        try {
-            // TODO: 2023/12/10 should scan from root package
-            Set<Class<?>> scanned = ScanClassProvider.scanAllClassesIn("io.agistep");
+        Set<Class<?>> scanned = ScanClassProvider.scanAllClassesIn(BasePackageLoader.load());
 
-            scanned.stream()
-                    .flatMap(cls -> Arrays.stream(cls.getDeclaredMethods()))
-                    .filter(method -> method.isAnnotationPresent(EventHandler.class))
-                    .forEach(method -> {
-                        var handler = method.getAnnotation(EventHandler.class);
-                        var handlerName = handler.payload().getName();
-                        handlers.put(handlerName, HandlerAdapter.init(method.getDeclaringClass()));
-                    });
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize EventHandlerRegistry", e);
-        }
+        scanned.stream()
+                .flatMap(cls -> Arrays.stream(cls.getDeclaredMethods()))
+                .filter(method -> method.isAnnotationPresent(EventHandler.class))
+                .forEach(method -> {
+                    var handler = method.getAnnotation(EventHandler.class);
+                    var handlerName = handler.payload().getName();
+                    handlers.put(handlerName, HandlerAdapter.init(method.getDeclaringClass()));
+                });
     }
 
     HandlerAdapter retrieveHandler(String name) {
