@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.utils.AnnotationHelper;
 import io.agistep.utils.MethodInvokeHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 
 class HandlerAdapter {
@@ -27,6 +29,17 @@ class HandlerAdapter {
 	private HandlerAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
 		this.aggregateName = aggregateName;
 		this.handlerMethods = handlerMethods;
+	}
+
+	public static HandlerAdapter init(Object aggregate) {
+		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
+		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
+			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
+
+			return Pair.of(annotation, m);
+		}).collect(toList());
+
+		return new HandlerAdapter(aggregate, handlerMethodPairs);
 	}
 
 	String getAggregateName() {
