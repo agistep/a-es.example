@@ -6,16 +6,16 @@ import java.util.List;
 public class EventHandlerLoader {
 
     private final EventHandlerMethodScanner eventHandlerScanner;
-    private final EventHandlerAdapterMaker eventHandlerAdapterMaker;
+    private final EventHandlerAdapterInitializer eventHandlerAdapterInitializer;
 
-    public EventHandlerLoader(EventHandlerMethodScanner eventHandlerScanner, EventHandlerAdapterMaker eventHandlerAdapterMaker) {
+    public EventHandlerLoader(EventHandlerMethodScanner eventHandlerScanner, EventHandlerAdapterInitializer eventHandlerAdapterInitializer) {
         this.eventHandlerScanner = eventHandlerScanner;
-        this.eventHandlerAdapterMaker = eventHandlerAdapterMaker;
+        this.eventHandlerAdapterInitializer = eventHandlerAdapterInitializer;
     }
 
     List<EventHandlerMethodAdapter> load(String basePackage) {
         List<Method> methods = eventHandlerScanner.scan(basePackage);
-        return methods.stream().map(method -> eventHandlerAdapterMaker.make(method))
+        return methods.stream().map(eventHandlerAdapterInitializer::init)
                 .toList();
     }
 }

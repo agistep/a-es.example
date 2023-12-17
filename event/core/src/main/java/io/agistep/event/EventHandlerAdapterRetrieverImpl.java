@@ -6,18 +6,18 @@ import java.util.Map;
 
 public class EventHandlerAdapterRetrieverImpl implements EventHandlerAdapterRetriever {
 
-    private final Map<String, EventHandlerMethodAdapter> handlers;
-
+    private final Map<String, EventHandlerMethodAdapter> payloadToHandlerAdapter;
 
     public EventHandlerAdapterRetrieverImpl(List<EventHandlerMethodAdapter> eventHandlerMethodAdapters) {
-        handlers = new HashMap<>();
-        eventHandlerMethodAdapters.forEach(handlerAdapter -> handlers.put(handlerAdapter.getPayloadName(), handlerAdapter));
+        payloadToHandlerAdapter = new HashMap<>();
+        eventHandlerMethodAdapters.forEach(
+                handlerAdapter -> payloadToHandlerAdapter.put(handlerAdapter.getPayloadName(), handlerAdapter)
+        );
     }
-
 
     @Override
     public EventHandlerMethodAdapter retrieve(String payloadName) {
 
-        return handlers.get(payloadName);
+        return payloadToHandlerAdapter.get(payloadName);
     }
 }

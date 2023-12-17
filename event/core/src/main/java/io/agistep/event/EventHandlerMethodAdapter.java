@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 
 class EventHandlerMethodAdapter {
@@ -30,18 +29,6 @@ class EventHandlerMethodAdapter {
 		this.aggregateName = aggregateName;
 		this.handlerMethods = handlerMethods;
 	}
-
-	public static EventHandlerMethodAdapter init(Class<?> aggregateClass) {
-		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregateClass, EventHandler.class);
-		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
-			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
-
-			return Pair.of(annotation, m);
-		}).collect(toList());
-
-		return new EventHandlerMethodAdapter(aggregateClass, handlerMethodPairs);
-	}
-
 
 	public static EventHandlerMethodAdapter init(Method method) {
 			EventHandler annotation = AnnotationHelper.getAnnotation(method, EventHandler.class);

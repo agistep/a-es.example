@@ -18,15 +18,15 @@ class EventHandlerLoaderTest {
     void setUp() {
         System.setProperty("basePackage", "io.agistep");
 
-        sut = new EventHandlerLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterMakerImpl());
+        sut = new EventHandlerLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
     }
 
     @Test
     void aaa() throws NoSuchMethodException {
         EventHandlerMethodScanner eventHandlerScanner = new EventHandlerMethodScannerImpl();
-        EventHandlerAdapterMaker eventHandlerAdapterMaker = new EventHandlerAdapterMakerImpl();
+        EventHandlerAdapterInitializer eventHandlerAdapterInitializer = new EventHandlerAdapterInitializerImpl();
 
-        sut = new EventHandlerLoader(eventHandlerScanner, eventHandlerAdapterMaker);
+        sut = new EventHandlerLoader(eventHandlerScanner, eventHandlerAdapterInitializer);
 
         List<EventHandlerMethodAdapter> actual = sut.load("io.agistep.foo");
         var m = Foo.class.getDeclaredMethod("onReOpened", Event.class);

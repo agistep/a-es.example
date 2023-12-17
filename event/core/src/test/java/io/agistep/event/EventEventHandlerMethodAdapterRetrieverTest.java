@@ -43,5 +43,4 @@ class EventEventHandlerMethodAdapterRetrieverTest {
         assertThat(eventHandlerMethodAdapter).isNotNull();
     }
 
-
 }
