@@ -31,15 +31,15 @@ class HandlerAdapter {
 		this.handlerMethods = handlerMethods;
 	}
 
-	public static HandlerAdapter init(Object aggregate) {
-		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
+	public static HandlerAdapter init(Class<?> aggregateClass) {
+		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregateClass, EventHandler.class);
 		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
 			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
 
 			return Pair.of(annotation, m);
 		}).collect(toList());
 
-		return new HandlerAdapter(aggregate, handlerMethodPairs);
+		return new HandlerAdapter(aggregateClass, handlerMethodPairs);
 	}
 
 	String getAggregateName() {

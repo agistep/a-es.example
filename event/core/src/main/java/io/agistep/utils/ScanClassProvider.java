@@ -23,7 +23,7 @@ public final class ScanClassProvider {
                 try {
                     classes.add(Class.forName(classInfo.getName()));
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException("Failed to load class: " + classInfo.getName(), e);
                 }
             }
         }
