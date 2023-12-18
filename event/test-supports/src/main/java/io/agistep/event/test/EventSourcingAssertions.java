@@ -14,6 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class EventSourcingAssertions {
 
+    public static <AGG> XYZ<AGG> assertEventSourcing() {
+        return new XYZ<>();
+    }
+
     public static <AGG> ABC<AGG> assertEventSourcing(Supplier<AGG> initAggregate) {
         return new ABC<>(initAggregate);
     }
@@ -34,7 +38,7 @@ public final class EventSourcingAssertions {
             EventFixtureBuilder eventsWith = eventsWith(first);
 
             for (int i = 0; i < payloads.length; ++i) {
-                eventsWith.next(payloads[0]);
+                eventsWith.next(payloads[i]);
             }
 
             return new DEF<>(initAggregate, eventsWith.build());
@@ -59,7 +63,16 @@ public final class EventSourcingAssertions {
         public HIG<AGG> when(Consumer<AGG> aggregateProcessor) {
             return new HIG<>(this, aggregateProcessor);
         }
+    }
 
+    public static class XYZ<AGG> {
+
+        XYZ() {
+        }
+
+        public FFF<AGG> when(Supplier<AGG> aggregateProcessor) {
+            return new FFF<>(this, aggregateProcessor);
+        }
     }
 
     public static class HIG<AGG> {
@@ -70,6 +83,11 @@ public final class EventSourcingAssertions {
         public HIG(DEF<AGG> def, Consumer<AGG> aggregateProcessor) {
             this.def = def;
             this.aggregateProcessor = aggregateProcessor;
+        }
+
+        public void doTest() {
+            Pair<AGG> pair = getPair(def.recently, def.initAggregate);
+            aggregateProcessor.accept(pair.aggregate);
         }
 
         public ObjectAssert<AGG> expected(Object ... payloads) {
@@ -113,7 +131,7 @@ public final class EventSourcingAssertions {
             final long aggregateId = IdUtils.idOf(aggregate);
 
             Event[] expected = getExpected(aggregateId, seq, expectedPayload);
-            Event[] actual = getActual();
+            Event[] actual = getActual(aggregateId);
 
             assertThat(actual.length).isEqualTo(expected.length);
 
@@ -130,8 +148,84 @@ public final class EventSourcingAssertions {
             EventSource.clearAll();
         }
 
-        private Event[] getActual() {
-            return HoldingEventLogger.init().getAll();
+        private Event[] getActual(long aggregateId) {
+            return HoldingEventLogger.init().getEvent(aggregateId);
+        }
+
+        private static Event[] getExpected(long aggregateId, long seq, Object[] expectedPayload) {
+            if (expectedPayload == null || expectedPayload.length == 0) {
+                return new Event[0];
+            }
+            EventFixtureBuilder eventsWith = eventsWith(aggregateId, expectedPayload[0]);
+
+            for (int i = 1; i < expectedPayload.length; ++i) {
+                eventsWith.next(expectedPayload[i]);
+            }
+            return eventsWith.build(seq);
+        }
+
+    }
+
+    public static class FFF<AGG> {
+
+        private final XYZ<AGG> xyz;
+        private final Supplier<AGG> aggregateProcessor;
+
+        public FFF(XYZ<AGG> xyz, Supplier<AGG> aggregateProcessor) {
+            this.xyz = xyz;
+            this.aggregateProcessor = aggregateProcessor;
+        }
+
+        public ObjectAssert<AGG> expected(Object ... payloads) {
+            return assertThat(testEventSourcing(
+                    aggregateProcessor,
+                    payloads));
+        }
+
+        private AGG testEventSourcing(Supplier<AGG> aggregateProcessor, Object[] expected) {
+            AGG aggregate = aggregateProcessor.get();
+            abc(aggregate, expected);
+            return aggregate;
+        }
+
+        private static long getLatestSeq(Object aggregate) {
+            try {
+                long seq = EventSource.getLatestSeqOf(aggregate);
+                if(EventSource.getHoldEvents(aggregate).isEmpty()) {
+                    return seq;
+                }else {
+                    return seq - EventSource.getHoldEvents(aggregate).size();
+                }
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+
+        private void abc(Object aggregate, Object... expectedPayload) {
+
+            final long aggregateId = IdUtils.idOf(aggregate);
+            final long latestSeq = getLatestSeq(aggregate);
+
+            Event[] expected = getExpected(aggregateId, latestSeq, expectedPayload);
+            Event[] actual = getActual(aggregateId);
+
+            assertThat(actual.length).isEqualTo(expected.length);
+
+            for (int i = 0; i < expected.length; i++) {
+                //assertThat(actual[i]).is(idCondition(expected[i]));
+                assertThat(actual[i]).is(aggregateIdCondition(expected[i]));
+                assertThat(actual[i]).is(seqCondition(expected[i]));
+                assertThat(actual[i]).is(nameCondition(expected[i]));
+                assertThat(actual[i]).is(payloadCondition(expected[i]));
+                assertThat(actual[i]).is(occurredAtCondition(expected[i]));
+            }
+
+            HoldingEventLogger.init().clear();
+            EventSource.clearAll();
+        }
+
+        private Event[] getActual(long aggregateId) {
+            return HoldingEventLogger.init().getEvent(aggregateId);
         }
 
         private static Event[] getExpected(long aggregateId, long seq, Object[] expectedPayload) {

@@ -1,5 +1,6 @@
 package io.agistep.event.test;
 
+import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ class HoldingEventLogger {
     }
 
     private List<Event> getEvents() {
-        return this.logs.get();
+        return logs.get();
     }
 
     int size() {
@@ -28,6 +29,14 @@ class HoldingEventLogger {
 
     Event[] getAll() {
         return getEvents().toArray(new Event[0]);
+    }
+
+    Event[] getEvent(long aggregateId) {
+        return getEvents().stream().filter(e->e.getAggregateId() == aggregateId).toList().toArray(new Event[0]);
+    }
+
+    Event[] getEvent(Object aggregate) {
+        return getEvent(IdUtils.idOf(aggregate));
     }
 
     void add(Event anEvent) {

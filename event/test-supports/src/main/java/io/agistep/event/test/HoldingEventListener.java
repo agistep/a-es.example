@@ -27,4 +27,8 @@ public class HoldingEventListener extends ListenerSupport {
     public Event[] getAll() {
         return this.log.getAll();
     }
+
+    public void clear() {
+        this.log.clear();
+    }
 }
