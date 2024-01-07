@@ -4,6 +4,7 @@ import io.agistep.event.serialization.*;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -44,7 +45,7 @@ class SerializerProviderTest {
 
     @Test
     void NoOpsDeserializationTest() {
-        Deserializer sut = SerializerProvider.getDeserializer("nothing", Void.class );
+        Deserializer sut = SerializerProvider.getDeserializer("nothing", Void.class);
         assertThat(sut).isInstanceOf(NoOpDeserializer.class);
     }
 
@@ -59,17 +60,28 @@ class SerializerProviderTest {
     }
 
     @Test
+    void customSerializer_has_Serializer_prefix() {
+        assertThatThrownBy(() -> SerializerProvider.getSerializer("foo"))
+                .isInstanceOf(IllegalArgumentException.class);
+        Serializer serializer = SerializerProvider.getSerializer(CustomSerializer.class.getName());
+        assertThat(serializer).isNotNull();
+
+        assertThatThrownBy(() -> SerializerProvider.getDeserializer("foo", Void.class))
+                .isInstanceOf(IllegalArgumentException.class);
+        Deserializer deserializer = SerializerProvider.getDeserializer(CustomDeserializer.class.getName(), Void.class);
+        assertThat(deserializer).isNotNull();
+    }
+
+    @Test
     void customSerializer() {
-        // TODO 어떻게 사용자 입장에서 좀더 편하게 사용할 수 있게 만들 수 있을까?
-        String name = CustomSerializer.class.getName();
-        Serializer sut = SerializerProvider.getSerializer(name);
+
+        Serializer sut = SerializerProvider.getSerializer(CustomSerializer.class.getName());
         assertThat(sut).isInstanceOf(CustomSerializer.class);
     }
 
     @Test
     void customDeserializer() {
-        String name = CustomDeserializer.class.getName();
-        Deserializer sut = SerializerProvider.getDeserializer(name, String.class);
+        Deserializer sut = SerializerProvider.getDeserializer(CustomDeserializer.class.getName(), String.class);
         assertThat(sut).isInstanceOf(CustomDeserializer.class);
     }
 

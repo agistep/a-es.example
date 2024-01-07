@@ -2,6 +2,10 @@ package io.agistep.event;
 
 import io.agistep.event.serialization.NoOpDeserializer;
 import io.agistep.event.serialization.NoOpSerializer;
+import org.valid4j.Validation;
+
+import static org.valid4j.Validation.*;
+import static org.valid4j.Validation.validate;
 
 class SerializerProvider {
 
@@ -14,6 +18,8 @@ class SerializerProvider {
     }
 
     public static Serializer getSerializer(String name) {
+        validate(name.endsWith("Serializer"), new IllegalArgumentException("Class name must end with Serializer."));
+
         final String className = PREFIX + name + "Serializer";
         Serializer serializer = cache.getSerializer(className);
 
@@ -34,6 +40,8 @@ class SerializerProvider {
     }
 
     public static Deserializer getDeserializer(String name, Class<?> targetClass) {
+        validate(name.endsWith("Deserializer"), new IllegalArgumentException("Class name must end with Deserializer."));
+
         final String className = PREFIX + name + "Deserializer";
         Deserializer deserializer = cache.getDeserializer(className);
 
