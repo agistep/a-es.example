@@ -41,6 +41,7 @@ class EventEventHandlerMethodAdapterRetrieverTest {
     void initAllEventHandlers() {
         EventHandlerMethodAdapter eventHandlerMethodAdapter = sut.retrieve(FooReOpened.class.getName());
         assertThat(eventHandlerMethodAdapter).isNotNull();
+        assertThat(eventHandlerMethodAdapter.getPayloadName()).isEqualTo(FooReOpened.class.getName());
     }
 
 }

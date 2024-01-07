@@ -3,12 +3,12 @@ package io.agistep.event;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class EventHandlerLoader {
+public class EventHandlerMethodAdapterLoader {
 
     private final EventHandlerMethodScanner eventHandlerScanner;
     private final EventHandlerAdapterInitializer eventHandlerAdapterInitializer;
 
-    public EventHandlerLoader(EventHandlerMethodScanner eventHandlerScanner, EventHandlerAdapterInitializer eventHandlerAdapterInitializer) {
+    public EventHandlerMethodAdapterLoader(EventHandlerMethodScanner eventHandlerScanner, EventHandlerAdapterInitializer eventHandlerAdapterInitializer) {
         this.eventHandlerScanner = eventHandlerScanner;
         this.eventHandlerAdapterInitializer = eventHandlerAdapterInitializer;
     }

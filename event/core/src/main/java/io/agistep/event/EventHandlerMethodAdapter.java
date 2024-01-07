@@ -31,7 +31,7 @@ class EventHandlerMethodAdapter {
 	}
 
 	public static EventHandlerMethodAdapter init(Method method) {
-			EventHandler annotation = AnnotationHelper.getAnnotation(method, EventHandler.class);
+		EventHandler annotation = AnnotationHelper.getAnnotation(method, EventHandler.class);
 
 		Pair<EventHandler, Method> eventHandlerMethodPair = Pair.of(annotation, method);
 		return new EventHandlerMethodAdapter(method.getDeclaringClass(), List.of(eventHandlerMethodPair));

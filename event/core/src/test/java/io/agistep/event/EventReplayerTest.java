@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventReplayerTest {
+class EventReplayerTest extends EventApplySupport {
 
 
 	@BeforeEach

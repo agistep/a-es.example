@@ -3,17 +3,11 @@ package io.agistep.event;
 import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventApplierTest {
-
-    @BeforeEach
-    void setUp() {
-        EventSource.clearAll();
-    }
+class EventApplierTest extends EventApplySupport {
 
     @Test
     void apply() {

@@ -1,56 +1,25 @@
 package io.agistep.event;
 
-import io.agistep.utils.AnnotationHelper;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
+import io.agistep.utils.BasePackageLoader;
 
 final class EventReplayer {
-	static final Map<String, EventHandlerMethodAdapter> handlers = new HashMap<>();
+
+	private static EventHandlerAdapterRetriever eventHandlerAdapterRetriever;
+
+	static {
+		var eventHandlerMethodLoader = new EventHandlerMethodAdapterLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
+		var adapters = eventHandlerMethodLoader.load(BasePackageLoader.load());
+
+		eventHandlerAdapterRetriever = new EventHandlerAdapterRetrieverImpl(adapters);
+	}
 
 	static void replay(Object aggregate, Event anEvent) {
 		//TODO null empty
-		EventHandlerMethodAdapter handler = findHandler(aggregate);
+		var payloadName = anEvent.getPayload().getClass().getName();
+		EventHandlerMethodAdapter handler = eventHandlerAdapterRetriever.retrieve(payloadName);
 		handler.handle(aggregate, anEvent);
 
 		updateSeq(anEvent.getAggregateId(), anEvent.getSeq());
-	}
-
-	private static EventHandlerMethodAdapter findHandler(Object aggregate) {
-		final String aggregateName = aggregate.getClass().getName();
-		EventHandlerMethodAdapter handler = retrieveHandler(aggregateName);
-		if(handler != null) {
-			return handler;
-		}
-
-		return caching(initHandler(aggregate));
-
-	}
-
-	private static EventHandlerMethodAdapter initHandler(Object aggregate) {
-		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
-		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
-			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
-
-			return Pair.of(annotation, m);
-		}).collect(toList());
-
-		return new EventHandlerMethodAdapter(aggregate, handlerMethodPairs);
-	}
-
-
-	private static EventHandlerMethodAdapter retrieveHandler(String aggregateName) {
-		return handlers.get(aggregateName);
-	}
-
-	private static EventHandlerMethodAdapter caching(EventHandlerMethodAdapter handler) {
-		handlers.put(handler.getAggregateName(), handler);
-		return handler;
 	}
 
 	private static void updateSeq(long aggregateId, long seq) {

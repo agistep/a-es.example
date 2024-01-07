@@ -10,15 +10,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EventHandlerLoaderTest {
+class EventHandlerLoaderTest extends EventApplySupport {
 
-    private EventHandlerLoader sut;
+    private EventHandlerMethodAdapterLoader sut;
 
     @BeforeEach
     void setUp() {
-        System.setProperty("basePackage", "io.agistep");
-
-        sut = new EventHandlerLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
+        sut = new EventHandlerMethodAdapterLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
     }
 
     @Test
@@ -26,7 +24,7 @@ class EventHandlerLoaderTest {
         EventHandlerMethodScanner eventHandlerScanner = new EventHandlerMethodScannerImpl();
         EventHandlerAdapterInitializer eventHandlerAdapterInitializer = new EventHandlerAdapterInitializerImpl();
 
-        sut = new EventHandlerLoader(eventHandlerScanner, eventHandlerAdapterInitializer);
+        sut = new EventHandlerMethodAdapterLoader(eventHandlerScanner, eventHandlerAdapterInitializer);
 
         List<EventHandlerMethodAdapter> actual = sut.load("io.agistep.foo");
         var m = Foo.class.getDeclaredMethod("onReOpened", Event.class);
