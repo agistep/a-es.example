@@ -3,14 +3,14 @@ package io.agistep.event;
 import io.agistep.event.serialization.NoOpDeserializer;
 import io.agistep.event.serialization.NoOpSerializer;
 
-class ServiceLocator {
+class SerializerProvider {
 
     private static Cache cache = new Cache();
 
     static final String PREFIX = "io.agistep.event.serialization.";
 
-    ServiceLocator(Cache cache) {
-        ServiceLocator.cache = cache;
+    SerializerProvider(Cache cache) {
+        SerializerProvider.cache = cache;
     }
 
     public static Serializer getSerializer(String name) {
@@ -24,11 +24,16 @@ class ServiceLocator {
         InitialContext context = new InitialContext();
 
         Serializer serializerFromContext = context.serializerLookup(className);
+
+        if (serializerFromContext instanceof NoOpSerializer) {
+            serializerFromContext = context.serializerLookup(name);
+        }
+
         cache.addSerializer(serializerFromContext);
         return serializerFromContext;
     }
 
-    public static Deserializer getDeserializer(String name) {
+    public static Deserializer getDeserializer(String name, Class<?> targetClass) {
         final String className = PREFIX + name + "Deserializer";
         Deserializer deserializer = cache.getDeserializer(className);
 
@@ -38,7 +43,12 @@ class ServiceLocator {
 
         InitialContext context = new InitialContext();
 
-        Deserializer deserializeLookup = context.deserializerLookup(className);
+        Deserializer deserializeLookup = context.deserializerLookup(className, targetClass);
+
+        if (deserializeLookup instanceof NoOpDeserializer) {
+            deserializeLookup = context.deserializerLookup(name, targetClass);
+        }
+
         cache.addDeserializer(deserializeLookup);
         return deserializeLookup;
     }
