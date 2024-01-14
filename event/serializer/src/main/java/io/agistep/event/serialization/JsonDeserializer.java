@@ -7,7 +7,7 @@ import io.agistep.event.Deserializer;
 
 import static org.valid4j.Validation.validate;
 
-public class JsonDeserializer implements Deserializer {
+public final class JsonDeserializer implements Deserializer {
 
     private final Class<?> aClass;
 

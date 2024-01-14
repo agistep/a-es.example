@@ -2,10 +2,10 @@ package io.agistep.event.storages;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.agistep.event.*;
-import io.agistep.event.serialization.JsonDeserializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferDeserializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
+import org.valid4j.Validation;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
@@ -80,7 +80,6 @@ class JDBCEventStorage extends OptimisticLockingSupport {
             prep.setLong(2, seq);
             prep.setString(3, name);
             prep.setLong(4, aggregateId);
-            //TODO 여기에 Serilizer 가 추가되어야 한다.
             prep.setObject(5, s);
             prep.setTimestamp(6, Timestamp.valueOf(occurredAt));
             prep.execute();
@@ -141,9 +140,13 @@ class JDBCEventStorage extends OptimisticLockingSupport {
 
     @Override
     public Deserializer[] supportedDeSerializer(Class<?> name) {
+        Deserializer deserializer = SerializerProvider.getDeserializer("Json", name);
+        Deserializer deserializer1 = SerializerProvider.getDeserializer("ProtocolBuffer", name);
+
+
         return new Deserializer[]{
-                new JsonDeserializer(name),
-                new ProtocolBufferDeserializer(name)
+                deserializer,
+                deserializer1,
         };
     }
 

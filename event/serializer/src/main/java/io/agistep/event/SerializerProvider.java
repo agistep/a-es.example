@@ -7,7 +7,7 @@ import org.valid4j.Validation;
 import static org.valid4j.Validation.*;
 import static org.valid4j.Validation.validate;
 
-class SerializerProvider {
+public class SerializerProvider {
 
     private static Cache cache = new Cache();
 
@@ -18,7 +18,6 @@ class SerializerProvider {
     }
 
     public static Serializer getSerializer(String name) {
-        validate(name.endsWith("Serializer"), new IllegalArgumentException("Class name must end with Serializer."));
 
         final String className = PREFIX + name + "Serializer";
         Serializer serializer = cache.getSerializer(className);
@@ -32,6 +31,7 @@ class SerializerProvider {
         Serializer serializerFromContext = context.serializerLookup(className);
 
         if (serializerFromContext instanceof NoOpSerializer) {
+            validate(name.endsWith("Serializer"), new UnsupportedOperationException("Class name must end with Serializer."));
             serializerFromContext = context.serializerLookup(name);
         }
 
@@ -40,7 +40,6 @@ class SerializerProvider {
     }
 
     public static Deserializer getDeserializer(String name, Class<?> targetClass) {
-        validate(name.endsWith("Deserializer"), new IllegalArgumentException("Class name must end with Deserializer."));
 
         final String className = PREFIX + name + "Deserializer";
         Deserializer deserializer = cache.getDeserializer(className);
@@ -54,6 +53,7 @@ class SerializerProvider {
         Deserializer deserializeLookup = context.deserializerLookup(className, targetClass);
 
         if (deserializeLookup instanceof NoOpDeserializer) {
+            validate(name.endsWith("Deserializer"), new UnsupportedOperationException("Class name must end with Deserializer."));
             deserializeLookup = context.deserializerLookup(name, targetClass);
         }
 

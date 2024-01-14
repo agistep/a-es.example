@@ -13,7 +13,7 @@ class SerializerProviderTest {
 
     @Test
     void noOpsSerializerTest() {
-        Serializer sut = SerializerProvider.getSerializer("nothing");
+        Serializer sut = SerializerProvider.getSerializer("nothingSerializer");
         assertThat(sut).isInstanceOf(NoOpSerializer.class);
     }
 
@@ -45,14 +45,12 @@ class SerializerProviderTest {
 
     @Test
     void NoOpsDeserializationTest() {
-        Deserializer sut = SerializerProvider.getDeserializer("nothing", Void.class);
+        Deserializer sut = SerializerProvider.getDeserializer("nothingDeserializer", Void.class);
         assertThat(sut).isInstanceOf(NoOpDeserializer.class);
     }
 
     @Test
     void JsonDeserializationTest() {
-
-
         Class<String> clazz = String.class;
         Deserializer sut = SerializerProvider.getDeserializer("Json", clazz);
 
@@ -60,14 +58,22 @@ class SerializerProviderTest {
     }
 
     @Test
+    void ProtoBufferDeserializationTest() {
+        Class<String> clazz = String.class;
+        Deserializer sut = SerializerProvider.getDeserializer("ProtocolBuffer", clazz);
+
+        assertThat(sut).isInstanceOf(ProtocolBufferDeserializer.class);
+    }
+
+    @Test
     void customSerializer_has_Serializer_prefix() {
         assertThatThrownBy(() -> SerializerProvider.getSerializer("foo"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UnsupportedOperationException.class);
         Serializer serializer = SerializerProvider.getSerializer(CustomSerializer.class.getName());
         assertThat(serializer).isNotNull();
 
         assertThatThrownBy(() -> SerializerProvider.getDeserializer("foo", Void.class))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UnsupportedOperationException.class);
         Deserializer deserializer = SerializerProvider.getDeserializer(CustomDeserializer.class.getName(), Void.class);
         assertThat(deserializer).isNotNull();
     }
