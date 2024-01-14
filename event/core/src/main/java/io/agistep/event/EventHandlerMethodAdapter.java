@@ -6,35 +6,27 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.NoSuchElementException;
 
-import static java.lang.String.format;
-
+import static org.valid4j.Validation.validate;
 
 class EventHandlerMethodAdapter {
 
 	private final String aggregateName;
-	private final List<Pair<EventHandler, Method>> handlerMethods;
+	private final Pair<EventHandler, Method> handlerMethodPair;
 
-	EventHandlerMethodAdapter(Object aggregate, List<Pair<EventHandler, Method>> handlerMethods) {
-		this(aggregate.getClass(), handlerMethods);
-	}
-
-	EventHandlerMethodAdapter(Class<?> aggregateClass, List<Pair<EventHandler, Method>> handlerMethods) {
-		this(aggregateClass.getName(), handlerMethods);
-	}
-
-	private EventHandlerMethodAdapter(String aggregateName, List<Pair<EventHandler, Method>> handlerMethods) {
-		this.aggregateName = aggregateName;
-		this.handlerMethods = handlerMethods;
+	EventHandlerMethodAdapter(Class<?> aggregateClass, Pair<EventHandler, Method> handlerMethodPair) {
+		this.aggregateName = aggregateClass.getName();
+		this.handlerMethodPair = handlerMethodPair;
 	}
 
 	public static EventHandlerMethodAdapter init(Method method) {
+		validate(method != null, new IllegalArgumentException("Method is null"));
+
 		EventHandler annotation = AnnotationHelper.getAnnotation(method, EventHandler.class);
+		validate(annotation != null, new IllegalArgumentException("EventHandler annotation is not present on method: " + method.getName()));
 
 		Pair<EventHandler, Method> eventHandlerMethodPair = Pair.of(annotation, method);
-		return new EventHandlerMethodAdapter(method.getDeclaringClass(), List.of(eventHandlerMethodPair));
+		return new EventHandlerMethodAdapter(method.getDeclaringClass(), eventHandlerMethodPair);
 	}
 
 	String getAggregateName() {
@@ -42,14 +34,6 @@ class EventHandlerMethodAdapter {
 	}
 
 	public void handle(Object aggregate, Event anEvent) {
-		String eventName = anEvent.getName();
-
-		Pair<EventHandler, Method> handlerMethodPair = handlerMethods.stream()
-				.filter(hm -> hm.getKey().payload().getName().equals(eventName))
-				.findFirst()
-				.orElseThrow(()->
-						new NoSuchElementException(format("No Handler for %s Present in %s.", eventName, aggregate.getClass().getName())));
-
 		try {
 			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);
@@ -60,11 +44,7 @@ class EventHandlerMethodAdapter {
 		}
 	}
 
-	Pair<EventHandler, Method> getPair(int index) {
-		return this.handlerMethods.get(index);
-	}
-
 	String getPayloadName() {
-		return this.getPair(0).getKey().payload().getName();
+		return this.handlerMethodPair.getKey().payload().getName();
 	}
 }

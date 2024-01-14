@@ -1,8 +1,7 @@
 package io.agistep.event;
 
 import io.agistep.foo.Foo;
-import io.agistep.utils.AnnotationHelper;
-import org.apache.commons.lang3.tuple.Pair;
+import io.agistep.foo.FooReOpened;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,7 @@ class EventHandlerLoaderTest extends EventApplySupport {
         var m = Foo.class.getDeclaredMethod("onReOpened", Event.class);
 
         assertTrue(actual.stream().anyMatch(a -> a.getAggregateName().equals(Foo.class.getName())
-                && a.getPair(0).equals(Pair.of(AnnotationHelper.getAnnotation(m, EventHandler.class), m))
+                && a.getPayloadName().equals(FooReOpened.class.getName())
                 )
         );
 
