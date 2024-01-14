@@ -27,6 +27,9 @@ Gamja🥔 is an open-source, Java-based initiative designed to facilitate the ea
 
 # Getting Started
 
+### Prerequisites
+- system properties 설정하기: `basePackage` - aggregate를 scan할 base package를 설정 (ex. `basePackage=com.example.gamja`)
+
 
 
 # Documentation
@@ -40,6 +43,3 @@ We welcome contributions! Check out our [Contribution Guidelines](link-to-contri
 # License
 
 This project is licensed under the [MIT License](link-to-license).
-
-
-
