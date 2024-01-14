@@ -4,19 +4,13 @@ import io.agistep.foo.Foo;
 import io.agistep.foo.FooCreated;
 import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.test.EventFixtureBuilder.eventsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EventReplayerTest {
+class EventReplayerTest extends EventApplySupport {
 
-
-	@BeforeEach
-	void setUp() {
-		EventSource.clearAll();
-	}
 
 	@Test
 	void replay() {

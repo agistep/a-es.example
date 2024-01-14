@@ -1,32 +1,38 @@
 package io.agistep.event;
 
 import io.agistep.foo.Foo;
-import io.agistep.foo.FooDone;
 import io.agistep.foo.FooReOpened;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
 
-class EventHandlerLoaderTest {
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    private EventHandlerLoader sut = new EventHandlerLoader();
+class EventHandlerLoaderTest extends EventApplySupport {
 
-    @Test
-    void retrieveNullIfNoEventHandler() {
-        HandlerAdapter handlerAdapter = sut.retrieveHandler("NotExistClassName");
-        assertThat(handlerAdapter).isEqualTo(null);
+    private EventHandlerMethodAdapterLoader sut;
+
+    @BeforeEach
+    void setUp() {
+        sut = new EventHandlerMethodAdapterLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
     }
 
     @Test
-    void initAllEventHandlers() {
-        HandlerAdapter handlerAdapter = sut.retrieveHandler(FooReOpened.class.getName());
-        assertThat(handlerAdapter.getAggregateName()).isEqualTo(Foo.class.getName());
-    }
+    void aaa() throws NoSuchMethodException {
+        EventHandlerMethodScanner eventHandlerScanner = new EventHandlerMethodScannerImpl();
+        EventHandlerAdapterInitializer eventHandlerAdapterInitializer = new EventHandlerAdapterInitializerImpl();
 
-    @Test
-    void initAllEventHandlers2() {
-        HandlerAdapter handlerAdapter = sut.retrieveHandler(FooDone.class.getName());
-        assertThat(handlerAdapter.getAggregateName()).isEqualTo(Foo.class.getName());
+        sut = new EventHandlerMethodAdapterLoader(eventHandlerScanner, eventHandlerAdapterInitializer);
+
+        List<EventHandlerMethodAdapter> actual = sut.load("io.agistep.foo");
+        var m = Foo.class.getDeclaredMethod("onReOpened", Event.class);
+
+        assertTrue(actual.stream().anyMatch(a -> a.getAggregateName().equals(Foo.class.getName())
+                && a.getPayloadName().equals(FooReOpened.class.getName())
+                )
+        );
+
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import static io.agistep.event.test.EventFixtureBuilder.anEventWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ThreadLocalEventHolderTest {
+class ThreadLocalEventHolderTest extends EventApplySupport {
 
 
     private ThreadLocalEventHolder sut;

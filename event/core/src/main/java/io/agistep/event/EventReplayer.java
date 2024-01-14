@@ -1,56 +1,35 @@
 package io.agistep.event;
 
-import io.agistep.utils.AnnotationHelper;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
+import io.agistep.utils.BasePackageLoader;
 
 final class EventReplayer {
 
+	private static EventHandlerAdapterRetriever eventHandlerAdapterRetriever;
+
+	static {
+		var eventHandlerMethodLoader = new EventHandlerMethodAdapterLoader(new EventHandlerMethodScannerImpl(), new EventHandlerAdapterInitializerImpl());
+		var adapters = eventHandlerMethodLoader.load(BasePackageLoader.load());
+
+		eventHandlerAdapterRetriever = new EventHandlerAdapterRetrieverImpl(adapters);
+	}
+
 	static void replay(Object aggregate, Event anEvent) {
-		//TODO null empty
-		HandlerAdapter handler = findHandler(aggregate);
+		validate(aggregate, anEvent);
+
+		var payloadName = anEvent.getPayload().getClass().getName();
+		EventHandlerMethodAdapter handler = eventHandlerAdapterRetriever.retrieve(payloadName);
 		handler.handle(aggregate, anEvent);
 
 		updateSeq(anEvent.getAggregateId(), anEvent.getSeq());
 	}
 
-	private static HandlerAdapter findHandler(Object aggregate) {
-		final String aggregateName = aggregate.getClass().getName();
-		HandlerAdapter handler = retrieveHandler(aggregateName);
-		if(handler != null) {
-			return handler;
+	private static void validate(Object aggregate, Event anEvent) {
+		if (anEvent == null) {
+			throw new IllegalArgumentException("event should not be null");
 		}
-
-		return caching(initHandler(aggregate));
-
-	}
-
-	private static HandlerAdapter initHandler(Object aggregate) {
-		List<Method> eventHandlerMethods = AnnotationHelper.getMethodsListWithAnnotation(aggregate.getClass(), EventHandler.class);
-		List<Pair<EventHandler, Method>> handlerMethodPairs = eventHandlerMethods.stream().map(m -> {
-			EventHandler annotation = AnnotationHelper.getAnnotation(m, EventHandler.class);
-
-			return Pair.of(annotation, m);
-		}).collect(toList());
-
-		return new HandlerAdapter(aggregate, handlerMethodPairs);
-	}
-
-	final static Map<String, HandlerAdapter> handlers = new HashMap<>();
-
-	private static HandlerAdapter retrieveHandler(String aggregateName) {
-		return handlers.get(aggregateName);
-	}
-
-	private static HandlerAdapter caching(HandlerAdapter handler) {
-		handlers.put(handler.getAggregateName(), handler);
-		return handler;
+		if (aggregate == null) {
+			throw new IllegalArgumentException("aggregate should not be null");
+		}
 	}
 
 	private static void updateSeq(long aggregateId, long seq) {
