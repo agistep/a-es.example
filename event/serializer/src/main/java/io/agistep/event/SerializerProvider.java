@@ -42,7 +42,7 @@ public class SerializerProvider {
     public static Deserializer getDeserializer(String name, Class<?> targetClass) {
 
         final String className = PREFIX + name + "Deserializer";
-        Deserializer deserializer = cache.getDeserializer(className);
+        Deserializer deserializer = cache.getDeserializer(className, targetClass);
 
         if (!(deserializer instanceof NoOpDeserializer)) {
             return deserializer;

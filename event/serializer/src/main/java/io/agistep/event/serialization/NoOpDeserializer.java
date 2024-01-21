@@ -13,4 +13,9 @@ public class NoOpDeserializer implements Deserializer {
     public Object deserialize(byte[] byteArray) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Class<?> getTargetClazz() {
+        throw new UnsupportedOperationException();
+    }
 }

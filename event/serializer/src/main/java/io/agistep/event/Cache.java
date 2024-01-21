@@ -5,6 +5,7 @@ import io.agistep.event.serialization.NoOpSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class Cache {
 
@@ -23,14 +24,15 @@ class Cache {
         serializers.add(serializer);
     }
 
-    public Deserializer getDeserializer(String className) {
-        return deSerializers.stream()
-                .filter(a -> a.getClass().getName().startsWith(className))
-                .findFirst()
-                .orElseGet(NoOpDeserializer::new);
-    }
-
     public void addDeserializer(Deserializer deserializer) {
         deSerializers.add(deserializer);
+    }
+
+    public Deserializer getDeserializer(String name, Class<?> aClass) {
+        return deSerializers.stream()
+                .filter(a -> a.getClass().getName().startsWith(name))
+                .filter(a -> Objects.equals(a.getTargetClazz(), aClass))
+                .findFirst()
+                .orElseGet(NoOpDeserializer::new);
     }
 }

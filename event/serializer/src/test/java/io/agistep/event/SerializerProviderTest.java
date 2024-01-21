@@ -121,6 +121,11 @@ class SerializerProviderTest {
         public Object deserialize(byte[] byteArray) {
             return null;
         }
+
+        @Override
+        public Class<?> getTargetClazz() {
+            return null;
+        }
     }
 
 }
