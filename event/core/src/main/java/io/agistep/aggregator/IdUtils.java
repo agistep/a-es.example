@@ -41,14 +41,18 @@ public final class IdUtils {
 		try {
 			field = aggregate.getClass().getDeclaredField(NAME_OF_ID_FIELD);
 		} catch (NoSuchFieldException e) {
-			throw new IllegalAggregateIdException(
-					format("Aggregate Must Have 'id' field. :%s", aggregate.getClass().getName()),e);
+			Field[] superClassFields = aggregate.getClass().getSuperclass().getDeclaredFields();
+			if (superClassFields.length == 0) {
+				throw new IllegalAggregateIdException("Aggregate Must Have 'id' field.",e);
+			}
+
+			field = superClassFields[0];
+		} catch (Exception e) {
+			throw new IllegalAggregateIdException("Aggregate Must Have 'id' field.",e);
 		}
 
-		if(isNotSupport(field)) {
-			throw new IllegalAggregateIdException(
-					format("An ID field applied should be one of the following types: " +
-					"long, Long. :%s", aggregate.getClass().getName()),null);
+		if (isNotSupport(field)) {
+			throw new IllegalAggregateIdException("An ID field is applied should be one of the following types: int, long, Long, Integer, String",null);
 		}
 
 		field.setAccessible(true);
