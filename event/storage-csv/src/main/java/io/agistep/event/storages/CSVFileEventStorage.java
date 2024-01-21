@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -21,6 +22,8 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     public static final int COMMA_ASCII = 44;
 
     Path path;
+    private final List<Serializer> serializers = new ArrayList<>();
+    private final List<Deserializer> deSerializers = new ArrayList<>();
 
     public CSVFileEventStorage(File file) {
         this.path = file.toPath();
@@ -151,16 +154,24 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public Serializer[] supportedSerializer() {
-        return new Serializer[]{
-                SerializerProvider.getSerializer("ProtocolBuffer")
-        };
+    public List<Serializer> supportedSerializer() {
+        serializers.add(SerializerProvider.getSerializer("ProtocolBuffer"));
+        return Collections.unmodifiableList(serializers);
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer(Class<?> name) {
-        return new Deserializer[]{
-                SerializerProvider.getDeserializer("ProtocolBuffer", name),
-        };
+    public void addSerializer(Serializer serializer) {
+        serializers.add(serializer);
+    }
+
+    @Override
+    public List<Deserializer> supportedDeSerializer(Class<?> name) {
+        deSerializers.add(SerializerProvider.getDeserializer("ProtocolBuffer", name));
+        return Collections.unmodifiableList(deSerializers);
+    }
+
+    @Override
+    public void addDeSerializer(Deserializer deserializer) {
+        deSerializers.add(deserializer);
     }
 }

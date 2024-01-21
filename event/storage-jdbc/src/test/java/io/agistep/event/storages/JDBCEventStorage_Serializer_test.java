@@ -4,12 +4,14 @@ import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 import io.agistep.event.Serializer;
 import io.agistep.event.serialization.JsonSerializer;
+import io.agistep.event.serialization.NoOpSerializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -26,10 +28,16 @@ class JDBCEventStorage_Serializer_test {
 
     @Test
     void supportedSerializer_test() {
-        Serializer[] serializers = eventStorage.supportedSerializer();
-        Serializer[] expectedSerializers = new Serializer[]{new JsonSerializer(), new ProtocolBufferSerializer()};
+        List<Serializer> serializers = eventStorage.supportedSerializer();
+        List<Serializer> expectedSerializers = List.of(new JsonSerializer(), new ProtocolBufferSerializer());
 
         assertThat(serializers).isEqualTo(expectedSerializers);
+    }
+
+    @Test
+    void addSerializerTest() {
+        eventStorage.addSerializer(new NoOpSerializer());
+        eventStorage.supportedSerializer();
     }
 
     @Test
