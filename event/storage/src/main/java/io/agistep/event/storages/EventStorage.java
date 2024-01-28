@@ -36,7 +36,11 @@ public interface EventStorage {
         return byAggregate.size() - 1;
     }
 
-    Serializer[] supportedSerializer();
+    List<Serializer> supportedSerializer();
+    void addSerializer(Serializer serializer);
 
-    Deserializer[] supportedDeSerializer(Class<?> name);
+    List<Deserializer> supportedDeSerializer(Class<?> name);
+    void addDeSerializer(Deserializer deserializer);
+
+
 }
