@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.aggregator.IdUtils;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ class ThreadLocalEventHolder implements EventHolder {
 	}
 
 	@Override
-	public List<Event> getEvents(Object aggregate) {
+	public List<Event> getEvents(Aggregate aggregate) {
 		if(IdUtils.notAssignedIdOf(aggregate)) {
 			return List.of();
 		}
@@ -60,7 +61,7 @@ class ThreadLocalEventHolder implements EventHolder {
 	}
 
 	@Override
-	public void clear(Object aggregate) {
+	public void clear(Aggregate aggregate) {
         final long id = IdUtils.idOf(aggregate);
 
 		List<Event> events = changes.get().stream()

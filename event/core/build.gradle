@@ -41,6 +41,9 @@ dependencies {
 
     testImplementation project(':event:test-supports')
     testImplementation project(":event:fixtures")
+    testImplementation project(path: ':event:test-supports')
+    testImplementation project(path: ':event:test-supports')
+    testImplementation project(path: ':event:test-supports')
 
 }
 

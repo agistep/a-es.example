@@ -14,7 +14,7 @@ import static io.agistep.event.test.EventSourcingAssertions.assertEventSourcing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class HoldingEventListenerTest {
+class HoldingEventListenerTest extends EventApplySupport {
     public static final FooCreated FIRST_PAYLOAD = new FooCreated();
     public static final FooDone SECOND_PAYLOAD = new FooDone();
     public static final FooReOpened THIRD_PAYLOAD = new FooReOpened();

@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.utils.AnnotationHelper;
 import io.agistep.utils.MethodInvokeHelper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,7 +34,7 @@ class EventHandlerMethodAdapter {
 		return aggregateName;
 	}
 
-	public void handle(Object aggregate, Event anEvent) {
+	public void handle(Aggregate aggregate, Event anEvent) {
 		try {
 			Method method = handlerMethodPair.getValue();
 			method.setAccessible(true);

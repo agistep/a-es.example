@@ -1,5 +1,6 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.utils.BasePackageLoader;
 
 final class EventReplayer {
@@ -13,7 +14,7 @@ final class EventReplayer {
 		eventHandlerAdapterRetriever = new EventHandlerAdapterRetrieverImpl(adapters);
 	}
 
-	static void replay(Object aggregate, Event anEvent) {
+	static void replay(Aggregate aggregate, Event anEvent) {
 		validate(aggregate, anEvent);
 
 		var payloadName = anEvent.getPayload().getClass().getName();
@@ -23,7 +24,7 @@ final class EventReplayer {
 		updateSeq(anEvent.getAggregateId(), anEvent.getSeq());
 	}
 
-	private static void validate(Object aggregate, Event anEvent) {
+	private static void validate(Aggregate aggregate, Event anEvent) {
 		if (anEvent == null) {
 			throw new IllegalArgumentException("event should not be null");
 		}

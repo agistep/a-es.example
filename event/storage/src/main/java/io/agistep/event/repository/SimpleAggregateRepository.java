@@ -1,5 +1,6 @@
 package io.agistep.event.repository;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
 import io.agistep.event.storages.EventStorage;
@@ -7,7 +8,7 @@ import io.agistep.event.storages.EventStorage;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleAggregateRepository<AGG> implements AggregateRepository<AGG> {
+public class SimpleAggregateRepository<AGG extends Aggregate> implements AggregateRepository<AGG> {
     private final EventStorage storage;
     private final AggregateInitializer<AGG> initializer;
 

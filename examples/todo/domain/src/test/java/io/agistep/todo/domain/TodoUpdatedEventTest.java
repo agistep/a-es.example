@@ -1,25 +1,10 @@
 package io.agistep.todo.domain;
 
-import io.agistep.event.EventSource;
-import io.agistep.event.test.HoldingEventListener;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.agistep.event.test.EventSourcingAssertions.assertEventSourcing;
 
-class TodoUpdatedEventTest {
-
-
-    @BeforeEach
-    void setUp() {
-        EventSource.setListener(new HoldingEventListener());
-    }
-
-    @AfterEach
-    void tearDown() {
-        EventSource.setListener(null);
-    }
+class TodoUpdatedEventTest extends EventApplySupport {
 
     @Test
     void done() {

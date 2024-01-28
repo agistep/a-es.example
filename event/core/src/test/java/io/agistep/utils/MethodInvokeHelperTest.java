@@ -1,5 +1,6 @@
 package io.agistep.utils;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.event.Event;
 import io.agistep.foo.FooCreated;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +18,7 @@ class MethodInvokeHelperTest {
     @Test
     @DisplayName("Exception: invoke method with no parameters")
     void invoke0() throws NoSuchMethodException {
-        Object aggregate = new FooAggregate();
+        Aggregate aggregate = new FooAggregate();
         Event event = mock(Event.class);
         Method method = FooAggregate.class.getMethod("methodWithNoParams");
 
@@ -29,7 +30,7 @@ class MethodInvokeHelperTest {
     @Test
     @DisplayName("Exception: invoke method with invalid parameters")
     void invoke1() throws NoSuchMethodException {
-        Object aggregate = new FooAggregate();
+        Aggregate aggregate = new FooAggregate();
         Event event = mock(Event.class);
         Method method = FooAggregate.class.getMethod("methodWithInvalidParams", String.class, String.class);
 
@@ -98,7 +99,7 @@ class MethodInvokeHelperTest {
         verify(aggregate).methodWithTwoParams(payload, 1L);
     }
 
-    static class FooAggregate {
+    static class FooAggregate implements Aggregate {
         public void methodWithNoParams() {}
 
         public void methodWithOneEventParam(Event event) {}
@@ -108,5 +109,10 @@ class MethodInvokeHelperTest {
         public void methodWithTwoParams(Object payload, Long aggregateId) {}
 
         public void methodWithInvalidParams(String param1, String param2) {}
+
+        @Override
+        public long getId() {
+            return 0;
+        }
     }
 }

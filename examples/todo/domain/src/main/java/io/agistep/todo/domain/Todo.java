@@ -1,5 +1,6 @@
 package io.agistep.todo.domain;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.event.Event;
 import io.agistep.event.EventHandler;
 import io.agistep.event.EventSource;
@@ -7,9 +8,9 @@ import lombok.Getter;
 
 
 @Getter
-public class Todo {
+public class Todo implements Aggregate {
 
-	private Long id;
+	private long id;
 	private String text;
 	private boolean done;
 	private boolean hold;

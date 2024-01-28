@@ -1,5 +1,6 @@
 package io.agistep.utils;
 
+import io.agistep.aggregator.Aggregate;
 import io.agistep.event.Event;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +11,7 @@ import static org.valid4j.Validation.validate;
 
 public class MethodInvokeHelper {
 
-    public static Object invoke(Object aggregate, Event anEvent, Method method) throws IllegalAccessException, InvocationTargetException {
+    public static Object invoke(Aggregate aggregate, Event anEvent, Method method) throws IllegalAccessException, InvocationTargetException {
         Parameter[] parameters = method.getParameters();
         validate(parameters != null && parameters.length > 0,
                 new IllegalArgumentException(String.format("Method %s has no parameters", method.getName())));
