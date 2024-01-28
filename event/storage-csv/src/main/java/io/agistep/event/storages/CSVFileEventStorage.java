@@ -155,7 +155,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
 
     @Override
     public List<Serializer> supportedSerializer() {
-        serializers.add(SerializerProvider.getSerializer("ProtocolBuffer"));
+        serializers.add(SerializerProvider.getProtocolBufferSerializer());
         return Collections.unmodifiableList(serializers);
     }
 
@@ -166,7 +166,7 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
 
     @Override
     public List<Deserializer> supportedDeSerializer(Class<?> name) {
-        deSerializers.add(SerializerProvider.getDeserializer("ProtocolBuffer", name));
+        deSerializers.add(SerializerProvider.getProtocolBufferDeserializer(name));
         return Collections.unmodifiableList(deSerializers);
     }
 
