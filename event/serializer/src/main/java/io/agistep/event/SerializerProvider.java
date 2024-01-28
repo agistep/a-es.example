@@ -2,31 +2,44 @@ package io.agistep.event;
 
 import io.agistep.event.serialization.NoOpDeserializer;
 import io.agistep.event.serialization.NoOpSerializer;
-import org.valid4j.Validation;
 
-import static org.valid4j.Validation.*;
 import static org.valid4j.Validation.validate;
 
 public class SerializerProvider {
 
-    private static Cache cache = new Cache();
+    private static SerializerCache serializerCache = new SerializerCache();
+    private static final InitialContext context = new InitialContext();
 
     static final String PREFIX = "io.agistep.event.serialization.";
 
-    SerializerProvider(Cache cache) {
-        SerializerProvider.cache = cache;
+    SerializerProvider(SerializerCache serializerCache) {
+        SerializerProvider.serializerCache = serializerCache;
+    }
+
+    public static Serializer getProtocolBufferSerializer() {
+        return SerializerProvider.getSerializer("ProtocolBuffer");
+    }
+
+    public static Deserializer getProtocolBufferDeserializer(Class<?> targetClass) {
+        return SerializerProvider.getDeserializer("ProtocolBuffer", targetClass);
+    }
+
+    public static Serializer getJsonSerializer() {
+        return SerializerProvider.getSerializer("Json");
+    }
+
+    public static Deserializer getJsonDeSerializer(Class<?> targetClass) {
+        return SerializerProvider.getDeserializer("Json", targetClass);
     }
 
     public static Serializer getSerializer(String name) {
 
         final String className = PREFIX + name + "Serializer";
-        Serializer serializer = cache.getSerializer(className);
+        Serializer serializer = serializerCache.getSerializer(className);
 
         if (!(serializer instanceof NoOpSerializer)) {
             return serializer;
         }
-
-        InitialContext context = new InitialContext();
 
         Serializer serializerFromContext = context.serializerLookup(className);
 
@@ -35,14 +48,14 @@ public class SerializerProvider {
             serializerFromContext = context.serializerLookup(name);
         }
 
-        cache.addSerializer(serializerFromContext);
+        serializerCache.addSerializer(serializerFromContext);
         return serializerFromContext;
     }
 
     public static Deserializer getDeserializer(String name, Class<?> targetClass) {
 
         final String className = PREFIX + name + "Deserializer";
-        Deserializer deserializer = cache.getDeserializer(className, targetClass);
+        Deserializer deserializer = serializerCache.getDeserializer(className, targetClass);
 
         if (!(deserializer instanceof NoOpDeserializer)) {
             return deserializer;
@@ -57,7 +70,7 @@ public class SerializerProvider {
             deserializeLookup = context.deserializerLookup(name, targetClass);
         }
 
-        cache.addDeserializer(deserializeLookup);
+        serializerCache.addDeserializer(deserializeLookup);
         return deserializeLookup;
     }
 }

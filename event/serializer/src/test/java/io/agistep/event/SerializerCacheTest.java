@@ -5,17 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CacheTest {
+class SerializerCacheTest {
 
     @Test
     void findDeserializerTest() {
-        Cache cache = new Cache();
+        SerializerCache serializerCache = new SerializerCache();
         JsonDeserializer jsonDeserializer = new JsonDeserializer(String.class);
         JsonDeserializer longDeserializer = new JsonDeserializer(Long.class);
-        cache.addDeserializer(jsonDeserializer);
-        cache.addDeserializer(longDeserializer);
+        serializerCache.addDeserializer(jsonDeserializer);
+        serializerCache.addDeserializer(longDeserializer);
 
-        Deserializer deserializer = cache.getDeserializer(JsonDeserializer.class.getName(), Long.class);
+        Deserializer deserializer = serializerCache.getDeserializer(JsonDeserializer.class.getName(), Long.class);
         assertThat(deserializer).isEqualTo(longDeserializer);
     }
 }

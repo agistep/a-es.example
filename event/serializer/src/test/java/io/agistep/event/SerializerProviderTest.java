@@ -32,15 +32,15 @@ class SerializerProviderTest {
     @Test
     @SuppressWarnings("InstantiationOfUtilityClass")
     void cacheTest() {
-        Cache cache = spy(new Cache());
-        new SerializerProvider(cache);
+        SerializerCache serializerCache = spy(new SerializerCache());
+        new SerializerProvider(serializerCache);
 
         SerializerProvider.getSerializer("Json");
         SerializerProvider.getSerializer("Json");
         SerializerProvider.getSerializer("Json");
 
-        verify(cache).addSerializer(new JsonSerializer());
-        verify(cache, times(3)).getSerializer("io.agistep.event.serialization.JsonSerializer");
+        verify(serializerCache).addSerializer(new JsonSerializer());
+        verify(serializerCache, times(3)).getSerializer("io.agistep.event.serialization.JsonSerializer");
     }
 
     @Test

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-class Cache {
+class SerializerCache {
 
     private final List<Serializer> serializers = new ArrayList<>();
     private final List<Deserializer> deSerializers = new ArrayList<>();

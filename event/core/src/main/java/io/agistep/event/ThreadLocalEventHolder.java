@@ -2,9 +2,7 @@ package io.agistep.event;
 
 import io.agistep.aggregator.IdUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.ThreadLocal.withInitial;
@@ -14,6 +12,8 @@ import static java.util.Collections.unmodifiableList;
 class ThreadLocalEventHolder implements EventHolder {
 
 	private final static ThreadLocal<List<Event>> changes = withInitial(() -> synchronizedList(new ArrayList<>()));
+	private final static ThreadLocal<Map<Long,Long>> changes2 = withInitial(HashMap::new);
+
 
 	static EventHolder instance() {
 		return new ThreadLocalEventHolder();

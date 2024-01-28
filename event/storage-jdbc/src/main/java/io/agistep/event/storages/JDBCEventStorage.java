@@ -144,9 +144,9 @@ class JDBCEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public List<Deserializer> supportedDeSerializer(Class<?> name) {
-        deSerializers.add(SerializerProvider.getDeserializer("Json", name));
-        deSerializers.add(SerializerProvider.getDeserializer("ProtocolBuffer", name));
+    public List<Deserializer> supportedDeSerializer(Class<?> aClass) {
+        deSerializers.add(SerializerProvider.getDeserializer("Json", aClass));
+        deSerializers.add(SerializerProvider.getDeserializer("ProtocolBuffer", aClass));
         return unmodifiableList(deSerializers);
     }
 
