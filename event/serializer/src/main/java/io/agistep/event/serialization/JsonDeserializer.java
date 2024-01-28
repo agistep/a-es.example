@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agistep.event.Deserializer;
 
+import java.util.Objects;
+
 import static org.valid4j.Validation.validate;
 
-public class JsonObjectDeserializer implements Deserializer {
+public final class JsonDeserializer implements Deserializer {
 
     private final Class<?> aClass;
 
-    public JsonObjectDeserializer(Class<?> aClass) {
+    public JsonDeserializer(Class<?> aClass) {
         validate(aClass != null, new IllegalArgumentException("null cannot deserialize"));
         validate(!aClass.isPrimitive(), new IllegalArgumentException("Primitive Type cannot deserialize"));
 
@@ -50,5 +52,22 @@ public class JsonObjectDeserializer implements Deserializer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JsonDeserializer that)) return false;
+        return Objects.equals(aClass, that.aClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aClass);
+    }
+
+    @Override
+    public Class<?> getTargetClazz() {
+        return aClass;
     }
 }

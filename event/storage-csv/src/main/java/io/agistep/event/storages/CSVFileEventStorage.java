@@ -11,6 +11,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static io.agistep.event.EventMaker.*;
@@ -21,6 +22,8 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     public static final int COMMA_ASCII = 44;
 
     Path path;
+    private final List<Serializer> serializers = new ArrayList<>();
+    private final List<Deserializer> deSerializers = new ArrayList<>();
 
     public CSVFileEventStorage(File file) {
         this.path = file.toPath();
@@ -151,16 +154,24 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public Serializer[] supportedSerializer() {
-        return new Serializer[]{
-                new ProtocolBufferSerializer()
-        };
+    public List<Serializer> supportedSerializer() {
+        serializers.add(SerializerProvider.getProtocolBufferSerializer());
+        return Collections.unmodifiableList(serializers);
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer(Class<?> name) {
-        return new Deserializer[]{
-                new ProtocolBufferDeserializer(name)
-        };
+    public void addSerializer(Serializer serializer) {
+        serializers.add(serializer);
+    }
+
+    @Override
+    public List<Deserializer> supportedDeSerializer(Class<?> name) {
+        deSerializers.add(SerializerProvider.getProtocolBufferDeserializer(name));
+        return Collections.unmodifiableList(deSerializers);
+    }
+
+    @Override
+    public void addDeSerializer(Deserializer deserializer) {
+        deSerializers.add(deserializer);
     }
 }
