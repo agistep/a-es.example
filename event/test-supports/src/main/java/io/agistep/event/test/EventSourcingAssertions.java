@@ -1,6 +1,5 @@
 package io.agistep.event.test;
 
-import io.agistep.aggregator.Aggregate;
 import io.agistep.aggregator.IdUtils;
 import io.agistep.event.Event;
 import io.agistep.event.EventSource;
@@ -15,15 +14,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public final class EventSourcingAssertions {
 
-    public static <AGG extends Aggregate> XYZ<AGG> assertEventSourcing() {
+    public static <AGG> XYZ<AGG> assertEventSourcing() {
         return new XYZ<>();
     }
 
-    public static <AGG extends Aggregate> ABC<AGG> assertEventSourcing(Supplier<AGG> initAggregate) {
+    public static <AGG> ABC<AGG> assertEventSourcing(Supplier<AGG> initAggregate) {
         return new ABC<>(initAggregate);
     }
 
-    public static class ABC<AGG extends Aggregate> {
+    public static class ABC<AGG> {
         private final Supplier<AGG> initAggregate;
 
         ABC(Supplier<AGG> initAggregate) {
@@ -52,7 +51,7 @@ public final class EventSourcingAssertions {
 
     }
 
-    public static class DEF<AGG extends Aggregate> {
+    public static class DEF<AGG> {
         private final Supplier<AGG> initAggregate;
         private final Event[] recently;
 
@@ -66,7 +65,7 @@ public final class EventSourcingAssertions {
         }
     }
 
-    public static class XYZ<AGG extends Aggregate> {
+    public static class XYZ<AGG> {
 
         XYZ() {
         }
@@ -76,7 +75,7 @@ public final class EventSourcingAssertions {
         }
     }
 
-    public static class HIG<AGG extends Aggregate> {
+    public static class HIG<AGG> {
 
         private final DEF<AGG> def;
         private final Consumer<AGG> aggregateProcessor;
@@ -114,7 +113,7 @@ public final class EventSourcingAssertions {
             return new Pair<>(aggregate, latestSeq);
         }
 
-        private static long getLatestSeq(Aggregate aggregate) {
+        private static long getLatestSeq(Object aggregate) {
             long seq;
             try {
                 seq = EventSource.getLatestSeqOf(aggregate);
@@ -128,7 +127,7 @@ public final class EventSourcingAssertions {
             }
         }
 
-        private void abc(Aggregate aggregate, long seq, Object... expectedPayload) {
+        private void abc(Object aggregate, long seq, Object... expectedPayload) {
             final long aggregateId = IdUtils.idOf(aggregate);
 
             Event[] expected = getExpected(aggregateId, seq, expectedPayload);
@@ -167,7 +166,7 @@ public final class EventSourcingAssertions {
 
     }
 
-    public static class FFF<AGG extends Aggregate> {
+    public static class FFF<AGG> {
 
         private final XYZ<AGG> xyz;
         private final Supplier<AGG> aggregateProcessor;
@@ -189,7 +188,7 @@ public final class EventSourcingAssertions {
             return aggregate;
         }
 
-        private static long getLatestSeq(Aggregate aggregate) {
+        private static long getLatestSeq(Object aggregate) {
             try {
                 long seq = EventSource.getLatestSeqOf(aggregate);
                 if(EventSource.getHoldEvents(aggregate).isEmpty()) {
@@ -202,7 +201,7 @@ public final class EventSourcingAssertions {
             }
         }
 
-        private void abc(Aggregate aggregate, Object... expectedPayload) {
+        private void abc(Object aggregate, Object... expectedPayload) {
 
             final long aggregateId = IdUtils.idOf(aggregate);
             final long latestSeq = getLatestSeq(aggregate);

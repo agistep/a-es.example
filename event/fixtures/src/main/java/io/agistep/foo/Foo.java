@@ -1,13 +1,12 @@
 package io.agistep.foo;
 
 
-import io.agistep.aggregator.Aggregate;
 import io.agistep.event.Event;
 import io.agistep.event.EventHandler;
 
-public class Foo implements Aggregate {
+public class Foo {
 
-    long id;
+    Long id;
 
     boolean done = false;
 
@@ -28,7 +27,7 @@ public class Foo implements Aggregate {
         this.done = false;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

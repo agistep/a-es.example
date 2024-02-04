@@ -36,11 +36,6 @@ public final class IdUtils {
 		}
 	}
 
-	public static long idOf(Aggregate aggregate) {
-		return aggregate.getId();
-	}
-
-
 	private static Field getIdField(Object aggregate) {
 		Field field;
 		try {
@@ -80,10 +75,6 @@ public final class IdUtils {
 		} catch (IllegalAccessException e) {
 			throw new IllegalAggregateIdException(e.getMessage(), e);
 		}
-	}
-
-	public static boolean notAssignedIdOf(Aggregate aggregate) {
-		return aggregate.getId() == 0L;
 	}
 
 	public static long gen() {

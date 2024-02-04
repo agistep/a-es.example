@@ -1,6 +1,5 @@
 package io.agistep.event;
 
-import io.agistep.aggregator.Aggregate;
 import io.agistep.aggregator.IdUtils;
 
 import java.time.LocalDateTime;
@@ -24,15 +23,15 @@ public final class EventSource {
         return new EventBuilder();
     }
 
-    public static void apply(Aggregate aggregate, Object payload) {
+    public static void apply(Object aggregate, Object payload) {
         EventApplier.apply(aggregate, payload);
     }
 
-    public static List<Event> getHoldEvents(Aggregate aggregate) {
+    public static List<Event> getHoldEvents(Object aggregate) {
         return ThreadLocalEventHolder.instance().getEvents(aggregate);
     }
 
-    public static long getLatestSeqOf(Aggregate aggregate) {
+    public static long getLatestSeqOf(Object aggregate) {
         return getLatestSeqOf(IdUtils.idOf(aggregate));
     }
 
@@ -40,11 +39,11 @@ public final class EventSource {
         return ThreadLocalEventSeqHolder.instance().getSeq(aggregateId);
     }
 
-    public static void replay(Aggregate aggregate, Event anEvent) {
+    public static void replay(Object aggregate, Event anEvent) {
         EventReplayer.replay(aggregate, anEvent);
     }
 
-    public static void replay(Aggregate aggregate, Event[] events) {
+    public static void replay(Object aggregate, Event[] events) {
         Arrays.stream(events)
                 .forEach(e -> EventSource.replay(aggregate, e));
     }
@@ -53,7 +52,7 @@ public final class EventSource {
         ThreadLocalEventHolder.instance().clearAll();
     }
 
-    public static void clear(Aggregate aggregate) {
+    public static void clear(Object aggregate) {
         ThreadLocalEventHolder.instance().clear(aggregate);
     }
 

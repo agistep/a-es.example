@@ -21,7 +21,6 @@ class EventStoreTodoRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		System.setProperty("basePackage", "io.agistep");
 		Map<Long, List<Event>> map = new HashMap<>();
 		sut = new EventStoreTodoRepository(new MapEventStorage(map));
 	}

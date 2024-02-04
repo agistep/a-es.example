@@ -15,7 +15,7 @@ import static io.agistep.event.EventSource.INITIAL_SEQ;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class EventFixtureBuilderTest extends EventApplySupport {
+class EventFixtureBuilderTest {
 
     public static final FooCreated FIRST_PAYLOAD = new FooCreated();
     public static final FooDone SECOND_PAYLOAD = new FooDone();
