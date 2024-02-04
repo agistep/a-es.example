@@ -12,50 +12,63 @@ import static java.lang.String.format;
 public final class IdUtils {
 
 	private static final IdentifierProvider IDENTIFIER_PROVIDER = IdentifierProviderFactory.load().get();
-	private static final Class<?>[] SUPPORTED_TYPES = { long.class, Long.class };
+	private static final Class<?>[] SUPPORTED_TYPES = { long.class };
 	private static final String NAME_OF_ID_FIELD = "id";
 
 	public static long idOf(Object aggregate) {
 
-		Field field = getIdField(aggregate);
+		Field field = getIdField(aggregate.getClass());
 
 		try{
-
 			Object id = field.get(aggregate);
-			if(field.getType().isPrimitive() &&  Long.valueOf(0).equals(id)) {
-				throw new IllegalAggregateIdException(format("Primitive Type Int and long must not have 0(zero). :%s", aggregate.getClass().getName()));
+			if (field.getType().isPrimitive() &&  Long.valueOf(0).equals(id)) {
+				throw new IllegalAggregateIdException(format("An Aggregate id must not be 0(zero). :%s", aggregate.getClass().getName()));
 			}
 
-			if(!field.getType().isPrimitive() && id == null)  {
-				throw new IllegalAggregateIdException(format("An Id must not be null. :%s", aggregate.getClass().getName()));
-			}
-
-			return (Long) id;
+			return (long) id;
 		} catch (IllegalAccessException e) {
 			throw new IllegalAggregateIdException(e.getMessage(), e);
 		}
 	}
 
-	private static Field getIdField(Object aggregate) {
+	private static Field getIdField(Class<?> aggregateClass) {
+		Field field = findIdByAnnotation(aggregateClass);
+
+		if (field == null) {
+			field = findIdByNameConvention(aggregateClass);
+		}
+
+		field.setAccessible(true);
+		return field;
+	}
+
+	private static Field findIdByAnnotation(Class<?> aggregateClass) {
+		for (Field field : aggregateClass.getDeclaredFields()) {
+			if (field.isAnnotationPresent(AggregateId.class)) {
+				return field;
+			}
+		}
+		return null;
+	}
+
+	private static Field findIdByNameConvention(Class<?> aggregateClass) {
 		Field field;
 		try {
-			field = aggregate.getClass().getDeclaredField(NAME_OF_ID_FIELD);
+			field = aggregateClass.getDeclaredField(NAME_OF_ID_FIELD);
 		} catch (NoSuchFieldException e) {
-			Field[] superClassFields = aggregate.getClass().getSuperclass().getDeclaredFields();
+			Field[] superClassFields = aggregateClass.getSuperclass().getDeclaredFields();
 			if (superClassFields.length == 0) {
-				throw new IllegalAggregateIdException("Aggregate Must Have 'id' field.",e);
+				throw new IllegalAggregateIdException("Aggregate Must Have 'id' field or have @AggregateId annotation.", e);
 			}
 
 			field = superClassFields[0];
 		} catch (Exception e) {
-			throw new IllegalAggregateIdException("Aggregate Must Have 'id' field.",e);
+			throw new IllegalAggregateIdException("Aggregate Must Have 'id' field or have @AggregateId annotation.", e);
 		}
 
 		if (isNotSupport(field)) {
-			throw new IllegalAggregateIdException("An ID field is applied should be one of the following types: int, long, Long, Integer, String",null);
+			throw new IllegalAggregateIdException("An aggregate id should be primitive long type.", null);
 		}
-
-		field.setAccessible(true);
 		return field;
 	}
 
@@ -64,7 +77,7 @@ public final class IdUtils {
 	}
 
 	public static boolean notAssignedIdOf(Object aggregate) {
-		Field field = getIdField(aggregate);
+		Field field = getIdField(aggregate.getClass());
 		try {
 			Object id = field.get(aggregate);
 			if (field.getType().isPrimitive() && ((Number) id).longValue() == 0L) {
