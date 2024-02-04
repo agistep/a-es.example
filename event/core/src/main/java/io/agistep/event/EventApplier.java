@@ -1,9 +1,8 @@
 package io.agistep.event;
 
-import io.agistep.aggregator.IdUtils;
-
-import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static io.agistep.event.EventMaker.make;
 
 final class EventApplier {
 
@@ -16,28 +15,6 @@ final class EventApplier {
         hold(anEvent);
     }
 
-    private static Event make(Object aggregate, Object payload) {
-        final long eventId = IdUtils.gen();
-        final long aggregateId;
-        final long nextSeq;
-
-        if (IdUtils.notAssignedIdOf(aggregate)) {
-            aggregateId = IdUtils.gen();
-            nextSeq = EventSource.INITIAL_SEQ;
-        } else {
-            aggregateId = IdUtils.idOf(aggregate);
-            nextSeq = nextSeq(aggregateId);
-        }
-
-        return EventSource.builder()
-                .id(eventId)
-                .aggregateId(aggregateId)
-                .seq(nextSeq)
-                .payload(payload)
-                .occurredAt(LocalDateTime.now())
-                .build();
-    }
-
     private static void hold(Event anEvent) {
         Optional.ofNullable(EventSource.holdListener).ifPresent(listen->listen.beforeHold(anEvent));
         ThreadLocalEventHolder.instance().hold(anEvent);
@@ -48,10 +25,6 @@ final class EventApplier {
         Optional.ofNullable(EventSource.replayListener).ifPresent (listen-> listen.beforeReplay(aggregate, anEvent));
         EventReplayer.replay(aggregate, anEvent);
         Optional.ofNullable(EventSource.replayListener).ifPresent (listen-> listen.afterReplay(aggregate, anEvent));
-    }
-
-    private static long nextSeq(Object aggregateId) {
-        return ThreadLocalEventSeqHolder.instance().nextSeq((Long) aggregateId);
     }
 
     final static ReplayListener DUMMY = new ReplayListener() {
