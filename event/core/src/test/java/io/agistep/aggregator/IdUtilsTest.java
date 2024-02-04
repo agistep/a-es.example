@@ -19,6 +19,8 @@ class IdUtilsTest {
     final static E E = new E();
     final static F F = new F();
     final static G G = new G();
+    final static H H = new H();
+    final static I I = new I();
 
     static class A { @AggregateId long orderId = 1L; }
     static class B { long id = 1L;}
@@ -29,6 +31,13 @@ class IdUtilsTest {
 
     static class F { long id;}
     static class G { @AggregateId long orderId; }
+
+    static class H {
+        @AggregateId long orderId = 1L;
+        long id = 3L;
+    }
+
+    static class I extends H { }
 
     @Test
     @DisplayName("Exception: Illegal AggregateId")
@@ -59,6 +68,13 @@ class IdUtilsTest {
     void idOf1() {
         assertThat(idOf(A)).isEqualTo(A.orderId);
         assertThat(idOf(B)).isEqualTo(B.id);
+        assertThat(idOf(I)).isEqualTo(H.orderId);
+    }
+
+    @Test
+    @DisplayName("If id field and @AggregateId annotation both exist, @AggregateId annotation is used")
+    void idOf2() {
+        assertThat(idOf(H)).isEqualTo(H.orderId);
     }
 
     @Test

@@ -6,6 +6,7 @@ import io.agistep.identity.spi.IdentifierProviderFactory;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -43,25 +44,34 @@ public final class IdUtils {
 	}
 
 	private static Field findIdByAnnotation(Class<?> aggregateClass) {
-		for (Field field : aggregateClass.getDeclaredFields()) {
-			if (field.isAnnotationPresent(AggregateId.class)) {
-				return field;
-			}
+		Optional<Field> field = findAnnotatedField(aggregateClass);
+
+		if (field.isEmpty() && aggregateClass.getSuperclass() != null) {
+			field = findAnnotatedField(aggregateClass.getSuperclass());
 		}
-		return null;
+
+		return field.orElse(null);
+	}
+
+	private static Optional<Field> findAnnotatedField(Class<?> clazz) {
+		return Arrays.stream(clazz.getDeclaredFields())
+				.filter(f -> f.isAnnotationPresent(AggregateId.class))
+				.findFirst();
 	}
 
 	private static Field findIdByNameConvention(Class<?> aggregateClass) {
 		Field field;
 		try {
 			field = aggregateClass.getDeclaredField(NAME_OF_ID_FIELD);
+
 		} catch (NoSuchFieldException e) {
-			Field[] superClassFields = aggregateClass.getSuperclass().getDeclaredFields();
-			if (superClassFields.length == 0) {
+
+			try {
+				field = aggregateClass.getSuperclass().getDeclaredField(NAME_OF_ID_FIELD);
+			} catch (NoSuchFieldException ex) {
 				throw new IllegalAggregateIdException("Aggregate Must Have 'id' field or have @AggregateId annotation.", e);
 			}
 
-			field = superClassFields[0];
 		} catch (Exception e) {
 			throw new IllegalAggregateIdException("Aggregate Must Have 'id' field or have @AggregateId annotation.", e);
 		}
