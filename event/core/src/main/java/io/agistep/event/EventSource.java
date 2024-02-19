@@ -19,10 +19,6 @@ public final class EventSource {
         /* This is Utility */
     }
 
-    public static EventBuilder builder() {
-        return new EventBuilder();
-    }
-
     public static void apply(Object aggregate, Object payload) {
         EventApplier.apply(aggregate, payload);
     }

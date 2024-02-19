@@ -11,21 +11,6 @@ import static org.valid4j.Validation.validate;
 
 public class EventMaker {
 
-    public static EventBuilder builder() {
-        return new EventBuilder();
-    }
-
-    static Event make(long eventId, long aggregateId, long nextSeq, String eventName, LocalDateTime occurredAt, Object payload) {
-        return EventBuilder.builder()
-                .id(eventId)
-                .name(eventName)
-                .aggregateId(aggregateId)
-                .seq(nextSeq)
-                .payload(payload)
-                .occurredAt(occurredAt)
-                .build();
-    }
-
     static Event make(Object aggregate, Object payload) {
         final long eventId = IdUtils.gen();
         final long aggregateId;
@@ -39,18 +24,22 @@ public class EventMaker {
             nextSeq = nextSeq(aggregateId);
         }
 
-        return EventBuilder.builder()
-                .id(eventId)
-                .name(payload.getClass().getName())
-                .aggregateId(aggregateId)
-                .seq(nextSeq)
-                .payload(payload)
-                .occurredAt(LocalDateTime.now())
-                .build();
+        return make(eventId, aggregateId, nextSeq, payload.getClass().getName(), LocalDateTime.now(), payload);
     }
 
     private static long nextSeq(Object aggregateId) {
         return ThreadLocalEventSeqHolder.instance().nextSeq((Long) aggregateId);
+    }
+
+    public static Event make(long eventId, long aggregateId, long nextSeq, String eventName, LocalDateTime occurredAt, Object payload) {
+        return EventBuilder.builder()
+                .id(eventId)
+                .name(eventName)
+                .aggregateId(aggregateId)
+                .seq(nextSeq)
+                .payload(payload)
+                .occurredAt(occurredAt)
+                .build();
     }
 
     private static final class EventBuilder {
@@ -186,5 +175,29 @@ public class EventMaker {
                     ", occurredAt=" + occurredAt +
                     '}';
         }
+    }
+
+    public static Object payload(Object payload) {
+        return payload;
+    }
+
+    public static String eventName(String name) {
+        return name;
+    }
+
+    public static LocalDateTime occurredAt(LocalDateTime dateTime) {
+        return dateTime;
+    }
+
+    public static long seq(long seq) {
+        return seq;
+    }
+
+    public static long aggregateId(long id) {
+        return id;
+    }
+
+    public static long eventId(long id) {
+        return id;
     }
 }

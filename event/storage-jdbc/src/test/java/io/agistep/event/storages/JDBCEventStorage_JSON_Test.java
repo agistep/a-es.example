@@ -1,13 +1,14 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.EventMaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.agistep.event.EventMaker.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorage_JSON_Test {
@@ -27,14 +28,7 @@ class JDBCEventStorage_JSON_Test {
     void saveAndFind() {
 
         Person john = new Person("John", 30);
-
-        Event e = EventSource.builder()
-                .id(1L)
-                .aggregateId(11L)
-                .payload(john)
-                .seq(1L)
-                .occurredAt(LocalDateTime.now())
-                .build();
+        Event e = EventMaker.make(eventId(1L), aggregateId(11L), seq(1L), eventName(john.getClass().getName()), occurredAt(LocalDateTime.now()), payload(john));
 
         eventStorage.save(e);
 

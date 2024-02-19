@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.EventMaker;
 import io.agistep.event.Serializer;
 import io.agistep.event.serialization.JsonSerializer;
 import io.agistep.event.serialization.ProtocolBufferSerializer;
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.time.LocalDateTime;
 
+import static io.agistep.event.EventMaker.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
@@ -39,13 +40,8 @@ class JDBCEventStorage_Serializer_test {
         eventStorage.setSerializer(jsonSerializerSpy);
         JsonPayloadTest testAnEventPayload = new JsonPayloadTest("Test anEvent");
 
-        Event anEvent = EventSource.builder()
-                .id(2L)
-                .seq(0L)
-                .aggregateId(1L)
-                .payload(testAnEventPayload)
-                .occurredAt(LocalDateTime.of(2023,12,12,0,0))
-                .build();
+        Event anEvent = EventMaker.make(eventId(13L), aggregateId(5L), seq(0L), eventName(testAnEventPayload.getClass().getName()), occurredAt(LocalDateTime.of(2023,12,12,0,0)), payload(testAnEventPayload));
+
 
         eventStorage.save(anEvent);
 

@@ -31,13 +31,7 @@ class ThreadLocalEventHolderTest extends EventApplySupport {
     void occursTest() {
         long aggregateId = 1L;
         Object payload = new FooEventPayload();
-        sut.hold(EventSource.builder()
-                        .id(1L)
-                .seq(EventSource.INITIAL_SEQ)
-                .aggregateId(aggregateId)
-                .payload(payload)
-                .occurredAt(LocalDateTime.now())
-                .build());
+        sut.hold(EventMaker.make(1L, aggregateId, EventSource.INITIAL_SEQ, payload.getClass().getName(), LocalDateTime.now(), payload));
 
         List<Event> actual = sut.getEventAll();
         assertThat(actual).hasSize(1);

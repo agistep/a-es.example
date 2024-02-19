@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static io.agistep.event.EventMaker.*;
+
 class JDBCEventStorage extends OptimisticLockingSupport {
     static final String INSERT_DML = "INSERT INTO events" +
             "(id, seq, name, aggregateId, payload, occurredAt)" +
@@ -117,12 +119,14 @@ class JDBCEventStorage extends OptimisticLockingSupport {
                         .orElseThrow(UnsupportedOperationException::new);
 
                 Object deserialize = deserializer.deserialize(String.valueOf(payload).getBytes(StandardCharsets.UTF_8));
-                Event anEvent = EventSource.builder()
-                        .id(rs.getLong("id"))
-                        .aggregateId(rs.getLong("aggregateId"))
-                        .seq(rs.getLong("seq"))
-                        .payload(deserialize)
-                        .occurredAt(timestamp.toLocalDateTime()).build();
+                Event anEvent = EventMaker.make(
+                        eventId(rs.getLong("id")),
+                        aggregateId(rs.getLong("aggregateId")),
+                        seq(rs.getLong("seq")),
+                        eventName(deserialize.getClass().getName()),
+                        occurredAt(timestamp.toLocalDateTime()),
+                        payload(deserialize)
+                );
                 events.add(anEvent);
             }
         } catch (SQLException e) {
