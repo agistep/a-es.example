@@ -30,7 +30,13 @@ Gamja🥔 is an open-source, Java-based initiative designed to facilitate the ea
 ### Prerequisites
 - system properties 설정하기: `basePackage` - aggregate를 scan할 base package를 설정 (ex. `basePackage=com.example.gamja`)
 
-
+### Create aggregate
+- 디폴트로 aggregate클래스에서 long type의 `id` 필드가 aggregate의 id로 처리됩니다.
+- aggregate id를 `id`가 아닌 다른 필드명으로 하거나 명시적으로 aggregate id를 표시하려면 `@AggregateId` 어노테이션을 지정하세요.
+```java
+@AggregateId
+private long fooId;
+```
 
 # Documentation
 

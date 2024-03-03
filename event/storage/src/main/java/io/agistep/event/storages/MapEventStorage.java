@@ -33,12 +33,22 @@ public class MapEventStorage extends OptimisticLockingSupport {
     }
 
     @Override
-    public Serializer[] supportedSerializer() {
+    public List<Serializer> supportedSerializer() {
         throw new UnsupportedOperationException("MapEventStorage not supported Serializer");
     }
 
     @Override
-    public Deserializer[] supportedDeSerializer(Class<?> name) {
+    public void addSerializer(Serializer serializer) {
+        throw new UnsupportedOperationException("MapEventStorage not supported DeSerializer");
+    }
+
+    @Override
+    public List<Deserializer> supportedDeSerializer(Class<?> name) {
+        throw new UnsupportedOperationException("MapEventStorage not supported DeSerializer");
+    }
+
+    @Override
+    public void addDeSerializer(Deserializer deserializer) {
         throw new UnsupportedOperationException("MapEventStorage not supported DeSerializer");
     }
 }
