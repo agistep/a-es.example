@@ -14,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IdAssignorTest {
 
+    public static final long AGGREGATE_ID = 100L;
+
     @Test
     void exception_whenEventIsNotFirstSeq() {
         var aggregate = new Foo();
@@ -25,7 +27,7 @@ class IdAssignorTest {
     private static Event eventOfSeq(long nextSeq) {
         return EventMaker.make(
                 1L,
-                100L,
+                AGGREGATE_ID,
                 nextSeq,
                 FooCreated.class.getName(),
                 LocalDateTime.MIN,
@@ -41,7 +43,7 @@ class IdAssignorTest {
 
         IdAssignor.assignIdByStrategy(aggregate, createdEvent);
 
-        assertThat(aggregate.getId()).isEqualTo(100L);
+        assertThat(aggregate.getId()).isEqualTo(AGGREGATE_ID);
     }
 
     @Test
@@ -51,7 +53,7 @@ class IdAssignorTest {
 
         IdAssignor.assignIdByStrategy(aggregate, createdEvent);
 
-        assertThat(aggregate.getId()).isEqualTo(100L);
+        assertThat(aggregate.getId()).isEqualTo(AGGREGATE_ID);
     }
 
     @Test
