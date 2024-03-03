@@ -1,18 +1,17 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.EventMaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.agistep.event.EventMaker.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JDBCEventStorage_Protobuf_Test {
-
-    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";
 
     JDBCEventStorage eventStorage;
 
@@ -28,12 +27,7 @@ class JDBCEventStorage_Protobuf_Test {
 
         ProtoPayload build = ProtoPayload.newBuilder().setBody("foo-body").build();
 
-        Event e = EventSource.builder()
-                .id(12L)
-                .aggregateId(12L)
-                .payload(build)
-                .seq(1L)
-                .occurredAt(LocalDateTime.now()).build();
+        Event e = EventMaker.make(eventId(12L), aggregateId(12L), seq(1L), eventName(build.getClass().getName()), occurredAt(LocalDateTime.now()), payload(build));
 
         eventStorage.save(e);
 

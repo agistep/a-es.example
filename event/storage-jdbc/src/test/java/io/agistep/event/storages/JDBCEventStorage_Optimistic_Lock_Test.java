@@ -1,7 +1,7 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.EventMaker;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static io.agistep.event.EventMaker.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings("ClassNamingConvention")
 class JDBCEventStorage_Optimistic_Lock_Test {
-
-    private static String ANY_EVENT_NAME = "io.agistep.event.storages.ProtoPayload";
 
     JDBCEventStorage eventStorage;
 
@@ -43,11 +42,6 @@ class JDBCEventStorage_Optimistic_Lock_Test {
         record Person(String name, int age) {}
 
         Person john = new Person("John", 30);
-        return EventSource.builder()
-                .id(13L)
-                .aggregateId(5L)
-                .payload(john)
-                .seq(seq0)
-                .occurredAt(LocalDateTime.now()).build();
+        return EventMaker.make(eventId(13L), aggregateId(5L), seq(seq0), eventName(john.getClass().getName()), occurredAt(LocalDateTime.now()), payload(john));
     }
 }

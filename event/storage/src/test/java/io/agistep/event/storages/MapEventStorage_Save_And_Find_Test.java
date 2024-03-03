@@ -1,15 +1,16 @@
 package io.agistep.event.storages;
 
 import io.agistep.event.Event;
-import io.agistep.event.EventSource;
+import io.agistep.event.EventMaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
+import static io.agistep.event.EventMaker.*;
+import static io.agistep.event.EventMaker.payload;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("ClassNamingConvention")
@@ -17,13 +18,8 @@ class MapEventStorage_Save_And_Find_Test {
 
     MapEventStorage sut;
 
-    Event anEvent = EventSource.builder()
-            .id(1L)
-            .seq(0L)
-            .aggregateId(1L)
-            .payload(TestPayload.of("Hello~~~"))
-            .occurredAt(LocalDateTime.of(2023,12,12,0,0))
-            .build();
+    TestPayload payload = TestPayload.of("Hello~~~");
+    Event anEvent = EventMaker.make(eventId(1L), aggregateId(1L), seq(0L), eventName(payload.getClass().getName()), occurredAt(LocalDateTime.of(2023,12,12,0,0)), payload(payload));
 
     @BeforeEach
     void setUp() {

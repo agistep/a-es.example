@@ -13,22 +13,26 @@ class Event_Equal_Test {
 
     @Test
     void equals() {
-        Event anEvent = EventSource.builder()
-                .id(1L)
-                .seq(0L)
-                .aggregateId(1L)
-                .payload(new JsonPayloadTest("Test anEvent"))
-                .occurredAt(LocalDateTime.of(2023,12,12,0,0))
-                .build();
 
-        Event anEvent2 = EventSource.builder()
-                .id(1L)
-                .seq(0L)
+        JsonPayloadTest test_anEvent = new JsonPayloadTest("Test anEvent");
+        Event anEvent = EventMaker.make(
+                1L,
+                1L,
+                0L,
+                test_anEvent.getClass().getName(),
+                LocalDateTime.of(2023,12,12,0,0),
+                test_anEvent
+        );
 
-                .aggregateId(1L)
-                .payload(new JsonPayloadTest("Test anEvent"))
-                .occurredAt(LocalDateTime.of(2023,12,12,0,0))
-                .build();
+        JsonPayloadTest test_anEvent2 = new JsonPayloadTest("Test anEvent");
+        Event anEvent2 = EventMaker.make(
+                1L,
+                1L,
+                0L,
+                test_anEvent2.getClass().getName(),
+                LocalDateTime.of(2023,12,12,0,0),
+                test_anEvent
+        );
 
         assertThat(anEvent).isEqualTo(anEvent2);
     }

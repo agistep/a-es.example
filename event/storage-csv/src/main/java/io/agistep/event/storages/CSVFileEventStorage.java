@@ -10,11 +10,11 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static io.agistep.event.EventMaker.*;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 class CSVFileEventStorage extends OptimisticLockingSupport {
@@ -103,13 +103,13 @@ class CSVFileEventStorage extends OptimisticLockingSupport {
     private static Event getEvent(CSVRecord record) {
         Object deserialize = deserialize(record);
 
-        return EventSource.builder()
-                .id(Long.parseLong(record.get("id")))
-                .seq(Long.parseLong(record.get("seq")))
-                .aggregateId(Long.parseLong(record.get("aggregateId")))
-                .payload(deserialize)
-                .occurredAt(LocalDateTime.parse(record.get("occurredAt"), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .build();
+        return EventMaker.make(
+                eventId(Long.parseLong(record.get("id"))),
+                aggregateId(Long.parseLong(record.get("aggregateId"))),
+                seq(Long.parseLong(record.get("seq"))),
+                eventName(deserialize.getClass().getName()),
+                occurredAt(LocalDateTime.parse(record.get("occurredAt"), ISO_LOCAL_DATE_TIME)),
+                payload(deserialize));
     }
 
     private static Object deserialize(CSVRecord record) {

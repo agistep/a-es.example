@@ -3,70 +3,46 @@ package io.agistep.event;
 import io.agistep.aggregator.IdUtils;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.valid4j.Assertive.require;
+import static org.valid4j.Validation.validate;
 
-public final class EventSource {
-    public static final long INITIAL_SEQ = 0;
-    public static HoldListener holdListener;
-    public static ReplayListener replayListener;
+public class EventMaker {
 
-    private EventSource() {
-        /* This is Utility */
+    static Event make(Object aggregate, Object payload) {
+        final long eventId = IdUtils.gen();
+        final long aggregateId;
+        final long nextSeq;
+
+        if (IdUtils.notAssignedIdOf(aggregate)) {
+            aggregateId = IdUtils.gen();
+            nextSeq = EventSource.INITIAL_SEQ;
+        } else {
+            aggregateId = IdUtils.idOf(aggregate);
+            nextSeq = nextSeq(aggregateId);
+        }
+
+        return make(eventId, aggregateId, nextSeq, payload.getClass().getName(), LocalDateTime.now(), payload);
     }
 
-    public static void apply(Object aggregate, Object payload) {
-        EventApplier.apply(aggregate, payload);
+    private static long nextSeq(Object aggregateId) {
+        return ThreadLocalEventSeqHolder.instance().nextSeq((Long) aggregateId);
     }
 
-    public static List<Event> getHoldEvents(Object aggregate) {
-        return ThreadLocalEventHolder.instance().getEvents(aggregate);
+    public static Event make(long eventId, long aggregateId, long nextSeq, String eventName, LocalDateTime occurredAt, Object payload) {
+        return EventBuilder.builder()
+                .id(eventId)
+                .name(eventName)
+                .aggregateId(aggregateId)
+                .seq(nextSeq)
+                .payload(payload)
+                .occurredAt(occurredAt)
+                .build();
     }
 
-    public static long getLatestSeqOf(Object aggregate) {
-        return getLatestSeqOf(IdUtils.idOf(aggregate));
-    }
-
-    public static long getLatestSeqOf(Long aggregateId) {
-        return ThreadLocalEventSeqHolder.instance().getSeq(aggregateId);
-    }
-
-    public static void replay(Object aggregate, Event anEvent) {
-        EventReplayer.replay(aggregate, anEvent);
-    }
-
-    public static void replay(Object aggregate, Event[] events) {
-        Arrays.stream(events)
-                .forEach(e -> EventSource.replay(aggregate, e));
-    }
-
-    public static void clearAll() {
-        ThreadLocalEventHolder.instance().clearAll();
-    }
-
-    public static void clear(Object aggregate) {
-        ThreadLocalEventHolder.instance().clear(aggregate);
-    }
-
-    public static void setListener(Listener listener) {
-        setListener((HoldListener)listener);
-        setListener((ReplayListener)listener);
-    }
-
-    public static void setListener(HoldListener holdListener) {
-        EventSource.holdListener = holdListener;
-    }
-
-    public static void setListener(ReplayListener replayListener) {
-        EventSource.replayListener = replayListener;
-    }
-
-
-    public static final class EventBuilder {
+    private static final class EventBuilder {
         private Long id;
         private String name;
         private Long seq;
@@ -76,19 +52,29 @@ public final class EventSource {
 
         private EventBuilder() {}
 
+        public static EventBuilder builder() {
+            return new EventBuilder();
+        }
+
         public Event build() {
+            validate(name.equals(payload.getClass().getName()), new IllegalArgumentException("Event name should be same with payload class name."));
+
             if(this.occurredAt == null) {
                 this.occurredAt(LocalDateTime.now());
             }
 
-            String n = payload.getClass().getName();
             return new ObjectPayloadEnvelop(
                     require(id, is(not(nullValue()))),
-                    n,
+                    name,
                     seq,
                     aggregateId,
                     payload,
                     occurredAt);
+        }
+
+        public EventBuilder name(String name) {
+            this.name = name;
+            return this;
         }
 
         public EventBuilder id(long id) {
@@ -191,5 +177,27 @@ public final class EventSource {
         }
     }
 
+    public static Object payload(Object payload) {
+        return payload;
+    }
 
+    public static String eventName(String name) {
+        return name;
+    }
+
+    public static LocalDateTime occurredAt(LocalDateTime dateTime) {
+        return dateTime;
+    }
+
+    public static long seq(long seq) {
+        return seq;
+    }
+
+    public static long aggregateId(long id) {
+        return id;
+    }
+
+    public static long eventId(long id) {
+        return id;
+    }
 }
