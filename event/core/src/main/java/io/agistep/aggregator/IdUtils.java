@@ -32,7 +32,7 @@ public final class IdUtils {
 		}
 	}
 
-	private static Field getIdField(Class<?> aggregateClass) {
+	public static Field getIdField(Class<?> aggregateClass) {
 		Field field = findIdByAnnotation(aggregateClass);
 
 		if (field == null) {
