@@ -8,7 +8,7 @@ class GamjaConfigTest {
 
     @Test
     void loadConfig() {
-        var properties = GamjaConfig.GamjaConfigLoader.loadConfig("src/test/resources/gamja.yml");
+        var properties = GamjaConfig.GamjaConfigLoader.loadConfig("src/test/resources/test.yml");
 
         assertThat(properties.getBasePackage()).isEqualTo("io.agistep");
     }

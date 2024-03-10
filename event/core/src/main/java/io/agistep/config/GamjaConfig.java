@@ -1,6 +1,7 @@
 package io.agistep.config;
 
-import io.agistep.event.exception.GamjaComponentCreationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -10,8 +11,9 @@ import java.io.FileNotFoundException;
 
 import static io.agistep.config.GamjaConfig.GamjaConfigLoader.loadConfig;
 
-class GamjaConfig {
-    private static final String CONFIG_FILE_PATH = "gamja.yml";
+public class GamjaConfig {
+    private static final String CONFIG_FILE_PATH = "src/main/resources/gamja.yml";
+    private final static Logger log = LoggerFactory.getLogger("GamjaConfig");
 
     private static GamjaConfigProperties properties;
 
@@ -19,9 +21,8 @@ class GamjaConfig {
         properties = loadConfig(CONFIG_FILE_PATH);
     }
 
-
-    static GamjaConfigProperties getProperties() {
-        return new GamjaConfigProperties();
+    public static GamjaConfigProperties getProperties() {
+        return properties;
     }
 
     class GamjaConfigLoader {
@@ -32,7 +33,8 @@ class GamjaConfig {
                 FileInputStream inputStream = new FileInputStream(filePath);
                 return yaml.load(inputStream);
             } catch (FileNotFoundException e) {
-                throw new GamjaComponentCreationException("Configuration file not found.");
+                log.error("Config file not found: {}", filePath);
+                return new GamjaConfigProperties();
             }
         }
     }

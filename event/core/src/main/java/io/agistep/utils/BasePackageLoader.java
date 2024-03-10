@@ -1,5 +1,6 @@
 package io.agistep.utils;
 
+import io.agistep.config.GamjaConfig;
 import io.agistep.event.exception.GamjaComponentCreationException;
 
 public class BasePackageLoader {
@@ -8,10 +9,15 @@ public class BasePackageLoader {
 
 
     public static String load() {
-        var basePackage = System.getProperty(BASE_PACKAGE_PROPERTY);
+        var basePackage = GamjaConfig.getProperties().getBasePackage();
+
         if (basePackage == null) {
-            throw new GamjaComponentCreationException("BasePackage should be set as a system property.");
+            basePackage = System.getProperty(BASE_PACKAGE_PROPERTY);
+            if (basePackage == null) {
+                throw new GamjaComponentCreationException("BasePackage should be set as a system property.");
+            }
         }
+
         return basePackage;
     }
 
