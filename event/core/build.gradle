@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.5'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.5'
     implementation 'io.github.classgraph:classgraph:4.8.165'
+    implementation 'org.yaml:snakeyaml:2.2'
 
 
     testImplementation 'org.assertj:assertj-core:3.24.2'
