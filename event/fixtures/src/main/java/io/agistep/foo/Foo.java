@@ -6,7 +6,7 @@ import io.agistep.event.EventHandler;
 
 public class Foo {
 
-    Long id;
+    long id;
 
     boolean done = false;
 
@@ -27,7 +27,7 @@ public class Foo {
         this.done = false;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
