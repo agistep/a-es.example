@@ -1,5 +1,9 @@
 package io.agistep.event;
 
+import io.agistep.aggregator.ConfigIdGenerator;
+import io.agistep.aggregator.IdUtils;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static io.agistep.event.EventMaker.make;
@@ -9,11 +13,12 @@ final class EventApplier {
     static void apply(Object aggregate, Object payload) {
 
         final Event anEvent = make(aggregate, payload);
-        EventMaker.make();
+//        EventMaker.make();
         //TODO replay 실패하면 hold 를 푼다.
         replay(aggregate, anEvent);
         hold(anEvent);
     }
+    static ConfigIdGenerator generator = new ConfigIdGenerator();
 
     private static void hold(Event anEvent) {
         Optional.ofNullable(EventSource.holdListener).ifPresent(listen->listen.beforeHold(anEvent));

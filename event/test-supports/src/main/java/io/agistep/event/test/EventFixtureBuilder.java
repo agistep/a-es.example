@@ -1,6 +1,6 @@
 package io.agistep.event.test;
 
-import io.agistep.aggregator.IdUtils;
+import io.agistep.aggregator.ConfigIdGenerator;
 import io.agistep.event.Event;
 import io.agistep.event.EventMaker;
 import io.agistep.event.EventSource;
@@ -30,7 +30,8 @@ public final class EventFixtureBuilder {
     }
 
     private static long getId() {
-        return IdUtils.gen();
+        ConfigIdGenerator generator = new ConfigIdGenerator();
+        return generator.gen();
     }
 
     public static EventFixtureBuilder eventsWith(long aggregateId, Object firstPayload) {
