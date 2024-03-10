@@ -22,5 +22,13 @@ public interface IdentifierProviderFactory {
         throw new IdentifierProviderFactoryNotFoundException("IdentifierProvider Factory " + factoryName + " not found");
     }
 
+    default IdentifierProvider getOrDefault() {
+        IdentifierProvider identifierProvider = get();
+        if (identifierProvider == null) {
+            return load().get();
+        }
+        return identifierProvider;
+    }
+
     IdentifierProvider get();
 }

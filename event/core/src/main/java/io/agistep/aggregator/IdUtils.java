@@ -100,7 +100,4 @@ public final class IdUtils {
 		}
 	}
 
-	public static long gen() {
-		return IDENTIFIER_PROVIDER.nextId();
-	}
 }
