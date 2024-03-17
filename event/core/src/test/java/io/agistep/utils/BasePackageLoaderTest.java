@@ -11,7 +11,7 @@ class BasePackageLoaderTest {
     void exceptionWhenBasePackageIsNotSet() {
         System.clearProperty("basePackage");
 
-         assertThatThrownBy(BasePackageLoader::load)
+        assertThatThrownBy(BasePackageLoader::load)
                  .isInstanceOf(GamjaComponentCreationException.class)
                  .hasMessageContaining("BasePackage should be set as a system property.");
     }

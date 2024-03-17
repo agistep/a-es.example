@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class Todo {
 
-	private Long id;
+	private long id;
 	private String text;
 	private boolean done;
 	private boolean hold;

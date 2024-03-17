@@ -9,7 +9,6 @@ final class EventApplier {
     static void apply(Object aggregate, Object payload) {
 
         final Event anEvent = make(aggregate, payload);
-        EventMaker.make();
         //TODO replay 실패하면 hold 를 푼다.
         replay(aggregate, anEvent);
         hold(anEvent);
