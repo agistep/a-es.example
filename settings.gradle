@@ -9,7 +9,6 @@
  */
 
 rootProject.name = 'a-es.example'
-include('event:identity')
 
 include('event:fixtures')
 include('event:core')
